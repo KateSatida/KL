@@ -14,7 +14,7 @@ $("#wedding-title").textContent = w.title;
 $("#wedding-sub").textContent = `${w.couple} · ${w.date}`;
 $("#wedding-welcome").textContent = w.welcome;
 $("#hud-title").textContent = `💒 ${w.couple}`;
-if (!backend.online) $("#demo-banner").classList.remove("hidden");
+if (!backend.online) { $("#demo-banner").classList.remove("hidden"); document.body.classList.add("demo"); }
 
 // What this guest looks like. Saved on the device so a refresh keeps the outfit.
 const state = store.get("guest", { name: "", status: "", look: {} });

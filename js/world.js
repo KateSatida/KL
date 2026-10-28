@@ -40,7 +40,7 @@ export class World {
     this.canvas.width = innerWidth * dpr;
     this.canvas.height = innerHeight * dpr;
     // Zoom so the view feels the same on phones and big screens.
-    this.camera.zoom = Math.max(0.7, Math.min(1.3, Math.min(innerWidth / 900, innerHeight / 650))) * dpr;
+    this.camera.zoom = Math.max(0.8, Math.min(1.3, Math.min(innerWidth / 900, innerHeight / 650))) * dpr;
   }
 
   toWorld(clientX, clientY) {
