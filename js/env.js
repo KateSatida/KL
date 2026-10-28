@@ -11,5 +11,5 @@
 // While they are empty the game runs in DEMO MODE: it works on your computer,
 // tabs in the same browser can see each other, but nothing is saved online.
 // ─────────────────────────────────────────────────────────────────────────────
-export const SUPABASE_URL = "";
-export const SUPABASE_KEY = "";
+export const SUPABASE_URL = "https://qbpljobsvwjjazldetqi.supabase.co";
+export const SUPABASE_KEY = "sb_publishable_3R1PwwRSRHKgqUSyoi1Tsw_uMyDVHAH";
