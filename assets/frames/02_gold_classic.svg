@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
+  <path fill="#1f1b16" fill-rule="evenodd" d="M0 0H600V800H0Z M40 40V680H560V40Z"/>
+  <rect x="40" y="40" width="520" height="640" fill="none" stroke="#d9b45a" stroke-width="8"/>
+  <rect x="22" y="22" width="556" height="756" fill="none" stroke="#d9b45a" stroke-width="2"/>
+  <text x="300" y="735" text-anchor="middle" font-family="Georgia, serif" font-size="40" fill="#d9b45a" letter-spacing="6">K &amp; L</text>
+  <text x="300" y="768" text-anchor="middle" font-family="Georgia, serif" font-size="20" fill="#d9b45a" letter-spacing="4">FOREVER</text>
+</svg>
