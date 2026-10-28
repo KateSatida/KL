@@ -37,7 +37,7 @@
       "icon": "🍸",
       "x": 1160, "y": 140, "w": 320, "h": 230,
       "color": "#d6ecff",
-      "npc": { "name": "Bartender", "sprite": "/assets/npc/bartender.png", "x": 1320, "y": 215 }
+      "npc": { "name": "Bartender", "sprite": "assets/npc/bartender.png", "x": 1320, "y": 215 }
     },
     {
       "id": "projector",
@@ -88,7 +88,7 @@
       "Cheers to love!"
     ],
     "promptpay": {
-      "image": "/assets/promptpay/qr.svg",
+      "image": "assets/promptpay/qr.svg",
       "title": "Support the couple",
       "text": "Scan with any Thai banking app (PromptPay). Thank you so much!"
     }

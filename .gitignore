@@ -2,7 +2,5 @@ __pycache__/
 *.pyc
 .venv/
 venv/
-.env
 .pytest_cache/
-# Guest uploads (photos, messages, singles). Never commit these.
-data/
+_site/

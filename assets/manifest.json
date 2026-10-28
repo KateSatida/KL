@@ -1,0 +1,159 @@
+{
+  "layers": {
+    "characters": [
+      {
+        "id": "01_short_dark_hair",
+        "label": "Short Dark Hair",
+        "url": "assets/characters/01_short_dark_hair.png"
+      },
+      {
+        "id": "02_long_dark_hair",
+        "label": "Long Dark Hair",
+        "url": "assets/characters/02_long_dark_hair.png"
+      },
+      {
+        "id": "03_bun_brown_hair",
+        "label": "Bun Brown Hair",
+        "url": "assets/characters/03_bun_brown_hair.png"
+      },
+      {
+        "id": "04_short_light_hair",
+        "label": "Short Light Hair",
+        "url": "assets/characters/04_short_light_hair.png"
+      },
+      {
+        "id": "05_long_pink_hair",
+        "label": "Long Pink Hair",
+        "url": "assets/characters/05_long_pink_hair.png"
+      },
+      {
+        "id": "06_short_deep_skin",
+        "label": "Short Deep Skin",
+        "url": "assets/characters/06_short_deep_skin.png"
+      }
+    ],
+    "dresses": [
+      {
+        "id": "black_suit",
+        "label": "Black Suit",
+        "url": "assets/dresses/black_suit.png"
+      },
+      {
+        "id": "blush_gown",
+        "label": "Blush Gown",
+        "url": "assets/dresses/blush_gown.png"
+      },
+      {
+        "id": "navy_suit",
+        "label": "Navy Suit",
+        "url": "assets/dresses/navy_suit.png"
+      },
+      {
+        "id": "red_dress",
+        "label": "Red Dress",
+        "url": "assets/dresses/red_dress.png"
+      },
+      {
+        "id": "sky_dress",
+        "label": "Sky Dress",
+        "url": "assets/dresses/sky_dress.png"
+      },
+      {
+        "id": "thai_gold",
+        "label": "Thai Gold",
+        "url": "assets/dresses/thai_gold.png"
+      },
+      {
+        "id": "white_gown",
+        "label": "White Gown",
+        "url": "assets/dresses/white_gown.png"
+      }
+    ],
+    "props": [
+      {
+        "id": "black_glasses",
+        "label": "Black Glasses",
+        "url": "assets/props/black_glasses.png"
+      },
+      {
+        "id": "bouquet",
+        "label": "Bouquet",
+        "url": "assets/props/bouquet.png"
+      },
+      {
+        "id": "flower_crown",
+        "label": "Flower Crown",
+        "url": "assets/props/flower_crown.png"
+      },
+      {
+        "id": "heart_balloon",
+        "label": "Heart Balloon",
+        "url": "assets/props/heart_balloon.png"
+      },
+      {
+        "id": "pink_glasses",
+        "label": "Pink Glasses",
+        "url": "assets/props/pink_glasses.png"
+      },
+      {
+        "id": "top_hat",
+        "label": "Top Hat",
+        "url": "assets/props/top_hat.png"
+      },
+      {
+        "id": "veil",
+        "label": "Veil",
+        "url": "assets/props/veil.png"
+      }
+    ],
+    "drinks": [
+      {
+        "id": "beer",
+        "label": "Beer",
+        "url": "assets/drinks/beer.png"
+      },
+      {
+        "id": "champagne",
+        "label": "Champagne",
+        "url": "assets/drinks/champagne.png"
+      },
+      {
+        "id": "coconut",
+        "label": "Coconut",
+        "url": "assets/drinks/coconut.png"
+      },
+      {
+        "id": "pink_cocktail",
+        "label": "Pink Cocktail",
+        "url": "assets/drinks/pink_cocktail.png"
+      },
+      {
+        "id": "red_wine",
+        "label": "Red Wine",
+        "url": "assets/drinks/red_wine.png"
+      }
+    ]
+  },
+  "frames": [
+    {
+      "id": "00_no_frame",
+      "label": "No Frame",
+      "url": "assets/frames/00_no_frame.svg"
+    },
+    {
+      "id": "01_floral",
+      "label": "Floral",
+      "url": "assets/frames/01_floral.svg"
+    },
+    {
+      "id": "02_gold_classic",
+      "label": "Gold Classic",
+      "url": "assets/frames/02_gold_classic.svg"
+    },
+    {
+      "id": "03_polaroid",
+      "label": "Polaroid",
+      "url": "assets/frames/03_polaroid.svg"
+    }
+  ]
+}

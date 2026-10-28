@@ -17,3 +17,7 @@ new item on a separate layer, hide the guide, and export only the item.
 
 File names become labels: `03_pink_gown.png` → "Pink Gown" (the number only sets the order).
 Delete the placeholder files you don't want.
+
+`manifest.json` in this folder is the list of files the game reads. It is
+rebuilt automatically by `python tools/serve.py` and by GitHub on every push,
+so you never need to edit it by hand.
