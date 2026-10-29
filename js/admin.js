@@ -83,6 +83,18 @@ views.wishes = async () => {
   }));
 };
 
+views.songs = async () => {
+  const items = await admin.songs();
+  if (!items.length) return el("p", { class: "muted" }, "No song requests yet.");
+  return el("div", { class: "wall card", style: "max-height:none" }, items.map((s) => {
+    const node = el("div", { class: "msg" });
+    const isLink = /^https?:\/\//.test(s.song);
+    node.append(el("b", {}, s.name || "Guest"), " ", el("small", {}, timeAgo(s.created_at)),
+      el("div", {}, isLink ? el("a", { href: s.song, target: "_blank", rel: "noopener" }, s.song) : s.song), removeBtn("song_requests", s, node));
+    return node;
+  }));
+};
+
 // Bouquet toss: watch who stands in the circle, then pick a random one.
 let room = null, players = [], refreshBouquet = () => {};
 views.bouquet = async () => {
@@ -139,6 +151,8 @@ async function downloadZip() {
     }
     const messages = await admin.messages();
     zip.file("photo-notes.txt", notes.join("\n"));
+    const songs = await admin.songs();
+    zip.file("song-requests.txt", songs.map((s) => `${s.name}: ${s.song}`).join("\n"));
     const wishes = await admin.wishes();
     zip.file("wishes.txt", wishes.map((w) => `${w.name} (${new Date(w.created_at).toLocaleString()}): ${w.text}`).join("\n"));
     zip.file("bar-messages.txt", messages.map((m) => `${m.name} (${new Date(m.created_at).toLocaleString()}): ${m.text}`).join("\n"));

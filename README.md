@@ -139,6 +139,7 @@ Log in with the email and password from step 2b. You get:
 - 🍸 all bar messages, with delete buttons
 - 💘 all single cards, with delete buttons
 - 🌳 all wishes from the wishing tree, with delete buttons
+- 🎶 dance floor song requests, with delete buttons
 - 💐 the bouquet toss button
 - 👥 all guest names. Delete one to free it, e.g. for a guest who switched to another phone.
 - ⬇ **Download all photos (ZIP)**: photos plus `photo-notes.txt` and `bar-messages.txt`. Do this after the wedding.
@@ -209,10 +210,24 @@ end of the game link. The top bar shows ☀️ or 🌙.
 
 Keep photos small (about 1000 px wide) so they load fast on phones.
 
-**Dance floor music.** By default a small built-in tune plays. To use your own
-song, put an .mp3 in `assets/music/` and add `"music": "assets/music/song.mp3"`
-to the dance floor station. Music plays only on the phone of the guest who
-presses Play.
+**Music (Spotify / YouTube).** In `config/game.json` → `"music"`, paste share
+links (playlist, album, song or video):
+
+```json
+"music": {
+  "title": "Wedding playlist",
+  "playlist": "https://open.spotify.com/playlist/...",       // background music: the 🎵 button in the top bar
+  "danceFloor": "https://www.youtube.com/playlist?list=...", // the dance floor's "Play dance playlist"
+  "addSongsLink": "https://open.spotify.com/playlist/..."    // optional: collaborative playlist guests can add to in Spotify
+}
+```
+
+- The background playlist is fixed; guests can't change it. Leave it empty to hide the 🎵 button.
+- On the dance floor, guests can **request songs** (a name or a Spotify/YouTube link). Everyone sees the list and can play link requests. You see them on the admin page (🎶 Song requests) and in the ZIP.
+- Guests can only add to your real Spotify playlist if you make it **collaborative** in Spotify and put its link in `addSongsLink`; they need a Spotify account.
+- Music plays on each guest's own phone (not in sync), in a small player that stays on screen; closing it stops the music.
+- Spotify plays only 30-second previews for guests who aren't logged in to Spotify in that browser. YouTube plays full songs (sometimes with ads).
+- Without a `danceFloor` link, the dance floor plays a built-in tune (or your own mp3: add `"music": "assets/music/song.mp3"` to the dance floor station).
 
 **Bouquet toss.** On the admin page, open **💐 Bouquet toss**. It lists who is
 standing in the circle right now. Press **Toss now!** and every guest sees the

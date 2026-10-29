@@ -32,6 +32,7 @@
       <span id="hud-online" class="pill">👥 0</span>
       <span id="hud-time" class="pill" title="Day / night follows the clock">☀️</span>
       <span class="spacer"></span>
+      <button id="hud-music" class="btn small hidden" title="Music">🎵</button>
       <button id="hud-status" class="btn small">💬 Status</button>
       <button id="hud-wardrobe" class="btn small">👗 Outfit</button>
     </header>
@@ -51,6 +52,12 @@
     </aside>
 
     <div id="connection" class="pill connection hidden">Reconnecting…</div>
+
+    <!-- Mini music player (Spotify / YouTube), see "music" in config/game.json -->
+    <div id="music-panel" class="music-panel hidden">
+      <div class="music-head"><span id="music-title">🎵 Music</span><button id="music-close" class="chat-min" aria-label="Close music">✕</button></div>
+      <div id="music-frame"></div>
+    </div>
   </section>
 
   <!-- Pop-up window used by every station -->

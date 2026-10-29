@@ -70,6 +70,11 @@ export function createDemoBackend() {
       store.set("demo.wishes", [{ id: id(), created_at: now(), name, text, color }, ...store.get("demo.wishes", [])].slice(0, 200));
     },
 
+    async listSongs() { return store.get("demo.songs", []); },
+    async addSong({ name, song }) {
+      store.set("demo.songs", [{ id: id(), created_at: now(), name, song }, ...store.get("demo.songs", [])].slice(0, 100));
+    },
+
     async listSingles() { return store.get("demo.singles", []); },
     async addSingle({ name, instagram, bio, blob }) {
       const row = { id: id(), created_at: now(), name, instagram, bio, image: await blobToDataUrl(blob) };

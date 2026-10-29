@@ -80,6 +80,15 @@ export function createSupabaseBackend(url, key) {
       check(await db.from("wishes").insert({ name, text, color }));
     },
 
+    // ---- dance floor song requests ----------------------------------------------
+    async listSongs() {
+      return check(await db.from("song_requests").select("id, created_at, name, song")
+        .order("created_at", { ascending: false }).limit(100));
+    },
+    async addSong({ name, song }) {
+      check(await db.from("song_requests").insert({ name, song }));
+    },
+
     // ---- single station --------------------------------------------------------
     async listSingles() {
       const rows = check(await db.from("singles").select("id, created_at, name, instagram, bio, path")
@@ -105,6 +114,9 @@ export function createSupabaseBackend(url, key) {
         });
         channel.subscribe();
         return { broadcast(t, d) { channel.send({ type: "broadcast", event: "game", payload: { t, d } }); } };
+      },
+      async songs() {
+        return check(await db.from("song_requests").select("*").order("created_at", { ascending: false }));
       },
       async wishes() {
         return check(await db.from("wishes").select("*").order("created_at", { ascending: false }));
