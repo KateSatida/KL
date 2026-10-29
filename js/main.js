@@ -161,6 +161,10 @@ async function startGame() {
     stations.find((s) => s.def.type === "wardrobe")?.module.open();
   });
 
+  const showTime = () => { $("#hud-time").textContent = world.scenery.night ? "🌙" : "☀️"; };
+  showTime();
+  setInterval(showTime, 15000);
+
   setupChat(game);
   world.start();
 }

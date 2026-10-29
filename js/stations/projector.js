@@ -61,7 +61,12 @@ export default function projector(def, game) {
         label(ctx, "💘 Visit the Single Station", sx + sw / 2, sy + sh / 2, "#c2577a", 16);
         label(ctx, "to appear here!", sx + sw / 2, sy + sh / 2 + 22, "#4a3640", 13);
       }
+    },
+    // drawn after the night overlay so it stays readable
+    drawLabel(ctx, d) {
       label(ctx, `${d.icon} ${d.label} · tap to view`, d.x + d.w / 2, d.y + d.h - 12, "#ffffff", 14);
     },
+    // the screen glows at night
+    lights: (d) => [{ x: d.x + d.w / 2, y: d.y + d.h / 2, r: Math.max(d.w, d.h) * 0.75, strength: 1, color: "rgb(200,210,255)" }],
   };
 }

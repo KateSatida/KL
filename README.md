@@ -159,7 +159,8 @@ Browse → "Remove my card").
   - `statusRadius`: how close guests must be to see a status
   - `background`: set it to e.g. `"assets/map.png"` to use your own drawn map instead of the tiled floor
 - `stations`: position (`x`, `y`), size (`w`, `h`), label, icon and colour of each station
-- `decorations`: emoji placed on the map
+- `decorations`: pixel-art pictures placed on the map (see **Decorations and day/night** below)
+- `time`: when night starts and ends
 - `bar.promptpay`: your QR image path and the text under it
 
 **PromptPay QR.** Save your QR as `assets/promptpay/qr.png`, then change
@@ -170,6 +171,31 @@ Browse → "Remove my card").
 Where the typed note sits on the photo is set by `NOTE_BOX` at the top of `js/stations/photobooth.js`.
 
 **Colours and font.** Change them at the top of `css/style.css`.
+
+**Decorations and day/night.** The map is an outdoor lawn. Everything on it is a
+pixel-art PNG in `assets/decor/` (flower backdrop, LED string lights, lamp posts,
+trees, bushes, flower pots, cake). Each entry in `decorations` looks like:
+
+```json
+{ "image": "assets/decor/lamp_post.png", "night": "assets/decor/lamp_post_night.png", "x": 480, "y": 560 }
+```
+
+- `x`, `y`: the bottom-centre of the picture on the map (the map is 1600 × 1100).
+- `scale`: how many times bigger to draw it (default 2).
+- `night`: an optional second picture for night time. Its bright yellow/white pixels glow by themselves, so draw the bulbs "on" in it. `glow` sets the glow size (default 46).
+- `layer`: `"sorted"` (default: guests can walk in front of or behind it), `"ground"` (always under guests) or `"top"` (always over guests, e.g. hanging lights).
+
+Day/night follows **each guest's phone clock**, set in `time`:
+`"nightFrom": "18:00"`, `"dayFrom": "06:00"`. Set `"mode"` to `"day"` or
+`"night"` to force one. To preview, add `?time=night` (or `?time=20:30`) to the
+end of the game link. The top bar shows ☀️ or 🌙.
+
+**Station icons.** Each station's `"sprite"` is a 32×32 PNG in
+`assets/stations/`, drawn 3× bigger on the map. Remove `"sprite"` to use the
+emoji `"icon"` instead (the emoji is still used on buttons and pop-ups).
+
+`python tools/make_placeholder_art.py` re-creates the placeholder art (it never
+overwrites your own files unless you add `--force`).
 
 ---
 
