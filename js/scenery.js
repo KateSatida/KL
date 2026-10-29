@@ -62,6 +62,7 @@ export class Scenery {
     this.decor = await Promise.all(list.map(async (d) => {
       const item = { scale: 2, layer: "sorted", ...d, img: null, nightImg: null, glows: [] };
       if (d.image) item.img = await loadImage(d.image);
+      if (d.overlay) item.overlayImg = await loadImage(d.overlay);
       if (d.night) {
         item.nightImg = await loadImage(d.night);
         if (item.nightImg) item.glows = findGlowPoints(item.nightImg);
@@ -114,7 +115,19 @@ export class Scenery {
     const img = this.imageFor(d);
     if (!img) return;
     const w = img.width * d.scale, h = img.height * d.scale;
-    ctx.drawImage(img, Math.round(d.x - w / 2), Math.round(d.y - h), w, h);
+    const x = Math.round(d.x - w / 2), y = Math.round(d.y - h);
+    ctx.drawImage(img, x, y, w, h);
+    // "overlay": a picture (e.g. your logo) fitted into "overlayBox" [x, y, w, h]
+    // (in the decoration's own pixels), e.g. on the backdrop's drape
+    const o = d.overlayImg;
+    if (o && d.overlayBox) {
+      const [bx, by, bw, bh] = d.overlayBox.map((v) => v * d.scale);
+      const k = Math.min(bw / o.width, bh / o.height), ow = o.width * k, oh = o.height * k;
+      ctx.save();
+      ctx.imageSmoothingEnabled = k < 1;                    // big photo logos: smooth; pixel logos: crisp
+      ctx.drawImage(o, Math.round(x + bx + (bw - ow) / 2), Math.round(y + by + (bh - oh) / 2), Math.round(ow), Math.round(oh));
+      ctx.restore();
+    }
   }
 
   layer(name) { return this.decor.filter((d) => (d.emoji ? "ground" : d.layer) === name); }

@@ -2,6 +2,7 @@
 import { composeLook, loadImage, SIZE } from "./sprites.js";
 import { isModalOpen } from "./ui.js";
 import { Scenery, findGlowPoints } from "./scenery.js";
+import { Npcs } from "./npcs.js";
 
 const NEAR_STATION = 50;   // how close (px) you must be to use a station
 
@@ -22,6 +23,7 @@ export class World {
     this.onWalk = () => {};        // called when I start/stop/turn: {x, y, tx, ty, dir}
     this.keyDir = "0,0";
     this.scenery = new Scenery(config);   // grass, decorations, day/night
+    this.npcs = new Npcs(config);         // bride & groom etc.
     this.effects = [];                    // short animations, e.g. the flying bouquet: (ctx, now) => keepGoing
     this.danceZones = stations.filter((s) => s.def.type === "dancefloor").map((s) => s.def);
     this.background = null;
@@ -141,6 +143,7 @@ export class World {
 
   update(dt) {
     this.scenery.update(dt);
+    this.npcs.update(this.me, performance.now());
     const me = this.me;
     if (!me) return;
     let dx = 0, dy = 0;
@@ -215,6 +218,7 @@ export class World {
     const items = [
       ...players.map((p) => ({ y: p.ry, draw: () => this.drawPlayer(p, now) })),
       ...sc.layer("sorted").map((d) => ({ y: d.y, draw: () => sc.drawDecor(ctx, d) })),
+      ...this.npcs.list.map((n) => ({ y: n.y, draw: () => this.drawNpc(n, now) })),
     ].sort((a, b) => a.y - b.y);
     for (const item of items) item.draw();
     for (const d of sc.layer("top")) sc.drawDecor(ctx, d);
@@ -224,6 +228,7 @@ export class World {
       ...sc.decorLights(),
       ...this.stations.flatMap((s) => [...(s.module.lights?.(s.def) || []), ...stationLights(s.def)]),
       ...players.map((p) => ({ x: p.rx, y: p.ry - 30, r: 80, strength: 0.55 })),
+      ...this.npcs.list.map((n) => ({ x: n.x, y: n.y - 30, r: 80, strength: 0.55 })),
     ];
     sc.drawNight(ctx, [camera.zoom, 0, 0, camera.zoom, -camera.x * camera.zoom, -camera.y * camera.zoom], lights);
 
@@ -233,6 +238,23 @@ export class World {
     // Text last, so it stays readable at night
     for (const s of this.stations) (s.module.drawLabel || drawStationLabel)(ctx, s.def, now, this);
     for (const p of players.sort((a, b) => a.ry - b.ry)) this.drawPlayerText(p, now);
+    for (const n of this.npcs.list) {
+      label(ctx, n.name, n.x, n.y + 16, "#c2577a");
+      if (n.line) speech(ctx, n.line, n.x, n.y - SIZE * this.w.spriteScale - 8, "#ffffff");
+    }
+  }
+
+  drawNpc(n, now) {
+    if (!n.img) return;
+    const ctx = this.ctx, size = SIZE * this.w.spriteScale;
+    const bob = n.line ? Math.abs(Math.sin(now / 200)) * 3 : 0;    // little hop while talking
+    ctx.fillStyle = "#00000022";
+    ctx.beginPath(); ctx.ellipse(n.x, n.y, 16, 5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.save();
+    ctx.translate(n.x - size / 2, n.y - size - bob + 2);
+    if (n.dir === -1) { ctx.scale(-1, 1); ctx.translate(-size, 0); }
+    ctx.drawImage(n.img, 0, 0, size, size);
+    ctx.restore();
   }
 
   drawPlayer(p, now) {

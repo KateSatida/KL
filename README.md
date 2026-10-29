@@ -252,6 +252,24 @@ reopen their card at the station. No admin needed.
 - Notes: put your note images (PNG/JPG, e.g. 480×320) in `assets/bouquet_notes/`
   and list them under `"notes"`. The three included notes are placeholders.
 
+**Your logo.** The flower backdrop (bottom right) shows `assets/logo.png`. Replace
+that file with your own logo (PNG with a transparent background looks best; any
+size, it's fitted onto the backdrop). From a phone: open the repository on
+github.com → `assets` → **Add file → Upload files** → upload your file named
+exactly `logo.png` → **Commit changes**. The site updates in about a minute.
+
+**Bride & groom.** `"npcs"` in `config/game.json` places characters on the map
+that greet guests who walk up to them, taking turns with a random line:
+
+```json
+{ "name": "Bride 👰", "sprite": "assets/npc/bride.png", "x": 1262, "y": 1508,
+  "radius": 150, "lines": ["Hello! 👋", "Welcome! 💕", "Thanks for joining us! 🥰"] }
+```
+
+Change the names (e.g. your real names), lines, or position; replace
+`assets/npc/bride.png` / `groom.png` with your own 32×32 drawings; `"dir": -1`
+makes a character face left.
+
 **Station icons.** Each station's `"sprite"` is a 32×32 PNG in
 `assets/stations/`, drawn 3× bigger on the map. Remove `"sprite"` to use the
 emoji `"icon"` instead (the emoji is still used on buttons and pop-ups).
