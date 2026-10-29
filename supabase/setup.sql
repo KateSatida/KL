@@ -92,6 +92,44 @@ grant execute on function public.add_single(text, text, text, text) to anon, aut
 grant execute on function public.delete_own_single(uuid, uuid) to anon, authenticated;
 
 
+-- ── Guest names: no sign-up, but each name can only be used by one phone ──────────
+-- Each phone has a random secret token (kept in the browser). claim_name() gives
+-- the name to the first phone that asks; the same phone can always use it again.
+-- Free a name by deleting its row (admin page → Guests tab, or Table Editor).
+create table if not exists public.guest_names (
+  id         uuid primary key default gen_random_uuid(),
+  name_key   text not null unique,          -- lower-case, single spaces: "Mai" = "mai" = " MAI "
+  name       text not null check (char_length(name) between 1 and 24),
+  token      uuid not null,
+  created_at timestamptz not null default now()
+);
+alter table public.guest_names enable row level security;
+drop policy if exists "admin reads names" on public.guest_names;
+drop policy if exists "admin deletes names" on public.guest_names;
+create policy "admin reads names"   on public.guest_names for select to authenticated using (public.is_admin());
+create policy "admin deletes names" on public.guest_names for delete to authenticated using (public.is_admin());
+revoke all on public.guest_names from anon, authenticated;
+grant select (id, name_key, name, created_at), delete on public.guest_names to authenticated;
+
+create or replace function public.claim_name(p_name text, p_token uuid)
+returns boolean language plpgsql security definer set search_path = public as $$
+declare
+  v_name text := regexp_replace(trim(coalesce(p_name, '')), '\s+', ' ', 'g');
+  v_key  text := lower(v_name);
+begin
+  if char_length(v_name) not between 1 and 24 then return false; end if;
+  insert into public.guest_names (name_key, name, token) values (v_key, v_name, p_token)
+  on conflict (name_key) do nothing;
+  if not exists (select 1 from public.guest_names where name_key = v_key and token = p_token) then
+    return false;                                  -- someone else has this name
+  end if;
+  -- one name per phone: free the name this phone used before (if it changed name)
+  delete from public.guest_names where token = p_token and name_key <> v_key;
+  return true;
+end $$;
+grant execute on function public.claim_name(text, uuid) to anon, authenticated;
+
+
 -- ── Image storage ─────────────────────────────────────────────────────────────
 -- photos  : private (only admins can view), max 5 MB, JPEG only
 -- singles : public (shown on the projector),  max 2 MB, JPEG only

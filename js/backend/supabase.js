@@ -42,6 +42,12 @@ export function createSupabaseBackend(url, key) {
       };
     },
 
+    // ---- guest names (no sign-up; each name belongs to one phone) -------------
+    // Returns true if the name is free or already this phone's.
+    async claimName(name, token) {
+      return check(await db.rpc("claim_name", { p_name: name, p_token: token }));
+    },
+
     // ---- photo booth (private: only the admin can read) ----------------------
     async uploadPhoto({ name, note, blob }) {
       const path = `${uuid()}.jpg`;
@@ -86,6 +92,9 @@ export function createSupabaseBackend(url, key) {
       },
       async messages() {
         return check(await db.from("messages").select("*").order("created_at", { ascending: false }));
+      },
+      async guests() {
+        return check(await db.from("guest_names").select("id, name, created_at").order("created_at", { ascending: false }));
       },
       async singles() {
         const rows = check(await db.from("singles").select("id, created_at, name, instagram, bio, path")

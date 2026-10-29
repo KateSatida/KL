@@ -44,6 +44,16 @@ export function createDemoBackend() {
       };
     },
 
+    async claimName(name, token) {
+      const names = store.get("demo.names", {});        // {lower-case name: token}
+      const key = name.toLowerCase();
+      if (names[key] && names[key] !== token) return false;
+      for (const k of Object.keys(names)) if (names[k] === token) delete names[k];
+      names[key] = token;
+      store.set("demo.names", names);
+      return true;
+    },
+
     async uploadPhoto() {
       // Nothing is uploaded in demo mode; the photo is still downloaded to the device.
     },

@@ -53,9 +53,27 @@ const game = {
 };
 window.game = game; // handy for debugging in the browser console
 
-$("#join-btn").addEventListener("click", () => {
-  state.name = (state.name || "").trim().slice(0, 24);
+// A random secret that proves "this phone owns this name". Kept on the device.
+let deviceToken = store.get("deviceToken");
+if (!deviceToken) {
+  deviceToken = crypto.randomUUID?.() || "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) => (c ^ (Math.random() * 16) >> (c / 4)).toString(16));
+  store.set("deviceToken", deviceToken);
+}
+
+$("#join-btn").addEventListener("click", async () => {
+  state.name = (state.name || "").trim().replace(/\s+/g, " ").slice(0, 24);
   if (!state.name) return toast("Please type your name first 😊");
+  const btn = $("#join-btn");
+  btn.disabled = true;
+  try {
+    if (!(await backend.claimName(state.name, deviceToken))) {
+      return toast(`"${state.name}" is already taken. Please choose another name 🙏`, 4000);
+    }
+  } catch (e) {
+    return toast(`Could not check your name: ${e.message}`, 4000);
+  } finally {
+    btn.disabled = false;
+  }
   game.save();
   $("#join").classList.add("hidden");
   $("#game").classList.remove("hidden");

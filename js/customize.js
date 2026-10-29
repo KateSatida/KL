@@ -81,6 +81,7 @@ export function customizer(config, state, { showName = true } = {}) {
       preview,
       showName ? el("label", {}, "Name") : null,
       showName ? nameInput : null,
+      showName ? el("small", { class: "muted" }, "No sign-up needed. Just pick a name nobody else uses.") : null,
       el("label", {}, "Status"),
       statusInput,
     ),

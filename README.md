@@ -11,6 +11,11 @@ on their phone, dress up a 32×32 character, walk around, and visit stations:
 | 💘 **Single Station** | Upload a photo + Instagram. A random single shows on the big projector every few seconds. |
 | 💬 **Chat** | Proximity chat: you only see messages from guests standing close to you. |
 
+**Guests don't sign up or log in.** They just type a name. Each name can only
+be used by one phone (capital letters and spaces don't count, so "Mai" and
+"mai" are the same name). The same phone can always come back with its name.
+Only you log in with an email, for the admin page.
+
 **Free hosting:**
 - **GitHub Pages** hosts the game at `https://<your-username>.github.io/<repo>/`.
 - **Supabase** (free plan) does the live multiplayer and stores photos, messages and singles.
@@ -56,6 +61,7 @@ Do this once, about 10 minutes.
 2. Open [`supabase/setup.sql`](supabase/setup.sql) and copy all of it into the editor.
 3. Change `you@example.com` near the top to **your email**. Only this email can see the booth photos.
 4. Click **Run**. You should see "Success. No rows returned".
+5. Whenever this file changes (after a `git pull`), run it again. It's safe to re-run and keeps your data.
 
 **b) Create your admin login.**
 1. Go to **Authentication** → **Users** → **Add user** → **Create new user**.
@@ -124,6 +130,7 @@ Log in with the email and password from step 2b. You get:
 - 📸 every photo-booth picture with the guest's name and notes (only your email can see these)
 - 🍸 all bar messages, with delete buttons
 - 💘 all single cards, with delete buttons
+- 👥 all guest names. Delete one to free it, e.g. for a guest who switched to another phone.
 - ⬇ **Download all photos (ZIP)**: photos plus `photo-notes.txt` and `bar-messages.txt`. Do this after the wedding.
 
 Guests can remove their own single card from the same phone (Single Station →

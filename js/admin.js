@@ -45,6 +45,18 @@ const views = {
   },
 };
 
+views.guests = async () => {
+  const items = await admin.guests();
+  if (!items.length) return el("p", { class: "muted" }, "No guests yet.");
+  return el("div", { class: "wall card", style: "max-height:none" },
+    el("p", { class: "muted" }, `${items.length} names taken. Delete one to let someone else use it (e.g. a guest who changed phone).`),
+    items.map((g) => {
+      const node = el("div", { class: "msg" });
+      node.append(el("b", {}, g.name), " ", el("small", {}, timeAgo(g.created_at)), " ", removeBtn("guest_names", g, node));
+      return node;
+    }));
+};
+
 async function show(tab) {
   for (const b of $("#admin-tabs").children) b.classList.toggle("active", b.dataset.tab === tab);
   $("#admin-content").replaceChildren(el("p", { class: "muted" }, "Loading…"));
