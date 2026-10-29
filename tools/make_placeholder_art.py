@@ -445,6 +445,166 @@ def icon_dress():
     return s
 
 
+# ---- station buildings (assets/stations), 96x80, drawn 3x bigger ------------------
+
+def ellipse(s, cx, cy, rx, ry, c):
+    for y in range(int(cy - ry), int(cy + ry) + 1):
+        for x in range(int(cx - rx), int(cx + rx) + 1):
+            if ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1:
+                s.set(x, y, c)
+
+
+def camera_icon(s, x0, y0):
+    s.rect(x0, y0 + 2, x0 + 11, y0 + 8, "#3a3a46")
+    s.rect(x0 + 2, y0, x0 + 5, y0 + 1, "#3a3a46")
+    s.disc(x0 + 6, y0 + 5, 2.2, "#8ec9f0")
+    s.set(x0 + 5, y0 + 4, "#ffffff")
+    s.set(x0 + 10, y0 + 3, "#ff5d8f")
+
+
+def photobooth_building(night):
+    s = Sprite(96, 80)
+    s.rect(30, 22, 73, 77, "#f4a6b8")                    # cabinet
+    s.rect(66, 22, 73, 77, "#d98aa0")                    # side shade
+    s.rect(26, 15, 77, 21, "#c2577a")                    # roof
+    s.rect(28, 12, 75, 14, "#c2577a")
+    s.rect(36, 30, 58, 75, "#3a2a3a")                    # dark inside
+    s.rect(36, 30, 50, 75, "#d23a4a")                    # curtain (half open)
+    for x in range(38, 51, 3):
+        s.rect(x, 30, x, 75, "#a82c3a")
+    s.rect(52, 64, 57, 66, "#8b5a2b")                    # stool inside
+    s.rect(54, 67, 55, 75, "#8b5a2b")
+    s.rect(61, 34, 70, 44, "#2a2a36")                    # screen
+    s.rect(62, 35, 69, 43, "#8ec9f0")
+    s.rect(62, 52, 69, 54, "#3a3a46")                    # photo-strip slot
+    s.rect(63, 55, 68, 66, "#ffffff")
+    for y in (57, 61, 65):
+        s.rect(64, y - 1, 67, y, "#cfd6dc")
+    s.outline()
+    for x in range(30, 74, 4):                           # marquee bulbs
+        s.rect(x, 17, x + 1, 18, "#fff3b0" if night else "#e8d9a8")
+    s.rect(10, 40, 12, 77, "#8b5a2b")                    # sign post
+    s.rect(2, 26, 25, 41, "#b07a45")                     # wooden sign
+    for y in (30, 35):
+        s.rect(2, y, 25, y, "#8b5a2b")
+    s.rect(1, 25, 26, 25, "#6b4226"); s.rect(1, 42, 26, 42, "#6b4226")
+    s.rect(1, 25, 1, 42, "#6b4226"); s.rect(26, 25, 26, 42, "#6b4226")
+    camera_icon(s, 8, 28)
+    return s
+
+
+def cupid_fountain(night):
+    s = Sprite(96, 80)
+    ellipse(s, 48, 68, 44, 11, "#aeb7bf")                # basin rim
+    ellipse(s, 48, 67, 40, 8, "#8ec9f0")                 # water
+    ellipse(s, 44, 66, 14, 3, "#bfe6ff")
+    s.rect(43, 36, 52, 66, "#cfd6dc")                    # pedestal
+    s.rect(45, 36, 46, 66, "#e6ebef")
+    ellipse(s, 48, 36, 18, 5, "#aeb7bf")                 # upper bowl
+    ellipse(s, 48, 35, 15, 3, "#8ec9f0")
+    for x in (32, 35, 61, 64):                           # water streams
+        for y in range(39, 64):
+            if (y + x) % 3:
+                s.set(x, y, "#bfe6ff")
+    s.rect(45, 17, 51, 30, "#f7d2b3")                    # cupid body
+    s.rect(44, 29, 46, 32, "#f7d2b3"); s.rect(50, 29, 52, 32, "#f7d2b3")
+    s.disc(48, 12, 4, "#f7d2b3")                         # head
+    s.rect(44, 7, 52, 9, "#ffd166")                      # curls
+    s.rect(37, 15, 43, 22, "#ffffff"); s.rect(53, 15, 59, 22, "#ffffff")   # wings
+    s.rect(44, 23, 52, 25, "#ffffff")                    # cloth
+    s.outline("#6d7680")
+    s.set(46, 12, "#3b2a2a"); s.set(50, 12, "#3b2a2a")
+    for i in range(9):                                   # bow + arrow
+        s.set(55 + i // 3, 12 + i, "#8b5a2b")
+    for x in range(52, 66):
+        s.set(x, 16, "#8b5a2b")
+    s.rect(66, 15, 67, 17, "#ff5d8f")
+    for cx, cy in ((72, 6), (24, 10), (80, 18)):         # floating hearts
+        s.rect(cx, cy, cx + 1, cy, "#ff5d8f"); s.rect(cx + 3, cy, cx + 4, cy, "#ff5d8f")
+        s.rect(cx, cy + 1, cx + 4, cy + 1, "#ff5d8f"); s.rect(cx + 1, cy + 2, cx + 3, cy + 2, "#ff5d8f")
+        s.set(cx + 2, cy + 3, "#ff5d8f")
+    if night:                                            # rim lights
+        for x in range(10, 88, 8):
+            y = 68 + round(10 * (1 - ((x - 48) / 44) ** 2) ** 0.5)
+            s.rect(x, y - 1, x + 1, y, "#fff3b0")
+    return s
+
+
+def bar_back(night):
+    s = Sprite(96, 80)
+    s.rect(6, 14, 89, 62, "#8b5a2b")                     # back wall
+    for y in (28, 42):
+        s.rect(8, y, 87, y + 1, "#6b4226")               # shelves
+    colors = ["#2a9d8f", "#d23a4a", "#f4a261", "#8ec9f0", "#6a994e", "#ffd166", "#a77bd6"]
+    for i, x in enumerate(range(10, 86, 6)):             # bottles
+        for row, base in enumerate((27, 41)):
+            c = colors[(i + row * 3) % len(colors)]
+            h = 6 + (i + row) % 3
+            s.rect(x, base - h, x + 2, base, c)
+            s.rect(x + 1, base - h - 2, x + 1, base - h - 1, c)
+    s.outline()
+    for x in range(2, 94):                               # striped awning
+        stripe = "#ff8fab" if (x // 6) % 2 else "#ffffff"
+        s.rect(x, 4, x, 12, stripe)
+        if x % 6 in (2, 3):
+            s.set(x, 13, stripe)
+    s.rect(2, 3, 93, 3, "#c2577a")
+    for x in range(6, 92, 7):                            # string lights under awning
+        s.rect(x, 15, x + 1, 16, "#fff3b0" if night else "#d9cfa0")
+    return s
+
+
+def bar_front():
+    s = Sprite(96, 80)
+    s.rect(4, 58, 91, 77, "#b07a45")                     # counter
+    s.rect(2, 54, 93, 57, "#d9a066")                     # counter top
+    for x in range(16, 90, 14):
+        s.rect(x, 60, x, 75, "#8b5a2b")                  # panels
+    s.outline()
+    for x in (20, 50, 74):                               # glasses on the counter
+        s.rect(x, 49, x + 3, 50, "#ff7eb6"); s.rect(x + 1, 51, x + 2, 53, "#e8f4ff")
+    return s
+
+
+def closet():
+    s = Sprite(96, 80)
+    s.rect(4, 6, 91, 77, "#f6ead8")                      # back wall
+    s.rect(4, 6, 91, 8, "#b07a45"); s.rect(4, 6, 6, 77, "#b07a45"); s.rect(89, 6, 91, 77, "#b07a45")
+    s.rect(7, 70, 88, 77, "#e3cdb0")                     # floor
+    ellipse(s, 30, 74, 18, 3, "#e8a7b8")                 # rug
+    s.rect(8, 15, 56, 16, "#8b5a2b")                     # clothes rail
+    garments = [("#d23a4a", "dress"), ("#2d2d38", "suit"), ("#8ec9f0", "dress"), ("#ffd166", "shirt"),
+                ("#a77bd6", "dress"), ("#ffffff", "dress")]
+    for i, (c, kind) in enumerate(garments):
+        x = 10 + i * 8
+        s.set(x + 3, 17, "#555555")                      # hanger hook
+        s.rect(x, 18, x + 6, 19, "#555555")
+        if kind == "dress":
+            for j, y in enumerate(range(20, 44)):
+                w = 2 + j // 8
+                s.rect(x + 3 - w, y, x + 3 + w, y, c)
+        else:
+            s.rect(x, 20, x + 6, 36 if kind == "suit" else 30, c)
+    s.rect(10, 56, 56, 58, "#b07a45")                    # shoe shelf
+    for i, c in enumerate(["#d23a4a", "#2d2d38", "#ff8fab", "#8b5a2b", "#ffffff"]):
+        s.rect(12 + i * 9, 53, 16 + i * 9, 55, c)
+    s.rect(60, 9, 90, 10, "#8b5a2b")                     # curtain rod
+    s.rect(62, 11, 88, 69, "#3a2a3a")                    # changing booth inside
+    s.rect(62, 11, 79, 69, "#c38fd6")                    # curtain, half drawn
+    for x in range(64, 80, 3):
+        s.rect(x, 11, x, 69, "#a46fbb")
+    s.rect(84, 30, 87, 50, "#bfe6ff")                    # mirror inside
+    s.outline()
+    return s
+
+
+BUILDINGS = {
+    "photobooth_building": photobooth_building(False), "photobooth_building_night": photobooth_building(True),
+    "cupid_fountain": cupid_fountain(False), "cupid_fountain_night": cupid_fountain(True),
+    "bar_back": bar_back(False), "bar_back_night": bar_back(True), "bar_front": bar_front(),
+    "closet": closet(),
+}
+
 DECOR = {
     "flower_backdrop": flower_backdrop(),
     "led_string": led_string(False), "led_string_night": led_string(True),
@@ -459,7 +619,7 @@ def main():
         character(*args).save(ASSETS / "characters" / f"{name}.png")
     bartender().save(ASSETS / "npc" / "bartender.png")
     for folder, items in (("dresses", DRESSES), ("props", PROPS), ("drinks", DRINKS),
-                          ("decor", DECOR), ("stations", STATION_ICONS)):
+                          ("decor", DECOR), ("stations", STATION_ICONS), ("stations", BUILDINGS)):
         for name, sprite in items.items():
             sprite.save(ASSETS / folder / f"{name}.png")
 

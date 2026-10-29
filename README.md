@@ -182,7 +182,7 @@ trees, bushes, flower pots, cake). Each entry in `decorations` looks like:
 
 - `x`, `y`: the bottom-centre of the picture on the map (the map is 1600 × 1100).
 - `scale`: how many times bigger to draw it (default 2).
-- `night`: an optional second picture for night time. Its bright yellow/white pixels glow by themselves, so draw the bulbs "on" in it. `glow` sets the glow size (default 46).
+- `night`: an optional second picture for night time. Its light-bulb pixels glow by themselves: draw the bulbs "on" in a very light yellow such as `#fff3b0` or `#fffbe0` (darker yellows like `#ffd166` don't glow). `glow` sets the glow size (default 46).
 - `layer`: `"sorted"` (default: guests can walk in front of or behind it), `"ground"` (always under guests) or `"top"` (always over guests, e.g. hanging lights).
 
 Day/night follows **each guest's phone clock**, set in `time`:
