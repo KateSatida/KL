@@ -218,13 +218,13 @@ links (playlist, album, song or video):
   "title": "Wedding playlist",
   "playlist": "https://open.spotify.com/playlist/...",       // background music: the 🎵 button in the top bar
   "danceFloor": "https://www.youtube.com/playlist?list=...", // the dance floor's "Play dance playlist"
-  "addSongsLink": "https://open.spotify.com/playlist/..."    // optional: collaborative playlist guests can add to in Spotify
+  "addSongsLink": "https://youtube.com/playlist?list=..."    // optional: collaborative playlist guests can add to (YouTube or Spotify)
 }
 ```
 
 - The background playlist is fixed; guests can't change it. Leave it empty to hide the 🎵 button.
 - On the dance floor, guests can **request songs** (a name or a Spotify/YouTube link). Everyone sees the list and can play link requests. You see them on the admin page (🎶 Song requests) and in the ZIP.
-- Guests can only add to your real Spotify playlist if you make it **collaborative** in Spotify and put its link in `addSongsLink`; they need a Spotify account.
+- Guests can only add to your real playlist if you make it **collaborative** and put its link in `addSongsLink`; they need a YouTube (or Spotify) account. On YouTube: open the playlist → ⋯ → **Collaborate** → turn it on → copy the invite link.
 - Music plays on each guest's own phone (not in sync), in a small player that stays on screen; closing it stops the music.
 - Spotify plays only 30-second previews for guests who aren't logged in to Spotify in that browser. YouTube plays full songs (sometimes with ads).
 - Without a `danceFloor` link, the dance floor plays a built-in tune (or your own mp3: add `"music": "assets/music/song.mp3"` to the dance floor station).
