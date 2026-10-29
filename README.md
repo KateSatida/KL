@@ -10,6 +10,10 @@ on their phone, dress up a 32×32 character, walk around, and visit stations:
 | 🍸 **Drink Bar** | Pick a drink to carry, scan your PromptPay QR, and talk to the bartender to leave messages on a shared wall. |
 | 💘 **Single Station** | Upload a photo + Instagram. A random single shows on the big projector every few seconds. |
 | 💬 **Chat** | Proximity chat: you only see messages from guests standing close to you. |
+| 🌳 **Wishing Tree** | Guests hang a coloured ribbon with a wish; the ribbons appear on the tree for everyone. |
+| 🖼️ **Memory Lane** | Easels with your photos and a slideshow with captions. |
+| 💃 **Dance Floor** | Light-up floor (disco lights at night). Guests standing on it dance; a music button plays a tune on their phone. |
+| 💐 **Bouquet Toss** | Singles stand in the circle; you press "Toss now!" on the admin page and everyone sees the bouquet fly to a random guest in it. |
 
 **Guests don't sign up or log in.** They just type a name the first time.
 After that, **each phone keeps its name**: refreshing, closing or reopening the
@@ -134,6 +138,8 @@ Log in with the email and password from step 2b. You get:
 - 📸 every photo-booth picture with the guest's name and notes (only your email can see these)
 - 🍸 all bar messages, with delete buttons
 - 💘 all single cards, with delete buttons
+- 🌳 all wishes from the wishing tree, with delete buttons
+- 💐 the bouquet toss button
 - 👥 all guest names. Delete one to free it, e.g. for a guest who switched to another phone.
 - ⬇ **Download all photos (ZIP)**: photos plus `photo-notes.txt` and `bar-messages.txt`. Do this after the wedding.
 
@@ -189,6 +195,29 @@ Day/night follows **each guest's phone clock**, set in `time`:
 `"nightFrom": "18:00"`, `"dayFrom": "06:00"`. Set `"mode"` to `"day"` or
 `"night"` to force one. To preview, add `?time=night` (or `?time=20:30`) to the
 end of the game link. The top bar shows ☀️ or 🌙.
+
+**Memory Lane photos.** Put your photos (any .jpg or .png) in
+`assets/memories/` and list them under the Memory Lane station in
+`config/game.json`:
+
+```json
+"photos": [
+  { "image": "assets/memories/first-date.jpg", "caption": "Where it all began 🌅" },
+  { "image": "assets/memories/proposal.jpg", "caption": "She said yes! 💍" }
+]
+```
+
+Keep photos small (about 1000 px wide) so they load fast on phones.
+
+**Dance floor music.** By default a small built-in tune plays. To use your own
+song, put an .mp3 in `assets/music/` and add `"music": "assets/music/song.mp3"`
+to the dance floor station. Music plays only on the phone of the guest who
+presses Play.
+
+**Bouquet toss.** On the admin page, open **💐 Bouquet toss**. It lists who is
+standing in the circle right now. Press **Toss now!** and every guest sees the
+bouquet fly to a random person in the circle; the winner gets the bouquet added
+to their outfit. Keep the admin page open while you toss.
 
 **Station icons.** Each station's `"sprite"` is a 32×32 PNG in
 `assets/stations/`, drawn 3× bigger on the map. Remove `"sprite"` to use the

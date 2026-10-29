@@ -2,6 +2,7 @@
 // Only emails listed in supabase/setup.sql can read the photos.
 import { $, el, timeAgo } from "./ui.js";
 import { backend } from "./backend/index.js";
+import { loadConfig } from "./config.js";
 
 const admin = backend.admin;
 
@@ -71,6 +72,46 @@ views.guests = async () => {
     }));
 };
 
+views.wishes = async () => {
+  const items = await admin.wishes();
+  if (!items.length) return el("p", { class: "muted" }, "No wishes yet.");
+  return el("div", { class: "wall card", style: "max-height:none" }, items.map((w) => {
+    const node = el("div", { class: "msg" });
+    node.append(el("span", { class: "ribbon", style: `background:${w.color}` }), " ", el("b", {}, w.name || "Guest"), " ",
+      el("small", {}, timeAgo(w.created_at)), el("div", {}, w.text), removeBtn("wishes", w, node));
+    return node;
+  }));
+};
+
+// Bouquet toss: watch who stands in the circle, then pick a random one.
+let room = null, players = [], refreshBouquet = () => {};
+views.bouquet = async () => {
+  const config = await loadConfig();
+  const zone = config.stations.find((s) => s.type === "bouquet");
+  if (!zone) return el("p", {}, "There is no bouquet station in config/game.json.");
+  const inCircle = () => players.filter((p) => p.x >= zone.x && p.x <= zone.x + zone.w && p.y >= zone.y && p.y <= zone.y + zone.h);
+  const list = el("p", { class: "muted" }, "Connecting…");
+  const result = el("h2", {});
+  const refresh = () => {
+    const names = inCircle().map((p) => p.name);
+    list.textContent = names.length ? `In the circle (${names.length}): ${names.join(", ")}` : "Nobody is in the circle yet.";
+  };
+  refreshBouquet = refresh;
+  if (!room) room = admin.watchRoom({ onPlayers: (ps) => { players = ps; refreshBouquet(); } });
+  refresh();
+  const btn = el("button", { class: "btn primary big", onclick: () => {
+    const pool = inCircle();
+    if (!pool.length) return alert("Nobody is standing in the bouquet circle yet.");
+    const w = pool[Math.floor(Math.random() * pool.length)];
+    room.broadcast("bouquet", { id: w.id, name: w.name });
+    result.textContent = `💐 ${w.name} caught the bouquet!`;
+  } }, "💐 Toss now!");
+  return el("div", { class: "card" },
+    el("p", {}, "Ask single guests to stand in the bouquet circle on the map. Then press the button: everyone sees the bouquet fly to a random guest in the circle."),
+    list, btn, result,
+    el("p", { class: "muted" }, "Keep this page open while tossing. It shows who is in the circle live (updated a moment after they stop walking)."));
+};
+
 async function show(tab) {
   for (const b of $("#admin-tabs").children) b.classList.toggle("active", b.dataset.tab === tab);
   $("#admin-content").replaceChildren(el("p", { class: "muted" }, "Loading…"));
@@ -98,6 +139,8 @@ async function downloadZip() {
     }
     const messages = await admin.messages();
     zip.file("photo-notes.txt", notes.join("\n"));
+    const wishes = await admin.wishes();
+    zip.file("wishes.txt", wishes.map((w) => `${w.name} (${new Date(w.created_at).toLocaleString()}): ${w.text}`).join("\n"));
     zip.file("bar-messages.txt", messages.map((m) => `${m.name} (${new Date(m.created_at).toLocaleString()}): ${m.text}`).join("\n"));
     const blob = await zip.generateAsync({ type: "blob" });
     const a = el("a", { href: URL.createObjectURL(blob), download: "wedding-guestbook.zip" });

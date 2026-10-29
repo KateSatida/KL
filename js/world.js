@@ -22,6 +22,8 @@ export class World {
     this.onWalk = () => {};        // called when I start/stop/turn: {x, y, tx, ty, dir}
     this.keyDir = "0,0";
     this.scenery = new Scenery(config);   // grass, decorations, day/night
+    this.effects = [];                    // short animations, e.g. the flying bouquet: (ctx, now) => keepGoing
+    this.danceZones = stations.filter((s) => s.def.type === "dancefloor").map((s) => s.def);
     this.background = null;
     if (this.w.background) loadImage(this.w.background).then((img) => { this.background = img; });
 
@@ -219,6 +221,9 @@ export class World {
     ];
     sc.drawNight(ctx, [camera.zoom, 0, 0, camera.zoom, -camera.x * camera.zoom, -camera.y * camera.zoom], lights);
 
+    // Animations (drawn bright, above the night)
+    this.effects = this.effects.filter((fx) => fx(ctx, now));
+
     // Text last, so it stays readable at night
     for (const s of this.stations) (s.module.drawLabel || drawStationLabel)(ctx, s.def, now, this);
     for (const p of players.sort((a, b) => a.ry - b.ry)) this.drawPlayerText(p, now);
@@ -227,13 +232,20 @@ export class World {
   drawPlayer(p, now) {
     const ctx = this.ctx;
     const size = SIZE * this.w.spriteScale;
-    const bob = p.moving ? Math.abs(Math.sin(now / 90)) * 3 : 0;
+    let bob = p.moving ? Math.abs(Math.sin(now / 90)) * 3 : 0;
+    let dir = p.dir;
+    // standing still on a dance floor: bounce and turn to the beat
+    if (!p.moving && this.danceZones.some((z) => inside({ x: p.rx, y: p.ry }, z, 0))) {
+      const phase = (String(p.id).charCodeAt(0) || 0) * 37;
+      bob = Math.abs(Math.sin((now + phase) / 160)) * 9;
+      dir = Math.floor((now + phase) / 470) % 2 ? -1 : 1;
+    }
     ctx.fillStyle = "#00000022";                                   // shadow
     ctx.beginPath(); ctx.ellipse(p.rx, p.ry, 16, 5, 0, 0, Math.PI * 2); ctx.fill();
     if (!p.sprite) return;
     ctx.save();
     ctx.translate(p.rx, p.ry - size - bob + 2);
-    if (p.dir === -1) { ctx.scale(-1, 1); ctx.translate(-size / 2, 0); } else ctx.translate(-size / 2, 0);
+    if (dir === -1) { ctx.scale(-1, 1); ctx.translate(-size / 2, 0); } else ctx.translate(-size / 2, 0);
     ctx.drawImage(p.sprite, 0, 0, size, size);
     ctx.restore();
   }

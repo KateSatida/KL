@@ -71,6 +71,15 @@ export function createSupabaseBackend(url, key) {
       check(await db.from("messages").insert({ name, text }));
     },
 
+    // ---- wishing tree ----------------------------------------------------------
+    async listWishes() {
+      return check(await db.from("wishes").select("id, created_at, name, text, color")
+        .order("created_at", { ascending: false }).limit(200));
+    },
+    async addWish({ name, text, color }) {
+      check(await db.from("wishes").insert({ name, text, color }));
+    },
+
     // ---- single station --------------------------------------------------------
     async listSingles() {
       const rows = check(await db.from("singles").select("id, created_at, name, instagram, bio, path")
@@ -88,6 +97,18 @@ export function createSupabaseBackend(url, key) {
 
     // ---- admin (needs login) -------------------------------------------------
     admin: {
+      // See who is in the world (without appearing in it) and send events, e.g. the bouquet toss.
+      watchRoom({ onPlayers }) {
+        const channel = db.channel(ROOM, { config: { broadcast: { self: false } } });
+        channel.on("presence", { event: "sync" }, () => {
+          onPlayers(Object.entries(channel.presenceState()).map(([key, metas]) => ({ ...metas[metas.length - 1], id: key })));
+        });
+        channel.subscribe();
+        return { broadcast(t, d) { channel.send({ type: "broadcast", event: "game", payload: { t, d } }); } };
+      },
+      async wishes() {
+        return check(await db.from("wishes").select("*").order("created_at", { ascending: false }));
+      },
       async session() { return check(await db.auth.getSession()).session; },
       async signIn(email, password) { check(await db.auth.signInWithPassword({ email, password })); },
       async signOut() { await db.auth.signOut(); },
