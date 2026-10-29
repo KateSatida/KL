@@ -3,6 +3,7 @@
 import { $, el, timeAgo } from "./ui.js";
 import { backend } from "./backend/index.js";
 import { loadConfig } from "./config.js";
+import { embedFor } from "./player.js";
 
 const admin = backend.admin;
 
@@ -97,6 +98,32 @@ views.songs = async () => {
 
 // Bouquet toss: watch who stands in the circle, then pick a random one.
 let room = null, players = [], refreshBouquet = () => {};
+const getRoom = () => room || (room = admin.watchRoom({ onPlayers: (ps) => { players = ps; refreshBouquet(); } }));
+
+// Music links: saved in Supabase, guests pick them up straight away.
+views.music = async () => {
+  const config = await loadConfig();
+  const saved = await backend.getSettings().catch(() => ({}));
+  const bg = el("input", { value: saved.music_playlist ?? config.music?.playlist ?? "", placeholder: "https://youtube.com/playlist?list=..." });
+  const dance = el("input", { value: saved.music_dance ?? config.music?.danceFloor ?? "", placeholder: "https://youtube.com/playlist?list=..." });
+  const note = el("p", { class: "muted" });
+  const save = el("button", { class: "btn primary", onclick: async () => {
+    for (const [input, what] of [[bg, "Background"], [dance, "Dance floor"]]) {
+      if (input.value.trim() && !embedFor(input.value)) return alert(`${what}: please paste a YouTube or Spotify link.`);
+    }
+    const values = { music_playlist: bg.value.trim(), music_dance: dance.value.trim() };
+    try {
+      await admin.saveSettings(values);
+      await getRoom().broadcast("settings", values);
+      note.textContent = "Saved ✔ Guests in the game switch right away.";
+    } catch (e) { note.textContent = `Error: ${e.message}`; }
+  } }, "💾 Save music");
+  return el("div", { class: "card" },
+    el("label", {}, "🎵 Background playlist (plays everywhere, random order, repeats)"), bg,
+    el("label", {}, "💃 Dance floor playlist (plays while a guest is on the dance floor)"), dance,
+    el("p", { class: "muted" }, "Paste a YouTube or Spotify link: playlist, album, song or video. Leave the dance floor empty to keep the background music there."),
+    save, note);
+};
 views.bouquet = async () => {
   const config = await loadConfig();
   const zone = config.stations.find((s) => s.type === "bouquet");
@@ -109,13 +136,13 @@ views.bouquet = async () => {
     list.textContent = names.length ? `In the circle (${names.length}): ${names.join(", ")}` : "Nobody is in the circle yet.";
   };
   refreshBouquet = refresh;
-  if (!room) room = admin.watchRoom({ onPlayers: (ps) => { players = ps; refreshBouquet(); } });
+  getRoom();
   refresh();
   const btn = el("button", { class: "btn primary big", onclick: () => {
     const pool = inCircle();
     if (!pool.length) return alert("Nobody is standing in the bouquet circle yet.");
     const w = pool[Math.floor(Math.random() * pool.length)];
-    room.broadcast("bouquet", { id: w.id, name: w.name });
+    getRoom().broadcast("bouquet", { id: w.id, name: w.name });
     result.textContent = `💐 ${w.name} caught the bouquet!`;
   } }, "💐 Toss now!");
   return el("div", { class: "card" },

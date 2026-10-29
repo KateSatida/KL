@@ -1,66 +1,131 @@
-// Mini music player for Spotify / YouTube links (playlist, album, song, video).
-// Links come from "music" in config/game.json. The player stays visible while
-// it plays (Spotify and YouTube don't allow hidden players); closing it stops it.
+// Music player for Spotify / YouTube links (playlist, album, song, video).
+//
+// - Background music starts when the guest enters the party and keeps going
+//   (YouTube playlists play in random order and repeat).
+// - On the dance floor it switches to the dance playlist (or the guest's own
+//   playlist), and back when they walk off.
+// - The player stays visible while it plays (YouTube and Spotify don't allow
+//   hidden players). ✕ or the 🎵 button stops it; 🎵 starts it again.
 import { $ } from "./ui.js";
 import { stopMusic } from "./music.js";
 
-// Turn a normal share link into an embeddable player address.
+// Turn a normal share link into something we can play.
 export function embedFor(link) {
   let url;
-  try { url = new URL(String(link).trim()); } catch { return null; }
+  try { url = new URL(String(link || "").trim()); } catch { return null; }
   const host = url.hostname.replace(/^www\.|^m\./, "");
   if (host === "open.spotify.com") {
     const m = url.pathname.match(/(?:\/intl-[a-z-]+)?\/(?:embed\/)?(playlist|album|track|artist|show|episode)\/([A-Za-z0-9]+)/);
     if (!m) return null;
-    return { kind: "spotify", height: 80, src: `https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=generator` };
+    return { kind: "spotify", src: `https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=generator` };
   }
   if (host === "youtube.com" || host === "music.youtube.com" || host === "youtu.be") {
     const list = url.searchParams.get("list");
     const video = host === "youtu.be" ? url.pathname.slice(1) : url.searchParams.get("v");
-    const params = "playsinline=1&rel=0&autoplay=1";
-    if (video && /^[\w-]{6,}$/.test(video)) {
-      return { kind: "youtube", height: 0, src: `https://www.youtube.com/embed/${video}?${params}${list ? `&list=${encodeURIComponent(list)}` : ""}` };
-    }
-    if (list) return { kind: "youtube", height: 0, src: `https://www.youtube.com/embed/videoseries?list=${encodeURIComponent(list)}&${params}` };
+    if (list && /^[\w-]+$/.test(list)) return { kind: "youtube", list, video: /^[\w-]{6,}$/.test(video || "") ? video : null };
+    if (video && /^[\w-]{6,}$/.test(video)) return { kind: "youtube", video };
   }
   return null;
 }
 
-let current = null;   // the link playing now
-
-export function openPlayer(link, title = "Music") {
-  const embed = embedFor(link);
-  if (!embed) return false;
-  stopMusic();                                   // stop the built-in tune if it was on
-  const panel = $("#music-panel");
-  $("#music-title").textContent = `🎵 ${title}`;
-  if (current !== link) {
-    const frame = document.createElement("iframe");
-    frame.src = embed.src;
-    frame.className = embed.kind;
-    if (embed.height) frame.height = embed.height;
-    frame.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
-    frame.loading = "lazy";
-    frame.title = title;
-    $("#music-frame").replaceChildren(frame);
-    current = link;
+// ---- YouTube (official IFrame API, so we can shuffle and repeat) --------------
+let ytApi = null;
+function loadYouTubeApi() {
+  if (!ytApi) {
+    ytApi = new Promise((resolve) => {
+      if (window.YT?.Player) return resolve(window.YT);
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => { prev?.(); resolve(window.YT); };
+      const s = document.createElement("script");
+      s.src = "https://www.youtube.com/iframe_api";
+      document.head.append(s);
+    });
   }
+  return ytApi;
+}
+
+let yt = null;            // YT.Player while a YouTube link is loaded
+let link = null;          // what is playing now
+let wanted = null;        // what should play (background or dance floor)
+let title = "";
+let on = false;           // the guest wants music (false after ✕)
+
+function shuffleAndRepeat(p) {
+  try {
+    p.setShuffle(true);
+    p.setLoop(true);
+    const n = p.getPlaylist()?.length || 0;
+    if (n > 1) p.playVideoAt(Math.floor(Math.random() * n));
+    else p.playVideo();
+  } catch { /* player not ready yet */ }
+}
+
+async function playYouTube(e) {
+  const YT = await loadYouTubeApi();
+  const vars = e.list ? { listType: "playlist", list: e.list } : { playlist: e.video };   // playlist=video makes one video repeat
+  if (yt) {
+    if (e.list) yt.loadPlaylist({ list: e.list, listType: "playlist" });
+    else yt.loadPlaylist([e.video]);
+    setTimeout(() => shuffleAndRepeat(yt), 1200);
+    return;
+  }
+  const holder = document.createElement("div");
+  $("#music-frame").replaceChildren(holder);
+  yt = new YT.Player(holder, {
+    width: "100%", height: "100%",
+    playerVars: { ...vars, autoplay: 1, playsinline: 1, rel: 0, loop: 1 },
+    events: {
+      onReady: (ev) => { ev.target.playVideo(); setTimeout(() => shuffleAndRepeat(ev.target), 800); },
+      onStateChange: (ev) => { if (ev.data === 0) ev.target.playVideo(); },   // ended: start again
+    },
+  });
+}
+
+function playSpotify(e) {
+  yt?.destroy?.();
+  yt = null;
+  const frame = document.createElement("iframe");
+  frame.src = e.src;
+  frame.className = "spotify";
+  frame.height = 80;
+  frame.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+  frame.title = title;
+  $("#music-frame").replaceChildren(frame);
+}
+
+function render() {
+  const panel = $("#music-panel");
+  const e = on && embedFor(wanted);
+  if (!e) {
+    panel.classList.add("hidden");
+    yt?.destroy?.(); yt = null; link = null;
+    $("#music-frame").replaceChildren();
+    $("#hud-music").classList.toggle("off", !on);
+    return;
+  }
+  stopMusic();                                    // the built-in dance tune, if it was on
+  $("#music-title").textContent = title;
+  $("#music-frame").className = e.kind;
   panel.classList.remove("hidden");
-  return true;
+  $("#hud-music").classList.remove("off");
+  if (link === wanted) return;
+  link = wanted;
+  if (e.kind === "youtube") playYouTube(e); else playSpotify(e);
 }
 
-export function closePlayer() {
-  $("#music-panel").classList.add("hidden");
-  $("#music-frame").replaceChildren();           // removing the player stops the music
-  current = null;
+// Which link should play now (called by main.js when the guest moves).
+export function setMusic(newLink, newTitle) {
+  if (newLink === wanted && newTitle === title) return;
+  wanted = newLink;
+  title = newTitle;
+  render();
 }
 
-export const playerOpen = () => !$("#music-panel").classList.contains("hidden");
+export function startMusic() { on = true; render(); }
+export function stopPlayer() { on = false; render(); }
+export const musicOn = () => on;
 
-export function setupPlayer(config) {
-  const link = config.music?.playlist;
-  const btn = $("#hud-music");
-  btn.classList.toggle("hidden", !embedFor(link));
-  btn.addEventListener("click", () => (playerOpen() ? closePlayer() : openPlayer(link, config.music?.title || "Wedding playlist")));
-  $("#music-close").addEventListener("click", closePlayer);
+export function setupPlayer() {
+  $("#hud-music").addEventListener("click", () => (on ? stopPlayer() : startMusic()));
+  $("#music-close").addEventListener("click", stopPlayer);
 }

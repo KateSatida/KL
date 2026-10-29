@@ -139,6 +139,7 @@ Log in with the email and password from step 2b. You get:
 - 🍸 all bar messages, with delete buttons
 - 💘 all single cards, with delete buttons
 - 🌳 all wishes from the wishing tree, with delete buttons
+- 🎵 the background and dance floor playlist links
 - 🎶 dance floor song requests, with delete buttons
 - 💐 the bouquet toss button
 - 👥 all guest names. Delete one to free it, e.g. for a guest who switched to another phone.
@@ -210,24 +211,35 @@ end of the game link. The top bar shows ☀️ or 🌙.
 
 Keep photos small (about 1000 px wide) so they load fast on phones.
 
-**Music (Spotify / YouTube).** In `config/game.json` → `"music"`, paste share
-links (playlist, album, song or video):
+**Music (YouTube / Spotify).** Change the links any time on the admin page,
+tab **🎵 Music** (no code needed; guests in the game switch right away):
 
-```json
-"music": {
-  "title": "Wedding playlist",
-  "playlist": "https://open.spotify.com/playlist/...",       // background music: the 🎵 button in the top bar
-  "danceFloor": "https://www.youtube.com/playlist?list=...", // the dance floor's "Play dance playlist"
-  "addSongsLink": "https://youtube.com/playlist?list=..."    // optional: collaborative playlist guests can add to (YouTube or Spotify)
-}
-```
+- **Background playlist**: starts when a guest enters the party and keeps playing
+  while they're on the site. YouTube playlists play in **random order and repeat**.
+- **Dance floor playlist**: plays while a guest stands on the dance floor; when
+  they walk off, the background playlist comes back. Leave it empty to keep the
+  background music on the dance floor.
+- **Guests' own playlist**: on the dance floor (🎵 Music tab) a guest can paste
+  their own YouTube or Spotify link; it plays only on their phone, only on the
+  dance floor.
+- **Song requests**: guests can request songs (name or link); you see them on the
+  admin page (🎶 Song requests) and in the ZIP. ▶ on a link plays it on that
+  guest's dance floor.
 
-- The background playlist is fixed; guests can't change it. Leave it empty to hide the 🎵 button.
-- On the dance floor, guests can **request songs** (a name or a Spotify/YouTube link). Everyone sees the list and can play link requests. You see them on the admin page (🎶 Song requests) and in the ZIP.
-- Guests can only add to your real playlist if you make it **collaborative** and put its link in `addSongsLink`; they need a YouTube (or Spotify) account. On YouTube: open the playlist → ⋯ → **Collaborate** → turn it on → copy the invite link.
-- Music plays on each guest's own phone (not in sync), in a small player that stays on screen; closing it stops the music.
-- Spotify plays only 30-second previews for guests who aren't logged in to Spotify in that browser. YouTube plays full songs (sometimes with ads).
-- Without a `danceFloor` link, the dance floor plays a built-in tune (or your own mp3: add `"music": "assets/music/song.mp3"` to the dance floor station).
+Good to know:
+- Music plays on each guest's own phone (not in sync), in a small player at the
+  top right that stays visible (YouTube and Spotify don't allow hidden players).
+  ✕ or the 🎵 button stops it; 🎵 starts it again.
+- Phones often block sound until the guest taps once, so they may need to tap
+  play in the small player the first time.
+- Spotify plays only 30-second previews for guests who aren't logged in to
+  Spotify in that browser, and can't shuffle from the game. YouTube plays full
+  songs (sometimes with ads). Playlists must be Public or Unlisted.
+- `config/game.json` → `"music"` holds the default links used until you save on
+  the admin page, plus `"addSongsLink"`: an optional collaborative playlist link
+  so guests can add songs there directly (needs a YouTube/Spotify account).
+- With no links at all, the dance floor offers a built-in tune (or your own mp3:
+  `"music": "assets/music/song.mp3"` on the dance floor station).
 
 **Bouquet toss.** On the admin page, open **💐 Bouquet toss**. It lists who is
 standing in the circle right now. Press **Toss now!** and every guest sees the
