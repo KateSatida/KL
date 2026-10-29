@@ -226,11 +226,16 @@ export class World {
     // Night: darken everything except around lights, stations that glow and people
     const lights = [
       ...sc.decorLights(),
+      ...sc.neonLights(now),
       ...this.stations.flatMap((s) => [...(s.module.lights?.(s.def) || []), ...stationLights(s.def)]),
       ...players.map((p) => ({ x: p.rx, y: p.ry - 30, r: 80, strength: 0.55 })),
       ...this.npcs.list.map((n) => ({ x: n.x, y: n.y - 30, r: 80, strength: 0.55 })),
     ];
     sc.drawNight(ctx, [camera.zoom, 0, 0, camera.zoom, -camera.x * camera.zoom, -camera.y * camera.zoom], lights);
+
+    // Things that glow above the night: station extras (disco) and neon signs
+    for (const s of this.stations) s.module.drawAfterNight?.(ctx, s.def, now, this);
+    sc.drawNeon(ctx, now);
 
     // Animations (drawn bright, above the night)
     this.effects = this.effects.filter((fx) => fx(ctx, now));

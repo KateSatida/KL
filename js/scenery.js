@@ -45,6 +45,20 @@ export function findGlowPoints(img) {
   return points.slice(0, 24);
 }
 
+// ---- neon (night only) ----------------------------------------------------------
+// A decoration with "neon": { "colors": ["#ff5d8f", …], "seconds": 4, "frame": [x, y, w, h] }
+// makes its overlay (your logo) glow like a neon sign and draws a neon frame,
+// fading through the colours.
+const hexToRgb = (h) => { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+function neonColor(neon, now) {
+  const colors = (neon.colors?.length ? neon.colors : ["#ff5d8f", "#4cc9f0", "#c77dff", "#ffd166"]).map(hexToRgb);
+  const t = now / 1000 / (neon.seconds || 4);
+  const i = Math.floor(t) % colors.length, f = t - Math.floor(t);
+  const [a, b] = [colors[i], colors[(i + 1) % colors.length]];
+  const k = f < 0.7 ? 0 : (f - 0.7) / 0.3;                  // hold, then fade to the next colour
+  return a.map((v, j) => Math.round(v + (b[j] - v) * k));
+}
+
 export class Scenery {
   constructor(config) {
     this.world = config.world;
@@ -144,6 +158,69 @@ export class Scenery {
       }
     }
     return out;
+  }
+
+  // Neon logo + frame, drawn on top of the night so it really glows.
+  drawNeon(ctx, now) {
+    const dark = this.darkness;
+    if (dark < 0.05) return;
+    for (const d of this.decor) {
+      if (!d.neon || !d.img) continue;
+      const [r, g, b] = neonColor(d.neon, now);
+      const color = `rgb(${r},${g},${b})`;
+      const flicker = Math.sin(now / 53) * Math.sin(now / 131) > 0.97 ? 0.55 : 1;   // the odd neon flicker
+      const w = d.img.width * d.scale, h = d.img.height * d.scale;
+      const x = Math.round(d.x - w / 2), y = Math.round(d.y - h);
+      ctx.save();
+      if (d.neon.frame) {                                    // dark panel so the neon pops
+        const [fx, fy, fw, fh] = d.neon.frame.map((v) => v * d.scale);
+        ctx.globalAlpha = dark * 0.85;
+        ctx.fillStyle = d.neon.panel || "#1a1028";
+        ctx.fillRect(x + fx, y + fy, fw, fh);
+      }
+      ctx.globalAlpha = dark * flicker;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 24;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 5;
+      ctx.lineJoin = "round";
+      if (d.neon.frame) {
+        const [fx, fy, fw, fh] = d.neon.frame.map((v) => v * d.scale);
+        ctx.strokeRect(x + fx, y + fy, fw, fh);
+        ctx.strokeRect(x + fx, y + fy, fw, fh);              // twice = brighter glow
+      }
+      const o = d.overlayImg;
+      if (o && d.overlayBox) {
+        // tint the logo into the neon colour
+        const c = (d._neonCanvas ||= document.createElement("canvas"));
+        c.width = o.width; c.height = o.height;
+        const g2 = c.getContext("2d");
+        g2.clearRect(0, 0, c.width, c.height);
+        g2.drawImage(o, 0, 0);
+        g2.globalCompositeOperation = "source-in";
+        g2.fillStyle = color;
+        g2.fillRect(0, 0, c.width, c.height);
+        const [bx, by, bw, bh] = d.overlayBox.map((v) => v * d.scale);
+        const k = Math.min(bw / o.width, bh / o.height), ow = o.width * k, oh = o.height * k;
+        const lx = Math.round(x + bx + (bw - ow) / 2), ly = Math.round(y + by + (bh - oh) / 2);
+        ctx.imageSmoothingEnabled = k < 1;
+        ctx.drawImage(c, lx, ly, Math.round(ow), Math.round(oh));
+        ctx.drawImage(c, lx, ly, Math.round(ow), Math.round(oh));
+        ctx.globalCompositeOperation = "lighter";
+        ctx.globalAlpha = dark * flicker * 0.6;
+        ctx.drawImage(c, lx, ly, Math.round(ow), Math.round(oh));
+      }
+      ctx.restore();
+    }
+  }
+
+  // light cast by neon signs (for the night overlay)
+  neonLights(now) {
+    return this.decor.filter((d) => d.neon && d.img).map((d) => {
+      const [r, g, b] = neonColor(d.neon, now);
+      const h = d.img.height * d.scale;
+      return { x: d.x, y: d.y - h / 2, r: d.img.width * d.scale * 0.9, strength: 0.6, color: `rgb(${r},${g},${b})` };
+    });
   }
 
   // Darken the world, cut soft holes where the lights are, then add a warm glow.

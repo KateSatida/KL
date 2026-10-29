@@ -313,6 +313,15 @@ def flower_backdrop():
     return s
 
 
+def flower_backdrop_night():
+    s = flower_backdrop()
+    for x in range(4, 61, 5):                             # bulbs along the arch
+        s.rect(x, 1, x + 1, 2, "#fff3b0")
+    for y in range(14, 46, 6):                            # and down both posts
+        s.rect(2, y, 3, y + 1, "#fff3b0"); s.rect(60, y, 61, y + 1, "#fff3b0")
+    return s
+
+
 def led_string(on):
     s = Sprite(64, 16)
     def sag(x): return 3 + round(8 * (1 - ((x - 31.5) / 32) ** 2))
@@ -764,7 +773,7 @@ BOUQUETS = {f"{i + 1:02d}_{k}": bouquet_of(k) for i, k in enumerate(
 MEMORIES = {f"0{i + 1}_{k}": memory_photo(k) for i, k in enumerate(["sunset", "mountains", "ring", "hearts"])}
 
 DECOR = {
-    "flower_backdrop": flower_backdrop(),
+    "flower_backdrop": flower_backdrop(), "flower_backdrop_night": flower_backdrop_night(),
     "led_string": led_string(False), "led_string_night": led_string(True),
     "lamp_post": lamp_post(False), "lamp_post_night": lamp_post(True),
     "tree": tree(), "bush": bush(), "flower_pot": flower_pot(), "cake": cake(),
