@@ -8,7 +8,7 @@
   },
   "world": {
     "width": 1600,
-    "height": 1560,
+    "height": 1640,
     "spawn": {
       "x": 800,
       "y": 620
@@ -177,7 +177,7 @@
     }
   ],
   "decorations": [
-    { "image": "assets/decor/flower_backdrop.png", "x": 1300, "y": 1450, "scale": 3 },
+    { "image": "assets/decor/flower_backdrop.png", "x": 1300, "y": 1450, "scale": 3, "overlay": "assets/logo.png", "overlayBox": [ 14, 16, 36, 22 ] },
     { "image": "assets/decor/lamp_post.png", "night": "assets/decor/lamp_post_night.png", "x": 480, "y": 620 },
     { "image": "assets/decor/lamp_post.png", "night": "assets/decor/lamp_post_night.png", "x": 480, "y": 1060 },
     { "image": "assets/decor/lamp_post.png", "night": "assets/decor/lamp_post_night.png", "x": 1120, "y": 620 },
@@ -220,6 +220,10 @@
     { "image": "assets/decor/flower_pot.png", "x": 715, "y": 1120 },
     { "image": "assets/decor/flower_pot.png", "x": 885, "y": 1120 },
     { "image": "assets/decor/cake.png", "x": 1000, "y": 640 }
+  ],
+  "npcs": [
+    { "name": "Bride 👰", "sprite": "assets/npc/bride.png", "x": 1262, "y": 1508, "radius": 150, "lines": [ "Hello! 👋", "Welcome! 💕", "Thanks for joining us! 🥰" ] },
+    { "name": "Groom 🤵", "sprite": "assets/npc/groom.png", "x": 1338, "y": 1508, "radius": 150, "dir": -1, "lines": [ "Hello! 👋", "Welcome! 💕", "Thanks for joining us! 🥰" ] }
   ],
   "photobooth": {
     "intro": "Smile! Pick a frame, write us a note, and snap a photo. It will be saved for the couple."

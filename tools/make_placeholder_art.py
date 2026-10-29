@@ -772,10 +772,50 @@ DECOR = {
 STATION_ICONS = {"camera": icon_camera(), "cocktail": icon_cocktail(), "heart": icon_heart(), "dress": icon_dress()}
 
 
+# ---- the couple (assets/npc) and the placeholder logo (assets/logo.png) ----------
+
+def stack(*layers):
+    """Put sprites on top of each other (like the game does)."""
+    out = Sprite()
+    for layer in layers:
+        for y in range(32):
+            for x in range(32):
+                if layer.px[y][x][3]:
+                    out.px[y][x] = layer.px[y][x]
+    return out
+
+
+def couple():
+    bride = stack(character(*CHARACTERS["02_long_dark_hair"]), DRESSES["white_gown"], PROPS["veil"], PROPS["bouquet"])
+    groom = stack(character(*CHARACTERS["01_short_dark_hair"]), DRESSES["black_suit"])
+    groom.set(19, 18, "#ffffff"); groom.set(18, 18, "#ff8fab")             # boutonniere
+    return {"bride": bride, "groom": groom}
+
+
+def logo():
+    s = Sprite(48, 24)
+    K = ["X..X", "X.X.", "XX..", "X.X.", "X..X"]
+    L = ["X...", "X...", "X...", "X...", "XXXX"]
+    def letter(rows, x0, y0, c):
+        for j, row in enumerate(rows):
+            for i, ch in enumerate(row):
+                if ch == "X":
+                    s.rect(x0 + i * 3, y0 + j * 3, x0 + i * 3 + 2, y0 + j * 3 + 2, c)
+    letter(K, 2, 4, "#c2577a")
+    letter(L, 34, 4, "#c2577a")
+    s.disc(21, 10, 3, "#ff5d8f"); s.disc(27, 10, 3, "#ff5d8f")             # heart
+    for i, y in enumerate(range(11, 17)):
+        s.rect(18 + i, y, 30 - i, y, "#ff5d8f")
+    return s
+
+
 def main():
     for name, args in CHARACTERS.items():
         character(*args).save(ASSETS / "characters" / f"{name}.png")
     bartender().save(ASSETS / "npc" / "bartender.png")
+    for name, sprite in couple().items():
+        sprite.save(ASSETS / "npc" / f"{name}.png")
+    logo().save(ASSETS / "logo.png")
     for folder, items in (("dresses", DRESSES), ("props", PROPS), ("drinks", DRINKS),
                           ("decor", DECOR), ("stations", STATION_ICONS), ("stations", BUILDINGS),
                           ("memories", MEMORIES), ("bouquets", BOUQUETS)):
