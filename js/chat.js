@@ -15,11 +15,20 @@ export function setupChat(game) {
     if (box.classList.contains("collapsed") && !mine) badge.classList.remove("hidden");
   };
 
-  $("#chat-toggle").addEventListener("click", () => {
-    box.classList.toggle("collapsed");
-    badge.classList.add("hidden");
-    if (!box.classList.contains("collapsed")) input.focus();
-  });
+  // Keep the station button just above the chat box, however tall it is
+  const game_ = $("#game");
+  const placeAbove = () => game_.style.setProperty("--chat-top", `${Math.round(innerHeight - box.getBoundingClientRect().top)}px`);
+  new ResizeObserver(placeAbove).observe(box);
+  addEventListener("resize", placeAbove);
+
+  const setOpen = (open) => {
+    box.classList.toggle("collapsed", !open);
+    if (open) { badge.classList.add("hidden"); input.focus(); }
+    else input.blur();
+  };
+  $("#chat-toggle").addEventListener("click", () => setOpen(box.classList.contains("collapsed")));
+  $("#chat-min").addEventListener("click", () => setOpen(false));
+  document.addEventListener("modalopen", () => setOpen(false));   // opening a station minimizes chat
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
