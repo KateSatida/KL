@@ -160,6 +160,11 @@ body.demo #join { padding-bottom: 40px; }
 .memory-photo { width: 100%; max-height: 55vh; object-fit: contain; border-radius: 12px; background: #f6efe9; image-rendering: auto; }
 .memory-caption { font-weight: 600; min-height: 1.4em; }
 
+.bouquet-card { text-align: center; }
+.bouquet-flower { width: 128px; height: 128px; image-rendering: pixelated; }
+.bouquet-meaning { font-size: 18px; margin: 4px 0 12px; }
+.bouquet-note { width: 100%; max-width: 420px; border-radius: 10px; }
+
 /* ---- Admin ---- */
 .admin-main { max-width: 1100px; margin: 0 auto; padding: 20px; }
 .admin-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }

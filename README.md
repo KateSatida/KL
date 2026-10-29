@@ -13,7 +13,7 @@ on their phone, dress up a 32×32 character, walk around, and visit stations:
 | 🌳 **Wishing Tree** | Guests hang a coloured ribbon with a wish; the ribbons appear on the tree for everyone. |
 | 🖼️ **Memory Lane** | Easels with your photos and a slideshow with captions. |
 | 💃 **Dance Floor** | Light-up floor (disco lights at night). Guests standing on it dance; a music button plays a tune on their phone. |
-| 💐 **Bouquet Toss** | Singles stand in the circle; you press "Toss now!" on the admin page and everyone sees the bouquet fly to a random guest in it. |
+| 💐 **Bouquet Toss** | Guests stand in the circle; you press "Toss now!" on the admin page and everyone in it catches a random bouquet with its flower meaning and a note from you. |
 
 **Guests don't sign up or log in.** They just type a name the first time.
 After that, **each phone keeps its name**: refreshing, closing or reopening the
@@ -242,9 +242,16 @@ Good to know:
   `"music": "assets/music/song.mp3"` on the dance floor station).
 
 **Bouquet toss.** On the admin page, open **💐 Bouquet toss**. It lists who is
-standing in the circle right now. Press **Toss now!** and every guest sees the
-bouquet fly to a random person in the circle; the winner gets the bouquet added
-to their outfit. Keep the admin page open while you toss.
+standing in the circle right now. Press **Toss now!**: a bouquet flies to
+**everyone** in the circle, and each guest catches a **random flower** (added to
+their outfit) with a card showing the flower's **meaning** and a random **note
+from you**. Toss as often as you like; each toss gives a different flower.
+
+- Flowers: list them under `"bouquets"` on the bouquet station in
+  `config/game.json` (name, meaning, and a 32×32 PNG in `assets/bouquets/` drawn
+  in the right hand like a prop).
+- Notes: put your note images (PNG/JPG, e.g. 480×320) in `assets/bouquet_notes/`
+  and list them under `"notes"`. The three included notes are placeholders.
 
 **Station icons.** Each station's `"sprite"` is a 32×32 PNG in
 `assets/stations/`, drawn 3× bigger on the map. Remove `"sprite"` to use the

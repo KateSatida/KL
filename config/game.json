@@ -64,12 +64,7 @@
       "y": 140,
       "w": 320,
       "h": 230,
-      "npc": {
-        "name": "Bartender",
-        "sprite": "assets/npc/bartender.png",
-        "x": 1320,
-        "y": 274
-      },
+      "npc": { "name": "Bartender", "sprite": "assets/npc/bartender.png", "x": 1320, "y": 274 },
       "art": "assets/stations/bar_back.png",
       "artNight": "assets/stations/bar_back_night.png",
       "artFront": "assets/stations/bar_front.png"
@@ -149,7 +144,25 @@
       "y": 1170,
       "w": 360,
       "h": 330,
-      "art": "assets/stations/toss_stage.png"
+      "art": "assets/stations/toss_stage.png",
+      "_help": "Each guest in the circle catches a random bouquet (32x32 PNG held in the hand) and sees its meaning and a random note image. Add/replace files in assets/bouquets/ and assets/bouquet_notes/.",
+      "bouquets": [
+        { "name": "Red Rose", "image": "assets/bouquets/01_rose.png", "meaning": "Romantic love. May true love find you soon. ❤️" },
+        { "name": "Pink Tulip", "image": "assets/bouquets/02_tulip.png", "meaning": "Happiness and caring love. 💗" },
+        { "name": "Sunflower", "image": "assets/bouquets/03_sunflower.png", "meaning": "Adoration and loyalty. Always turn toward the light. 🌻" },
+        { "name": "Lavender", "image": "assets/bouquets/04_lavender.png", "meaning": "Devotion and calm. Peace and gentle love. 💜" },
+        { "name": "Daisy", "image": "assets/bouquets/05_daisy.png", "meaning": "New beginnings and a cheerful heart. 🌼" },
+        { "name": "Peony", "image": "assets/bouquets/06_peony.png", "meaning": "A happy marriage and good fortune. Maybe yours is next! 🌸" },
+        { "name": "White Lily", "image": "assets/bouquets/07_lily.png", "meaning": "Purity and a fresh start. 🤍" },
+        { "name": "Orchid", "image": "assets/bouquets/08_orchid.png", "meaning": "Beauty, strength and grace. 💮" },
+        { "name": "Jasmine (มะลิ)", "image": "assets/bouquets/09_jasmine.png", "meaning": "Love, respect and gratitude. 🤍" },
+        { "name": "Baby's Breath", "image": "assets/bouquets/10_babys_breath.png", "meaning": "Everlasting love. ✨" }
+      ],
+      "notes": [
+        "assets/bouquet_notes/01_thank_you.png",
+        "assets/bouquet_notes/02_bloom.png",
+        "assets/bouquet_notes/03_next.png"
+      ]
     },
     {
       "id": "dance",
