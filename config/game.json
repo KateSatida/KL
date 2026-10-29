@@ -45,8 +45,8 @@
       "y": 140,
       "w": 320,
       "h": 230,
-      "color": "#ffd6e0",
-      "sprite": "assets/stations/camera.png"
+      "art": "assets/stations/photobooth_building.png",
+      "artNight": "assets/stations/photobooth_building_night.png"
     },
     {
       "id": "bar",
@@ -57,14 +57,15 @@
       "y": 140,
       "w": 320,
       "h": 230,
-      "color": "#d6ecff",
       "npc": {
         "name": "Bartender",
         "sprite": "assets/npc/bartender.png",
-        "x": 1220,
-        "y": 230
+        "x": 1320,
+        "y": 274
       },
-      "sprite": "assets/stations/cocktail.png"
+      "art": "assets/stations/bar_back.png",
+      "artNight": "assets/stations/bar_back_night.png",
+      "artFront": "assets/stations/bar_front.png"
     },
     {
       "id": "projector",
@@ -87,8 +88,8 @@
       "y": 760,
       "w": 320,
       "h": 230,
-      "color": "#ffe6c7",
-      "sprite": "assets/stations/heart.png"
+      "art": "assets/stations/cupid_fountain.png",
+      "artNight": "assets/stations/cupid_fountain_night.png"
     },
     {
       "id": "wardrobe",
@@ -99,8 +100,7 @@
       "y": 760,
       "w": 320,
       "h": 230,
-      "color": "#e3f7d9",
-      "sprite": "assets/stations/dress.png"
+      "art": "assets/stations/closet.png"
     }
   ],
   "decorations": [

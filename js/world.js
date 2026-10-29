@@ -1,7 +1,7 @@
 // The game world: map, players, movement, and drawing everything on the canvas.
 import { composeLook, loadImage, SIZE } from "./sprites.js";
 import { isModalOpen } from "./ui.js";
-import { Scenery } from "./scenery.js";
+import { Scenery, findGlowPoints } from "./scenery.js";
 
 const NEAR_STATION = 50;   // how close (px) you must be to use a station
 
@@ -214,7 +214,7 @@ export class World {
     // Night: darken everything except around lights, stations that glow and people
     const lights = [
       ...sc.decorLights(),
-      ...this.stations.flatMap((s) => s.module.lights?.(s.def) || []),
+      ...this.stations.flatMap((s) => [...(s.module.lights?.(s.def) || []), ...stationLights(s.def)]),
       ...players.map((p) => ({ x: p.rx, y: p.ry - 30, r: 80, strength: 0.55 })),
     ];
     sc.drawNight(ctx, [camera.zoom, 0, 0, camera.zoom, -camera.x * camera.zoom, -camera.y * camera.zoom], lights);
@@ -269,9 +269,57 @@ export class World {
 
 // ---- drawing helpers (also used by station modules) ---------------------------
 
-// Station area + its icon: the pixel-art "sprite" if set in config, else the emoji.
+// ---- station buildings -------------------------------------------------------
+// "art": a pixel-art building (e.g. 96x80 PNG, drawn artScale=3 times bigger),
+// standing just above the station's name. Optional "artNight" (glowing pixels
+// light up) and "artFront" (drawn in front of the station's character, e.g. a
+// bar counter in front of the bartender).
+const stationArt = new Map();
+function artFor(s) {
+  if (!stationArt.has(s.id)) {
+    const a = { img: null, night: null, front: null, glows: [] };
+    stationArt.set(s.id, a);
+    if (s.art) loadImage(s.art).then((i) => { a.img = i; });
+    if (s.artNight) loadImage(s.artNight).then((i) => { a.night = i; if (i) a.glows = findGlowPoints(i); });
+    if (s.artFront) loadImage(s.artFront).then((i) => { a.front = i; });
+  }
+  return stationArt.get(s.id);
+}
+
+function artBox(s, img) {
+  const k = s.artScale || 3, w = img.width * k, h = img.height * k;
+  return { x: Math.round(s.x + s.w / 2 - w / 2), y: Math.round(s.y + s.h - 34 - h), w, h, k };
+}
+
+export function drawStationFront(ctx, s) {
+  const a = artFor(s);
+  if (!a.front) return;
+  const b = artBox(s, a.front);
+  ctx.drawImage(a.front, b.x, b.y, b.w, b.h);
+}
+
+function stationLights(s) {
+  if (!s.artNight) return [];
+  const a = artFor(s);
+  if (!a.night) return [];
+  const b = artBox(s, a.night);
+  return a.glows.map((g) => ({ x: b.x + (g.x + 0.5) * b.k, y: b.y + (g.y + 0.5) * b.k, r: s.glow || 40, color: g.color, strength: 0.8 }));
+}
+
+// Station: its building if it has "art", else a coloured area with an icon
+// (the pixel-art "sprite" if set, else the emoji).
 const stationIcons = new Map();
-export function drawStation(ctx, s) {
+export function drawStation(ctx, s, now, world) {
+  if (s.art) {
+    const a = artFor(s);
+    const img = world?.scenery.darkness > 0.5 && a.night ? a.night : a.img;
+    if (!img) return;
+    const b = artBox(s, img);
+    ctx.fillStyle = "#00000022";                                    // soft shadow
+    ctx.beginPath(); ctx.ellipse(b.x + b.w / 2, b.y + b.h - 4, b.w * 0.45, 12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.drawImage(img, b.x, b.y, b.w, b.h);
+    return;
+  }
   ctx.fillStyle = s.color || "#fff";
   roundRect(ctx, s.x, s.y, s.w, s.h, 18);
   ctx.fill();

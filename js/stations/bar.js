@@ -1,6 +1,6 @@
 // Drink bar: pick a drink to hold, PromptPay QR, and the bartender's message wall.
 import { el, openModal, tabs, toast, timeAgo } from "../ui.js";
-import { drawStation, label } from "../world.js";
+import { drawStation, drawStationFront, label } from "../world.js";
 import { loadImage, SIZE } from "../sprites.js";
 
 export default function bar(def, game) {
@@ -72,14 +72,15 @@ export default function bar(def, game) {
         { id: "support", label: "💝 Support us", render: supportTab },
       ]));
     },
-    lights: (d) => [{ x: d.x + d.w / 2, y: d.y + d.h / 2, r: Math.max(d.w, d.h) * 0.7, strength: 0.8, color: "rgb(255,200,140)" }],
-    draw(ctx, d, now) {
-      drawStation(ctx, d);
+    lights: (d) => [{ x: d.x + d.w / 2, y: d.y + d.h / 2, r: Math.max(d.w, d.h) * 0.55, strength: 0.7, color: "rgb(255,200,140)" }],
+    // bar building, then the bartender, then the counter in front of them
+    draw(ctx, d, now, world) {
+      drawStation(ctx, d, now, world);
       if (npcImg && d.npc) {
         const s = SIZE * 2;
         ctx.drawImage(npcImg, d.npc.x - s / 2, d.npc.y - s + Math.sin(now / 400) * 2, s, s);
-        label(ctx, d.npc.name, d.npc.x, d.npc.y + 14, "#2a3d6b", 12);
       }
+      drawStationFront(ctx, d);
     },
   };
 }

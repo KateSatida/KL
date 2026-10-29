@@ -24,7 +24,7 @@ export function isNightNow(timeCfg = {}, now = new Date()) {
 }
 
 // Find the bright pixels of a "night" picture: those become glowing lights.
-function findGlowPoints(img) {
+export function findGlowPoints(img) {
   const c = document.createElement("canvas");
   c.width = img.width; c.height = img.height;
   const g = c.getContext("2d");
@@ -35,7 +35,7 @@ function findGlowPoints(img) {
     for (let x = 0; x < c.width; x++) {
       const i = (y * c.width + x) * 4;
       const [r, gr, b, a] = [data[i], data[i + 1], data[i + 2], data[i + 3]];
-      if (a < 200 || r < 235 || gr < 190 || b > 235) continue;     // warm & bright only
+      if (a < 200 || r < 245 || gr < 225 || b < 140 || b > 235) continue;   // light-bulb colours only (e.g. #fff3b0)
       const key = `${Math.floor(x / 5)},${Math.floor(y / 5)}`;    // one light per 5x5 block
       if (seen.has(key)) continue;
       seen.add(key);
