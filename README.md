@@ -13,7 +13,7 @@ on their phone, dress up a 32×32 character, walk around, and visit stations:
 | 🌳 **Wishing Tree** | Guests hang a coloured ribbon with a wish; the ribbons appear on the tree for everyone. |
 | 🖼️ **Memory Lane** | Easels with your photos and a slideshow with captions. |
 | 💃 **Dance Floor** | Light-up floor (disco lights at night). Guests standing on it dance; a music button plays a tune on their phone. |
-| 💐 **Bouquet Toss** | Guests stand in the circle; you press "Toss now!" on the admin page and everyone in it catches a random bouquet with its flower meaning and a note from you. |
+| 💐 **Bouquet Toss** | Guests toss the bouquet themselves and catch a random flower (worn in their outfit) with its meaning and a note from you. |
 
 **Guests don't sign up or log in.** They just type a name the first time.
 After that, **each phone keeps its name**: refreshing, closing or reopening the
@@ -141,7 +141,6 @@ Log in with the email and password from step 2b. You get:
 - 🌳 all wishes from the wishing tree, with delete buttons
 - 🎵 the background and dance floor playlist links
 - 🎶 dance floor song requests, with delete buttons
-- 💐 the bouquet toss button
 - 👥 all guest names. Delete one to free it, e.g. for a guest who switched to another phone.
 - ⬇ **Download all photos (ZIP)**: photos plus `photo-notes.txt` and `bar-messages.txt`. Do this after the wedding.
 
@@ -241,11 +240,11 @@ Good to know:
 - With no links at all, the dance floor offers a built-in tune (or your own mp3:
   `"music": "assets/music/song.mp3"` on the dance floor station).
 
-**Bouquet toss.** On the admin page, open **💐 Bouquet toss**. It lists who is
-standing in the circle right now. Press **Toss now!**: a bouquet flies to
-**everyone** in the circle, and each guest catches a **random flower** (added to
-their outfit) with a card showing the flower's **meaning** and a random **note
-from you**. Toss as often as you like; each toss gives a different flower.
+**Bouquet toss.** At the Bouquet Toss station a guest taps **💐 Toss the
+bouquet!**: a bouquet flies to them (everyone sees it) and they catch a **random
+flower** (added to their outfit) with a card showing the flower's **meaning** and
+a random **note from you**. They can toss again for a different flower, and
+reopen their card at the station. No admin needed.
 
 - Flowers: list them under `"bouquets"` on the bouquet station in
   `config/game.json` (name, meaning, and a 32×32 PNG in `assets/bouquets/` drawn
