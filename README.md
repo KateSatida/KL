@@ -5,7 +5,7 @@ on their phone, dress up a 32×32 character, walk around, and visit stations:
 
 | Station | What guests can do |
 |---|---|
-| 👗 **Character creator / Wardrobe** | Pick a character, outfit, prop and drink layer by layer, or draw their own 32×32 layer. Set a status that floats above their head when others are near. |
+| 👗 **Character creator / Wardrobe** | Pick a character, outfit, prop and drink layer by layer, or draw their own 32×32 character (starting from their current one or a blank canvas). Set a status that floats above their head when others are near. |
 | 📸 **Photo Booth** | Take a selfie, pick a frame, type a note and write on the photo with a finger, then save it. A copy goes to your private admin page. |
 | 🍸 **Drink Bar** | Pick a drink to carry, scan your PromptPay QR, and talk to the bartender to leave messages on a shared wall. |
 | 💘 **Single Station** | Upload a photo + Instagram. A random single shows on the big projector every few seconds. |

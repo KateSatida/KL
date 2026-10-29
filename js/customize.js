@@ -1,6 +1,6 @@
 // Character creator: pick a character, dress and prop, or draw your own layer.
 // Used on the join screen and again from the Wardrobe station.
-import { el } from "./ui.js";
+import { el, toast } from "./ui.js";
 import { composeLook } from "./sprites.js";
 import { pixelEditor } from "./pixel-editor.js";
 
@@ -14,7 +14,8 @@ const TABS = [
 ];
 
 // state = { name, status, look: {...} }  (edited in place)
-export function customizer(config, state, { showName = true, lockedName = null } = {}) {
+// onDrawingDone(): called after "Use drawing" (the wardrobe saves right away)
+export function customizer(config, state, { showName = true, lockedName = null, onDrawingDone = null } = {}) {
   if (!state.look.character && config.layers.characters[0]) state.look.character = config.layers.characters[0].url;
 
   const preview = el("canvas", { width: 32, height: 32 });
@@ -44,6 +45,7 @@ export function customizer(config, state, { showName = true, lockedName = null }
         class: "option" + (selected ? " selected" : ""),
         onclick: () => {
           if (item.url) state.look[tab.id] = item.url; else delete state.look[tab.id];
+          state.look.useDrawing = false;          // back to outfit pieces (the drawing is kept)
           for (const b of grid.children) b.classList.remove("selected");
           grid.children[choices.indexOf(item)].classList.add("selected");
           refresh();
@@ -55,15 +57,19 @@ export function customizer(config, state, { showName = true, lockedName = null }
   };
 
   const drawPanel = async () => {
-    const guide = await composeLook(state.look, ["custom"]);
+    // their character as pixels to start from (without the drink they're holding)
+    const character = await composeLook({ ...state.look, useDrawing: false }, ["drink", "bonus"]);
     return el("div", {},
-      el("p", { class: "muted" }, "Draw your own 32×32 layer on top of your outfit (hat, tattoo, pet…)."),
+      el("p", { class: "muted" }, "Your character is on the canvas: draw on it, erase parts, or start from blank. Your drawing becomes your character. Pick any outfit piece later to switch back."),
       pixelEditor({
-        guide,
-        initial: state.look.custom,
+        character,
+        initial: state.look.useDrawing ? state.look.custom : null,
         onDone: (dataUrl) => {
-          if (dataUrl) state.look.custom = dataUrl; else delete state.look.custom;
+          if (dataUrl) { state.look.custom = dataUrl; state.look.useDrawing = true; }
+          else { delete state.look.custom; state.look.useDrawing = false; }
           refresh();
+          if (onDrawingDone) onDrawingDone();
+          else toast(dataUrl ? "Drawing on! 🎨" : "Drawing removed");
         },
       }),
     );

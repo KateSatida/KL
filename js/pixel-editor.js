@@ -7,9 +7,10 @@ const PALETTE = [
   "#ff9f43", "#ffd166", "#b5e48c", "#6a994e", "#8ec9f0", "#2a3d6b", "#a77bd6", "#f7d2b3",
 ];
 
-// guide: optional canvas shown faintly underneath (your character)
-// initial: optional data URL to continue a previous drawing
-export function pixelEditor({ guide, initial, onDone }) {
+// character: canvas of the guest's current character (to start from)
+// initial:   data URL of their previous drawing, if any (opens first)
+// onDone(dataUrl | null)
+export function pixelEditor({ character, initial, onDone }) {
   const pixels = document.createElement("canvas");  // the real 32x32 drawing
   pixels.width = pixels.height = SIZE;
   const pctx = pixels.getContext("2d");
@@ -20,16 +21,10 @@ export function pixelEditor({ guide, initial, onDone }) {
 
   let color = PALETTE[5];
   let tool = "pen";
-  let showGuide = true;
   const history = [];
 
   const render = () => {
     vctx.clearRect(0, 0, 320, 320);
-    if (guide && showGuide) {
-      vctx.globalAlpha = 0.35;
-      vctx.drawImage(guide, 0, 0, 320, 320);
-      vctx.globalAlpha = 1;
-    }
     vctx.drawImage(pixels, 0, 0, 320, 320);
     vctx.strokeStyle = "#00000010";
     for (let i = 0; i <= SIZE; i++) {
@@ -73,23 +68,36 @@ export function pixelEditor({ guide, initial, onDone }) {
     pctx.putImageData(img, 0, 0);
   };
 
-  let drawing = false;
+  let drawing = false, last = null;
+  // draw a line between moves so fast finger strokes have no gaps
+  const line = ([x0, y0], [x1, y1]) => {
+    const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
+    for (let i = 0; i <= n; i++) paint(Math.round(x0 + (x1 - x0) * i / n), Math.round(y0 + (y1 - y0) * i / n));
+  };
   view.addEventListener("pointerdown", (e) => {
     e.preventDefault();
-    view.setPointerCapture(e.pointerId);
+    view.setPointerCapture?.(e.pointerId);
     snapshot();
-    const [x, y] = cellAt(e);
-    if (tool === "fill") { fill(x, y); render(); return; }
+    const cell = cellAt(e);
+    if (tool === "fill") { fill(...cell); render(); return; }
     drawing = true;
-    paint(x, y);
+    last = cell;
+    paint(...cell);
     render();
   });
   view.addEventListener("pointermove", (e) => {
     if (!drawing) return;
-    paint(...cellAt(e));
+    e.preventDefault();
+    const cell = cellAt(e);
+    line(last, cell);
+    last = cell;
     render();
   });
-  view.addEventListener("pointerup", () => { drawing = false; });
+  const stop = () => { drawing = false; };
+  view.addEventListener("pointerup", stop);
+  view.addEventListener("pointercancel", stop);
+  // iPhone: stop the pop-up from scrolling while drawing on the canvas
+  for (const ev of ["touchstart", "touchmove"]) view.addEventListener(ev, (e) => e.preventDefault(), { passive: false });
 
   const swatches = el("div", { class: "palette" });
   const picker = el("input", { type: "color", value: color, title: "Any colour" });
@@ -116,27 +124,40 @@ export function pixelEditor({ guide, initial, onDone }) {
   selectColor(color);
 
   const undo = () => { if (history.length) { pctx.putImageData(history.pop(), 0, 0); render(); } };
-  const clear = () => { snapshot(); pctx.clearRect(0, 0, SIZE, SIZE); render(); };
-  const toggleGuide = () => { showGuide = !showGuide; render(); };
+  const fromBlank = () => { snapshot(); pctx.clearRect(0, 0, SIZE, SIZE); render(); };
+  const fromCharacter = () => {
+    snapshot();
+    pctx.clearRect(0, 0, SIZE, SIZE);
+    if (character) pctx.drawImage(character, 0, 0);
+    render();
+  };
 
+  // open their last drawing, or start from their character
   if (initial) {
     const img = new Image();
     img.onload = () => { pctx.drawImage(img, 0, 0); render(); };
     img.src = initial;
+  } else if (character) {
+    pctx.drawImage(character, 0, 0);
   }
   render();
 
   const isEmpty = () => !pctx.getImageData(0, 0, SIZE, SIZE).data.some((v, i) => i % 4 === 3 && v);
 
   return el("div", { class: "pixel-editor" },
-    el("div", { class: "row" }, Object.values(toolButtons), picker),
+    el("div", { class: "row", style: "justify-content:center" },
+      el("button", { class: "btn small", onclick: fromCharacter }, "👤 Start from my character"),
+      el("button", { class: "btn small", onclick: fromBlank }, "⬜ Start from blank"),
+    ),
+    el("div", { class: "row", style: "justify-content:center" }, Object.values(toolButtons), picker),
     view,
     swatches,
-    el("div", { class: "row" },
+    el("div", { class: "row", style: "justify-content:center" },
       el("button", { class: "btn small", onclick: undo }, "↩ Undo"),
-      el("button", { class: "btn small", onclick: clear }, "🗑 Clear"),
-      guide ? el("button", { class: "btn small", onclick: toggleGuide }, "👤 Guide on/off") : null,
-      el("button", { class: "btn small primary", onclick: () => onDone(isEmpty() ? null : pixels.toDataURL("image/png")) }, "✔ Use drawing"),
+      el("button", { class: "btn small", onclick: fromBlank }, "🗑 Clear"),
+    ),
+    el("div", { class: "row", style: "justify-content:center" },
+      el("button", { class: "btn green big", onclick: () => onDone(isEmpty() ? null : pixels.toDataURL("image/png")) }, "✔ Use drawing"),
     ),
   );
 }

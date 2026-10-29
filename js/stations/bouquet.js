@@ -36,7 +36,7 @@ export default function bouquet(def, game) {
     setTimeout(() => {
       toast(`🎉 ${name} caught the bouquet!`, 6000);
       if (id === world.me?.id) {
-        game.setLook({ ...game.state.look, prop: "assets/props/bouquet.png" });
+        game.setLook({ ...game.state.look, bonus: "assets/props/bouquet.png" });
         toast("🎉 You caught the bouquet! 💐", 6000);
       }
     }, flight);

@@ -37,6 +37,8 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
 .btn:hover { border-color: var(--primary); }
 .btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
 .btn.primary:hover { background: var(--primary-dark); }
+.btn.green { background: #3fae5a; color: #fff; border-color: #3fae5a; }
+.btn.green:hover { background: #33944b; }
 .btn.small { padding: 5px 12px; font-size: 14px; }
 .btn.big { padding: 12px 28px; font-size: 18px; }
 .btn:disabled { opacity: .5; cursor: default; }
