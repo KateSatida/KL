@@ -88,14 +88,19 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
 .hud-top { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; gap: 6px; align-items: center; pointer-events: none; }
 .hud-top > * { pointer-events: auto; }
 .pill { background: #ffffffe6; border-radius: 999px; padding: 5px 12px; font-weight: 600; font-size: 14px; box-shadow: 0 2px 8px #0001; }
-#station-prompt { position: absolute; left: 50%; bottom: 90px; transform: translateX(-50%); font-size: 18px; box-shadow: 0 4px 16px #0002; animation: pop .25s; }
+/* --chat-top (set by chat.js) = how far the chat box reaches up, so the button always sits above it */
+#station-prompt { position: absolute; z-index: 3; left: 50%; bottom: calc(var(--chat-top, 60px) + 14px); transform: translateX(-50%); font-size: 18px; box-shadow: 0 4px 16px #0002; animation: pop .25s; }
 @keyframes pop { from { transform: translateX(-50%) scale(.6); } }
 .connection { position: absolute; top: 56px; left: 50%; transform: translateX(-50%); background: #fff3cd; }
 
 /* ---- Chat ---- */
 .chat { position: absolute; left: 8px; bottom: calc(8px + env(safe-area-inset-bottom)); width: min(360px, calc(100vw - 16px)); background: #ffffffee;
   border-radius: var(--radius); box-shadow: 0 4px 20px #0002; display: flex; flex-direction: column; max-height: 45vh; }
-.chat-toggle { border: 0; background: none; text-align: left; padding: 10px 14px; font-weight: 700; cursor: pointer; }
+.chat-head { display: flex; align-items: center; }
+.chat-toggle { flex: 1; border: 0; background: none; color: inherit; text-align: left; padding: 10px 14px; font-weight: 700; cursor: pointer; }
+.chat-min { border: 0; background: #f6e9ee; color: var(--text); border-radius: 999px; width: 36px; height: 36px;
+  margin-right: 8px; font-size: 20px; line-height: 1; cursor: pointer; touch-action: manipulation; }
+.chat.collapsed .chat-min { display: none; }
 .chat-log { overflow-y: auto; padding: 0 14px; font-size: 14px; flex: 1; min-height: 60px; }
 .chat-log p { margin: 4px 0; word-wrap: break-word; }
 .chat-log b { color: var(--primary-dark); }

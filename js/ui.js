@@ -22,6 +22,7 @@ export function openModal(title, body, onClose) {
   box.replaceChildren(body);
   $("#modal").classList.remove("hidden");
   closeHandler = onClose || null;
+  document.dispatchEvent(new Event("modalopen"));
 }
 
 export function closeModal() {

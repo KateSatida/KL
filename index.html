@@ -38,7 +38,10 @@
     <button id="station-prompt" class="btn primary hidden"></button>
 
     <aside id="chat" class="chat collapsed">
-      <button id="chat-toggle" class="chat-toggle">💬 Chat <span id="chat-near" class="muted"></span><span id="chat-badge" class="badge hidden">•</span></button>
+      <div class="chat-head">
+        <button id="chat-toggle" class="chat-toggle">💬 Chat <span id="chat-near" class="muted"></span><span id="chat-badge" class="badge hidden">•</span></button>
+        <button id="chat-min" class="chat-min" aria-label="Minimize chat" title="Minimize">▾</button>
+      </div>
       <div id="chat-log" class="chat-log"></div>
       <form id="chat-form" class="chat-form">
         <input id="chat-input" maxlength="300" autocomplete="off" placeholder="Walk close to someone to chat…">
