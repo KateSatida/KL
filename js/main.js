@@ -6,9 +6,17 @@ import { customizer } from "./customize.js";
 import { World } from "./world.js";
 import { createStations } from "./stations/index.js";
 import { setupChat } from "./chat.js";
-import { setupPlayer } from "./player.js";
+import { setupPlayer, setMusic, startMusic, embedFor } from "./player.js";
+import { inside } from "./world.js";
 
 const config = await loadConfig();
+// Music links the couple set on the admin page override config/game.json
+config.music = config.music || {};
+const applySettings = (s = {}) => {
+  if (s.music_playlist !== undefined) config.music.playlist = s.music_playlist;
+  if (s.music_dance !== undefined) config.music.danceFloor = s.music_dance;
+};
+applySettings(await backend.getSettings().catch(() => ({})));
 const w = config.wedding;
 document.title = w.title;
 $("#wedding-title").textContent = w.title;
@@ -98,6 +106,31 @@ if (myName) {
   enter().finally(() => { $("#join-btn").textContent = "Enter the party 🎉"; });
 }
 
+// Background music everywhere; dance playlist (or the guest's own) on the dance floor.
+function setupMusic(world) {
+  setupPlayer();
+  game.on("settings", (s) => applySettings(s));
+  // backup: pick up changes from the admin page even if the live message was missed
+  setInterval(() => backend.getSettings().then(applySettings).catch(() => {}), 120000);
+  const pick = () => {
+    const m = config.music;
+    const onFloor = world.me && world.danceZones.some((z) => inside(world.me, z, 0));
+    const mine = store.get("myDancePlaylist");
+    if (onFloor && embedFor(mine)) return [mine, "💃 Your dance playlist"];
+    if (onFloor && embedFor(m.danceFloor)) return [m.danceFloor, "💃 Dance floor"];
+    return [m.playlist, `🎵 ${m.title || "Background music"}`];
+  };
+  const update = () => {
+    const [link, title] = pick();
+    setMusic(link, title);
+    const any = embedFor(config.music.playlist) || embedFor(config.music.danceFloor) || embedFor(store.get("myDancePlaylist"));
+    $("#hud-music").classList.toggle("hidden", !any);
+  };
+  update();
+  setInterval(update, 700);
+  startMusic();      // starts right after "Enter the party" (phones may need one tap on the player)
+}
+
 async function startGame() {
   const stations = createStations(config, game);
   const world = new World($("#world"), config, stations);
@@ -167,6 +200,6 @@ async function startGame() {
   setInterval(showTime, 15000);
 
   setupChat(game);
-  setupPlayer(config);
+  setupMusic(world);
   world.start();
 }

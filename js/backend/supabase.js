@@ -80,6 +80,12 @@ export function createSupabaseBackend(url, key) {
       check(await db.from("wishes").insert({ name, text, color }));
     },
 
+    // ---- settings the couple edits on the admin page ----------------------------
+    async getSettings() {
+      const rows = check(await db.from("settings").select("key, value"));
+      return Object.fromEntries(rows.map((r) => [r.key, r.value]));
+    },
+
     // ---- dance floor song requests ----------------------------------------------
     async listSongs() {
       return check(await db.from("song_requests").select("id, created_at, name, song")
@@ -112,8 +118,13 @@ export function createSupabaseBackend(url, key) {
         channel.on("presence", { event: "sync" }, () => {
           onPlayers(Object.entries(channel.presenceState()).map(([key, metas]) => ({ ...metas[metas.length - 1], id: key })));
         });
-        channel.subscribe();
-        return { broadcast(t, d) { channel.send({ type: "broadcast", event: "game", payload: { t, d } }); } };
+        const ready = new Promise((resolve) => channel.subscribe((status) => { if (status === "SUBSCRIBED") resolve(); }));
+        // wait until connected, otherwise the message would be lost
+        return { broadcast(t, d) { return ready.then(() => channel.send({ type: "broadcast", event: "game", payload: { t, d } })); } };
+      },
+      async saveSettings(values) {
+        const rows = Object.entries(values).map(([key, value]) => ({ key, value, updated_at: new Date().toISOString() }));
+        check(await db.from("settings").upsert(rows));
       },
       async songs() {
         return check(await db.from("song_requests").select("*").order("created_at", { ascending: false }));

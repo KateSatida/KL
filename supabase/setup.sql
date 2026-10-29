@@ -132,6 +132,21 @@ create policy "guests add songs"     on public.song_requests for insert to anon,
 create policy "admin deletes songs"  on public.song_requests for delete to authenticated using (public.is_admin());
 
 
+-- ── Settings the couple can change from the admin page (e.g. music links) ──────
+create table if not exists public.settings (
+  key        text primary key check (key ~ '^[a-z_]{1,40}$'),
+  value      text not null default '' check (char_length(value) <= 500),
+  updated_at timestamptz not null default now()
+);
+alter table public.settings enable row level security;
+drop policy if exists "everyone reads settings" on public.settings;
+drop policy if exists "admin writes settings" on public.settings;
+drop policy if exists "admin updates settings" on public.settings;
+create policy "everyone reads settings" on public.settings for select to anon, authenticated using (true);
+create policy "admin writes settings"   on public.settings for insert to authenticated with check (public.is_admin());
+create policy "admin updates settings"  on public.settings for update to authenticated using (public.is_admin()) with check (public.is_admin());
+
+
 -- ── Guest names: no sign-up; one name per phone, one phone per name ──────────────
 -- Each phone has a random secret token (kept in the browser). claim_name() gives
 -- the name to the first phone that asks; that phone keeps it and can't take another.

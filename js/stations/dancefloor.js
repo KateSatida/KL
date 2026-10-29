@@ -1,10 +1,10 @@
 // Dance floor: light-up tiles, speakers and a disco ball. Guests standing still
 // on it dance (see World.drawPlayer). The music button plays on your phone only.
-import { el, openModal, closeModal, tabs, toast, timeAgo } from "../ui.js";
+import { el, openModal, closeModal, tabs, toast, timeAgo, store } from "../ui.js";
 import { roundRect } from "../world.js";
 import { loadImage } from "../sprites.js";
 import { isPlaying, toggleMusic } from "../music.js";
-import { embedFor, openPlayer } from "../player.js";
+import { embedFor, startMusic, musicOn } from "../player.js";
 
 const DAY = ["#ffd6e0", "#ffe9b8", "#d6ecff", "#e3f7d9", "#efd9ff"];
 const NIGHT = ["#ff5d8f", "#ffd166", "#4cc9f0", "#80ed99", "#c77dff"];
@@ -13,21 +13,38 @@ export default function danceFloor(def, game) {
   const img = {};
   for (const name of ["speaker", "disco_ball", "disco_ball_night"]) loadImage(`assets/stations/${name}.png`).then((i) => { img[name] = i; });
 
-  // config "music": danceFloor = Spotify/YouTube link to play here,
-  // addSongsLink = a collaborative Spotify playlist guests can add to.
-  // Without a link: an mp3 ("music" on this station) or the built-in tune.
-  const music = game.config.music || {};
+  // Music here comes from the admin page / config "music.danceFloor", or the
+  // guest's own playlist (saved on their phone). Without any link: an mp3
+  // ("music" on this station) or the built-in tune.
+  const music = game.config.music;
 
   const musicTab = () => {
-    const btn = embedFor(music.danceFloor)
-      ? el("button", { class: "btn primary big", onclick: () => { openPlayer(music.danceFloor, "Dance floor"); closeModal(); } }, "🎵 Play dance playlist")
-      : el("button", { class: "btn primary big", onclick: () => {
-        btn.textContent = toggleMusic(def.music) ? "⏹ Stop music" : "🎵 Play music";
-      } }, isPlaying() ? "⏹ Stop music" : "🎵 Play music");
-    return el("div", { style: "text-align:center" },
+    const mine = store.get("myDancePlaylist") || "";
+    const input = el("input", { maxlength: 300, value: mine, placeholder: "Paste a YouTube or Spotify playlist link" });
+    const now = () => embedFor(store.get("myDancePlaylist")) ? "your own playlist 🎧"
+      : embedFor(music.danceFloor) ? "the couple's dance playlist 💃" : "the background music 🎵";
+    const status = el("p", {}, "On the dance floor you hear ", el("b", {}, now()), ".");
+    const save = el("button", { class: "btn primary", onclick: () => {
+      const link = input.value.trim();
+      if (link && !embedFor(link)) return toast("Please paste a YouTube or Spotify link 🙏", 4000);
+      store.set("myDancePlaylist", link || null);
+      status.replaceChildren("On the dance floor you hear ", el("b", {}, now()), ".");
+      toast(link ? "Your playlist will play on the dance floor 🎧" : "Back to the couple's playlist");
+    } }, "Save");
+    const clear = el("button", { class: "btn", onclick: () => { input.value = ""; save.click(); } }, "Remove");
+    const noLinks = !embedFor(music.danceFloor) && !embedFor(music.playlist);
+    const tune = noLinks ? el("button", { class: "btn primary big", onclick: () => {
+      tune.textContent = toggleMusic(def.music) ? "⏹ Stop music" : "🎵 Play music";
+    } }, isPlaying() ? "⏹ Stop music" : "🎵 Play music") : null;
+    return el("div", {},
       el("p", {}, def.intro || "Stand still on the dance floor and your character dances! 💃🕺"),
-      btn,
-      el("p", { class: "muted" }, "The music plays on your phone only."),
+      status,
+      !musicOn() && !noLinks ? el("button", { class: "btn primary", onclick: () => { startMusic(); closeModal(); } }, "🎵 Turn music on") : null,
+      tune,
+      el("h3", {}, "🎧 My dance playlist"),
+      el("p", { class: "muted" }, "Paste your own YouTube or Spotify playlist. It plays only on your phone, only while you're on the dance floor."),
+      input,
+      el("div", { class: "row", style: "margin-top:8px" }, save, clear),
     );
   };
 
@@ -37,7 +54,12 @@ export default function danceFloor(def, game) {
       el("div", { style: "flex:1;min-width:0;word-break:break-word" },
         el("b", {}, s.name || "Guest"), " ", el("small", {}, timeAgo(s.created_at)),
         el("div", {}, playable ? (s.song.includes("spotify") ? "🟢 Spotify link" : "▶️ YouTube link") : s.song)),
-      playable ? el("button", { class: "btn small", onclick: () => { openPlayer(s.song, `Request from ${s.name || "a guest"}`); closeModal(); } }, "▶ Play") : null,
+      playable ? el("button", { class: "btn small", onclick: () => {
+        store.set("myDancePlaylist", s.song);
+        startMusic();
+        closeModal();
+        toast("Playing on your dance floor 🎧");
+      } }, "▶ Play") : null,
     );
   };
 
@@ -47,8 +69,7 @@ export default function danceFloor(def, game) {
     const load = () => game.backend.listSongs().then((ss) => list.replaceChildren(...(ss.length ? ss.map(songNode) : [el("p", { class: "muted" }, "No requests yet. Add the first song!")])))
       .catch((e) => list.replaceChildren(el("p", {}, e.message)));
     load();
-    const off = () => list.isConnected && load();
-    game.on("song", off);
+    game.on("song", () => list.isConnected && load());
     const send = el("button", { class: "btn primary", onclick: async () => {
       const song = input.value.trim().slice(0, 200);
       if (!song) return toast("Type a song first 🎶");
@@ -62,7 +83,7 @@ export default function danceFloor(def, game) {
       send.disabled = false;
     } }, "🎶 Add");
     return el("div", {},
-      el("p", { class: "muted" }, "Request a song for the dance floor. Everyone can see the list and play the links."),
+      el("p", { class: "muted" }, "Request a song for the couple. Everyone can see the list; ▶ plays a link on your own dance floor."),
       el("div", { class: "row", style: "flex-wrap:nowrap" }, input, send),
       music.addSongsLink ? (() => {
         const app = /spotify/.test(music.addSongsLink) ? "Spotify" : "YouTube";
@@ -76,7 +97,7 @@ export default function danceFloor(def, game) {
 
   const open = () => openModal(`${def.icon} ${def.label}`, tabs([
     { id: "music", label: "🎵 Music", render: musicTab },
-    { id: "request", label: "➕ Request a song", render: requestTab },
+    { id: "request", label: "🎶 Song requests", render: requestTab },
   ]));
 
   return {
