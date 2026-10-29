@@ -149,3 +149,7 @@ create policy "admin reads photo files"    on storage.objects for select to auth
 create policy "admin deletes photo files"  on storage.objects for delete to authenticated using (bucket_id = 'photos' and public.is_admin());
 create policy "guests upload singles"      on storage.objects for insert to anon, authenticated with check (bucket_id = 'singles');
 create policy "admin deletes single files" on storage.objects for delete to authenticated using (bucket_id = 'singles' and public.is_admin());
+
+
+-- Tell Supabase's API to pick up the new tables and functions right away
+notify pgrst, 'reload schema';
