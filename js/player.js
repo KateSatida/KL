@@ -49,6 +49,22 @@ let link = null;          // what is playing now
 let wanted = null;        // what should play (background or dance floor)
 let title = "";
 let on = false;           // the guest wants music (false after ✕)
+let playing = null;       // YouTube: true/false once known; Spotify: unknown (null)
+const MINI = "musicMinimized";
+let mini = (() => { try { return localStorage.getItem(MINI) === "1"; } catch { return false; } })();
+
+function showState() {
+  // when minimized, say whether it's playing; if not (phones need a tap), tapping opens it
+  const el = $("#music-state");
+  el.textContent = !mini ? "" : playing === false ? "▶ tap to play" : playing ? "♪ playing" : "";
+}
+
+export function setMinimized(value) {
+  mini = value;
+  try { localStorage.setItem(MINI, value ? "1" : "0"); } catch { /* private mode */ }
+  $("#music-panel").classList.toggle("mini", mini);
+  showState();
+}
 
 function shuffleAndRepeat(p) {
   try {
@@ -61,6 +77,7 @@ function shuffleAndRepeat(p) {
 }
 
 async function playYouTube(e) {
+  playing = false;
   const YT = await loadYouTubeApi();
   const vars = e.list ? { listType: "playlist", list: e.list } : { playlist: e.video };   // playlist=video makes one video repeat
   if (yt) {
@@ -76,12 +93,18 @@ async function playYouTube(e) {
     playerVars: { ...vars, autoplay: 1, playsinline: 1, rel: 0, loop: 1 },
     events: {
       onReady: (ev) => { ev.target.playVideo(); setTimeout(() => shuffleAndRepeat(ev.target), 800); },
-      onStateChange: (ev) => { if (ev.data === 0) ev.target.playVideo(); },   // ended: start again
+      onStateChange: (ev) => {
+        if (ev.data === 0) ev.target.playVideo();                            // ended: start again
+        if (ev.data === 1) playing = true;
+        if (ev.data === 2 || ev.data === 5) playing = false;                 // paused / not started
+        showState();
+      },
     },
   });
 }
 
 function playSpotify(e) {
+  playing = null;
   yt?.destroy?.();
   yt = null;
   const frame = document.createElement("iframe");
@@ -108,6 +131,7 @@ function render() {
   $("#music-frame").className = e.kind;
   panel.classList.remove("hidden");
   $("#hud-music").classList.remove("off");
+  showState();
   if (link === wanted) return;
   link = wanted;
   if (e.kind === "youtube") playYouTube(e); else playSpotify(e);
@@ -128,4 +152,8 @@ export const musicOn = () => on;
 export function setupPlayer() {
   $("#hud-music").addEventListener("click", () => (on ? stopPlayer() : startMusic()));
   $("#music-close").addEventListener("click", stopPlayer);
+  $("#music-min").addEventListener("click", () => setMinimized(!mini));
+  $("#music-title").addEventListener("click", () => { if (mini) setMinimized(false); });
+  $("#music-state").addEventListener("click", () => { if (mini) setMinimized(false); });
+  setMinimized(mini);
 }

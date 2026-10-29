@@ -55,7 +55,12 @@
 
     <!-- Mini music player (Spotify / YouTube), see "music" in config/game.json -->
     <div id="music-panel" class="music-panel hidden">
-      <div class="music-head"><span id="music-title">🎵 Music</span><button id="music-close" class="chat-min" aria-label="Close music">✕</button></div>
+      <div class="music-head">
+        <span id="music-title">🎵 Music</span>
+        <span id="music-state" class="music-state"></span>
+        <button id="music-min" class="chat-min" aria-label="Minimize music" title="Hide video, keep the music">▾</button>
+        <button id="music-close" class="chat-min" aria-label="Stop music" title="Stop music">✕</button>
+      </div>
       <div id="music-frame"></div>
     </div>
   </section>
