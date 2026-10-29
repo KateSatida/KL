@@ -99,7 +99,14 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
 /* ---- Music player ---- */
 .music-panel { position: absolute; top: 52px; right: 8px; width: min(240px, calc(100vw - 16px)); z-index: 4;
   background: #ffffffee; border-radius: var(--radius); box-shadow: 0 4px 20px #0002; overflow: hidden; }
-.music-head { display: flex; justify-content: space-between; align-items: center; padding: 4px 4px 4px 12px; font-weight: 700; font-size: 14px; }
+.music-head { display: flex; align-items: center; gap: 4px; padding: 4px 4px 4px 12px; font-weight: 700; font-size: 14px; }
+#music-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+.music-state { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.music-head .chat-min { width: 32px; height: 32px; margin: 0; font-size: 16px; flex: none; }
+/* minimized: only the small bar shows; the player moves off-screen and keeps playing */
+.music-panel.mini { width: auto; max-width: calc(100vw - 16px); }
+.music-panel.mini #music-frame { position: fixed; left: -10000px; top: 0; width: 320px; height: 180px; }
+.music-panel.mini #music-min { transform: rotate(180deg); }
 #music-frame iframe { display: block; width: 100%; border: 0; }
 #music-frame.youtube { aspect-ratio: 16 / 9; }
 #music-frame.youtube iframe { height: 100%; }

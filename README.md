@@ -228,7 +228,10 @@ tab **🎵 Music** (no code needed; guests in the game switch right away):
 Good to know:
 - Music plays on each guest's own phone (not in sync), in a small player at the
   top right that stays visible (YouTube and Spotify don't allow hidden players).
-  ✕ or the 🎵 button stops it; 🎵 starts it again.
+  ✕ or the 🎵 button stops it; 🎵 starts it again. **▾ minimizes** it to a small
+  "♪ playing" bar: the video is hidden and the music keeps going (tap the bar to
+  open it again; if it says "▶ tap to play", open it and press play once).
+  Note: YouTube's terms ask that embedded videos stay visible while playing.
 - Phones often block sound until the guest taps once, so they may need to tap
   play in the small player the first time.
 - Spotify plays only 30-second previews for guests who aren't logged in to
