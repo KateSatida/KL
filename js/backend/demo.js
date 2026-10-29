@@ -48,7 +48,7 @@ export function createDemoBackend() {
       const names = store.get("demo.names", {});        // {lower-case name: token}
       const key = name.toLowerCase();
       if (names[key] && names[key] !== token) return false;
-      for (const k of Object.keys(names)) if (names[k] === token) delete names[k];
+      if (Object.entries(names).some(([k, t]) => t === token && k !== key)) return false;  // one name per phone
       names[key] = token;
       store.set("demo.names", names);
       return true;

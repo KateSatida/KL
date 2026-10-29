@@ -14,7 +14,7 @@ const TABS = [
 ];
 
 // state = { name, status, look: {...} }  (edited in place)
-export function customizer(config, state, { showName = true } = {}) {
+export function customizer(config, state, { showName = true, lockedName = null } = {}) {
   if (!state.look.character && config.layers.characters[0]) state.look.character = config.layers.characters[0].url;
 
   const preview = el("canvas", { width: 32, height: 32 });
@@ -27,6 +27,7 @@ export function customizer(config, state, { showName = true } = {}) {
 
   const nameInput = el("input", { maxlength: 24, placeholder: "Your name", value: state.name || "" });
   nameInput.addEventListener("input", () => { state.name = nameInput.value; });
+  if (lockedName) { nameInput.value = state.name = lockedName; nameInput.readOnly = true; }
   const statusInput = el("input", { maxlength: 60, placeholder: "Status above your head, e.g. Friend of the bride 💕", value: state.status || "" });
   statusInput.addEventListener("input", () => { state.status = statusInput.value; });
 
@@ -81,7 +82,9 @@ export function customizer(config, state, { showName = true } = {}) {
       preview,
       showName ? el("label", {}, "Name") : null,
       showName ? nameInput : null,
-      showName ? el("small", { class: "muted" }, "No sign-up needed. Just pick a name nobody else uses.") : null,
+      showName ? el("small", { class: "muted" }, lockedName
+        ? "This phone's name. It stays the same every time you come back."
+        : "No sign-up needed. Pick a name nobody else uses. It stays with this phone.") : null,
       el("label", {}, "Status"),
       statusInput,
     ),

@@ -18,7 +18,7 @@ if (!backend.online) { $("#demo-banner").classList.remove("hidden"); document.bo
 
 // What this guest looks like. Saved on the device so a refresh keeps the outfit.
 const state = store.get("guest", { name: "", status: "", look: {} });
-$("#join-customizer").append(customizer(config, state));
+$("#join-customizer").append(customizer(config, state, { lockedName: store.get("myName") }));
 
 // Shared "game" object handed to every station module.
 const listeners = {};
@@ -60,13 +60,21 @@ if (!deviceToken) {
   store.set("deviceToken", deviceToken);
 }
 
-$("#join-btn").addEventListener("click", async () => {
+// One phone = one name. After the first join the name is remembered as
+// "myName" and the guest goes straight back in on refresh / reopen.
+async function enter() {
   state.name = (state.name || "").trim().replace(/\s+/g, " ").slice(0, 24);
   if (!state.name) return toast("Please type your name first 😊");
   const btn = $("#join-btn");
   btn.disabled = true;
   try {
     if (!(await backend.claimName(state.name, deviceToken))) {
+      const mine = store.get("myName");
+      if (mine && mine !== state.name) return toast(`This phone already joined as "${mine}" 🙂`, 4000);
+      if (mine) {                              // freed by the couple and taken by someone else
+        store.set("myName", null);
+        $("#join-customizer input").readOnly = false;
+      }
       return toast(`"${state.name}" is already taken. Please choose another name 🙏`, 4000);
     }
   } catch (e) {
@@ -74,11 +82,20 @@ $("#join-btn").addEventListener("click", async () => {
   } finally {
     btn.disabled = false;
   }
+  store.set("myName", state.name);
   game.save();
   $("#join").classList.add("hidden");
   $("#game").classList.remove("hidden");
   startGame();
-});
+}
+$("#join-btn").addEventListener("click", enter);
+
+const myName = store.get("myName");
+if (myName) {
+  state.name = myName;
+  $("#join-btn").textContent = `Entering as ${myName}…`;
+  enter().finally(() => { $("#join-btn").textContent = "Enter the party 🎉"; });
+}
 
 async function startGame() {
   const stations = createStations(config, game);

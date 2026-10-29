@@ -63,7 +63,7 @@ views.guests = async () => {
   const items = await admin.guests();
   if (!items.length) return el("p", { class: "muted" }, "No guests yet.");
   return el("div", { class: "wall card", style: "max-height:none" },
-    el("p", { class: "muted" }, `${items.length} names taken. Delete one to let someone else use it (e.g. a guest who changed phone).`),
+    el("p", { class: "muted" }, `${items.length} names taken. Each phone keeps its name. Delete one to free it, e.g. for a guest who changed phone or wants a new name.`),
     items.map((g) => {
       const node = el("div", { class: "msg" });
       node.append(el("b", {}, g.name), " ", el("small", {}, timeAgo(g.created_at)), " ", removeBtn("guest_names", g, node));
