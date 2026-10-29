@@ -8,6 +8,19 @@ const W = 600, H = 800;                                  // photo size (3:4, sam
 const NOTE_BOX = { x: 60, y: 540, w: 480, maxLines: 3 }; // where the typed note goes
 const INK_COLORS = ["#ffffff", "#e0708f", "#222222", "#f6c56b"];
 
+// iPhone/Android: open the share sheet ("Save Image" puts it in Photos).
+// Elsewhere: a normal download.
+async function saveToPhone(blob) {
+  if (!blob) return;
+  const file = new File([blob], `wedding-photo-${Date.now()}.jpg`, { type: "image/jpeg" });
+  if (navigator.canShare?.({ files: [file] })) {
+    try { await navigator.share({ files: [file] }); return; }
+    catch (e) { if (e.name === "AbortError") return; }   // user closed the sheet
+  }
+  const a = el("a", { href: URL.createObjectURL(blob), download: file.name });
+  document.body.append(a); a.click(); a.remove();
+}
+
 export default function photobooth(def, game) {
   return {
     open() {
@@ -98,19 +111,36 @@ export default function photobooth(def, game) {
       } }, "📸 Snap");
       const retake = el("button", { class: "btn", onclick: () => { inkCtx.clearRect(0, 0, W, H); setMode("live"); } }, "↺ Retake");
       const clearInk = el("button", { class: "btn small", onclick: () => inkCtx.clearRect(0, 0, W, H) }, "🧽 Clear writing");
+      // 1) send to the couple, 2) then offer "Save to my phone". Uploading first
+      // matters on iPhone: starting a download can cut off a running upload.
+      let photoBlob = null;
+      const SEND_LABEL = "💌 Send to the couple";
+      const upload = async (blob) => {
+        const data = { name: game.state.name, note: [note.value, privateNote.value].filter(Boolean).join("\n\n"), blob };
+        try { await game.backend.uploadPhoto(data); }
+        catch { await new Promise((r) => setTimeout(r, 1500)); await game.backend.uploadPhoto(data); }  // one retry
+      };
       const save = el("button", { class: "btn primary", onclick: async () => {
         save.disabled = true;
+        save.textContent = "Sending…";
         const out = Object.assign(document.createElement("canvas"), { width: W, height: H });
         render(out.getContext("2d"));
-        const blob = await canvasToJpeg(out, 0.9);
-        const a = el("a", { href: URL.createObjectURL(blob), download: `wedding-photo-${Date.now()}.jpg` });
-        document.body.append(a); a.click(); a.remove();
+        photoBlob = await canvasToJpeg(out, 0.85);
+        keep.classList.remove("hidden");
         try {
-          await game.backend.uploadPhoto({ name: game.state.name, note: [note.value, privateNote.value].filter(Boolean).join("\n\n"), blob });
-          toast(game.backend.online ? "Saved! The couple will love it 💖" : "Saved to your device (demo mode: not uploaded)");
-          closeModal();
-        } catch (e) { toast(`Saved to your phone, but upload failed: ${e.message}`, 8000); save.disabled = false; }
-      } }, "💾 Save photo");
+          await upload(photoBlob);
+          toast(game.backend.online ? "Sent! The couple will love it 💖" : "Demo mode: not uploaded");
+          status.textContent = "Sent to the couple 💖 Save a copy for yourself too?";
+          save.classList.add("hidden");
+          done.classList.remove("hidden");
+        } catch (e) {
+          toast(`Upload failed: ${e.message}. Please tap "Try again".`, 8000);
+          save.textContent = "🔁 Try again";
+        }
+        save.disabled = false;
+      } }, SEND_LABEL);
+      const keep = el("button", { class: "btn hidden", onclick: () => saveToPhone(photoBlob) }, "📲 Save to my phone");
+      const done = el("button", { class: "btn hidden", onclick: closeModal }, "✔ Done");
 
       const fileInput = el("input", { type: "file", accept: "image/*", capture: "user", class: "hidden" });
       const fileBtn = el("button", { class: "btn hidden", onclick: () => fileInput.click() }, "🖼 Choose a photo");
@@ -129,6 +159,8 @@ export default function photobooth(def, game) {
         snap.disabled = false;
         snap.classList.toggle("hidden", m !== "live");
         for (const n of [retake, save, inkBar]) n.classList.toggle("hidden", m !== "shot");
+        for (const n of [keep, done]) n.classList.add("hidden");
+        save.textContent = SEND_LABEL;
         status.textContent = m === "shot" ? "Looking good! Write on it with your finger, then save." : game.config.photobooth.intro;
       };
 
@@ -147,7 +179,7 @@ export default function photobooth(def, game) {
       setMode("live");
       openModal(`${def.icon} ${def.label}`, el("div", { class: "booth" },
         status, view,
-        el("div", { class: "row" }, snap, retake, fileBtn, save),
+        el("div", { class: "row", style: "justify-content:center" }, snap, retake, fileBtn, save, keep, done),
         inkBar,
         el("div", { style: "width:100%" }, el("label", {}, "Frame"), frameRow),
         note, privateNote, fileInput,

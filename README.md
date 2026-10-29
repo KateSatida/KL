@@ -116,7 +116,7 @@ Open the github.io link on **two phones** (or a phone + a computer):
 - [ ] Set a status → the other phone sees it above your head when close.
 - [ ] Drink Bar: pick a drink (the other phone sees it), post a message, check the QR.
 - [ ] Single Station: add a card → it appears on the projector on both phones.
-- [ ] Photo Booth: allow the camera, snap, write, save → the photo downloads.
+- [ ] Photo Booth: allow the camera, snap, write, "Send to the couple", then "Save to my phone".
 - [ ] `admin.html`: log in → the photo and its note are there.
 - [ ] Clean up test data on the admin page (🗑 Delete).
 
