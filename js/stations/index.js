@@ -10,8 +10,15 @@ import bar from "./bar.js";
 import singles from "./singles.js";
 import projector from "./projector.js";
 import wardrobe from "./wardrobe.js";
+import wishingTree from "./wishing-tree.js";
+import memoryLane from "./memory-lane.js";
+import dancefloor from "./dancefloor.js";
+import bouquet from "./bouquet.js";
 
-export const STATION_TYPES = { photobooth, bar, singles, projector, wardrobe };
+export const STATION_TYPES = {
+  photobooth, bar, singles, projector, wardrobe,
+  "wishing-tree": wishingTree, "memory-lane": memoryLane, dancefloor, bouquet,
+};
 
 export function createStations(config, game) {
   return config.stations

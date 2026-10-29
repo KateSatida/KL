@@ -65,6 +65,11 @@ export function createDemoBackend() {
       store.set("demo.messages", list.slice(0, 100));
     },
 
+    async listWishes() { return store.get("demo.wishes", []); },
+    async addWish({ name, text, color }) {
+      store.set("demo.wishes", [{ id: id(), created_at: now(), name, text, color }, ...store.get("demo.wishes", [])].slice(0, 200));
+    },
+
     async listSingles() { return store.get("demo.singles", []); },
     async addSingle({ name, instagram, bio, blob }) {
       const row = { id: id(), created_at: now(), name, instagram, bio, image: await blobToDataUrl(blob) };

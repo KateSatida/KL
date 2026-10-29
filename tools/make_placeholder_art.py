@@ -598,12 +598,123 @@ def closet():
     return s
 
 
+def wishing_tree(night):
+    s = Sprite(96, 96)
+    s.rect(42, 58, 53, 93, "#7a4b2a")                    # trunk
+    s.rect(45, 60, 47, 93, "#8f5b34")
+    s.rect(36, 90, 59, 93, "#7a4b2a")                    # roots
+    for i in range(10):                                   # branches
+        s.set(41 - i, 58 - i // 2, "#7a4b2a"); s.set(54 + i, 58 - i // 2, "#7a4b2a")
+    for cx, cy, r, c in [(48, 34, 30, "#4f7a3a"), (24, 42, 16, "#4f7a3a"), (72, 42, 16, "#4f7a3a"),
+                         (48, 28, 24, "#6a994e"), (30, 34, 12, "#6a994e"), (66, 34, 12, "#6a994e"),
+                         (42, 18, 8, "#7fb35f"), (58, 22, 7, "#7fb35f"), (28, 30, 5, "#7fb35f")]:
+        s.disc(cx, cy, r, c)
+    s.outline("#2f4a24")
+    rnd = random.Random(11)                               # lanterns
+    for x, y in ((20, 50), (34, 56), (62, 56), (76, 50), (30, 14), (66, 14), (48, 8)):
+        s.set(x, y - 2, "#3b3b3b")
+        s.rect(x - 1, y - 1, x + 1, y + 1, "#fff3b0" if night else "#e8a7b8")
+        if night:
+            s.set(x, y, "#fffbe0")
+    return s
+
+
+def easel():
+    s = Sprite(24, 36)
+    for i in range(16):                                   # legs
+        s.set(6 - i // 6, 20 + i, "#8b5a2b"); s.set(17 + i // 6, 20 + i, "#8b5a2b")
+        s.set(12, 20 + i, "#6b4226")
+    s.rect(1, 1, 22, 20, "#b07a45")                      # frame (photo drawn inside in game)
+    s.rect(3, 3, 20, 18, "#fff4e6")
+    s.rect(0, 21, 23, 22, "#8b5a2b")                     # ledge
+    return s.outline()
+
+
+def memory_sign():
+    s = Sprite(40, 40)
+    s.rect(4, 14, 6, 39, "#8b5a2b"); s.rect(33, 14, 35, 39, "#8b5a2b")
+    s.rect(1, 4, 38, 16, "#b07a45")
+    s.rect(1, 9, 38, 9, "#8b5a2b")
+    s.outline()
+    s.rect(17, 6, 18, 6, "#ff5d8f"); s.rect(21, 6, 22, 6, "#ff5d8f")      # heart
+    s.rect(16, 7, 23, 8, "#ff5d8f"); s.rect(17, 9, 22, 10, "#ff5d8f"); s.rect(18, 11, 21, 11, "#ff5d8f")
+    s.rect(19, 12, 20, 12, "#ff5d8f")
+    return s
+
+
+def toss_stage():
+    s = Sprite(64, 40)
+    ellipse(s, 32, 30, 30, 8, "#8b5a2b")                 # round wooden stage
+    ellipse(s, 32, 27, 30, 8, "#d9a066")
+    for x in range(6, 60, 6):
+        s.rect(x, 22, x, 32, "#b07a45")
+    s.rect(29, 6, 34, 24, "#ffffff")                     # pillar
+    ellipse(s, 32, 6, 6, 2, "#e6ebef")
+    s.outline()
+    for cx, cy, c in [(30, 2, "#ff8fab"), (34, 2, "#ffffff"), (32, 0, "#ff5d8f"), (28, 4, "#ffd6a5"), (36, 4, "#ff8fab")]:
+        s.disc(cx, cy, 1.3, c)                            # bouquet on the pillar
+    for i, x in enumerate(range(4, 62, 5)):               # petals around the edge
+        s.set(x, 34 + (i % 2), ["#ff8fab", "#ffffff", "#ffd6a5"][i % 3])
+    return s
+
+
+def speaker():
+    s = Sprite(16, 28)
+    s.rect(1, 1, 14, 26, "#2a2a36")
+    s.disc(7.5, 8, 4, "#4a4a5a"); s.disc(7.5, 8, 2, "#1a1a22")
+    s.disc(7.5, 19, 5, "#4a4a5a"); s.disc(7.5, 19, 2.5, "#1a1a22")
+    return s.outline()
+
+
+def disco_ball(night):
+    s = Sprite(16, 20)
+    s.rect(7, 0, 8, 3, "#888888")
+    s.disc(7.5, 11, 7, "#c9d1d9")
+    for y in range(5, 18, 3):
+        for x in range(1, 15, 3):
+            if s.get(x, y)[3]:
+                s.set(x, y, "#fffbe0" if night and (x + y) % 2 else "#8e9aa6")
+    return s
+
+
+def memory_photo(kind):
+    s = Sprite(64, 48)
+    if kind == "sunset":
+        for y in range(48):
+            s.rect(0, y, 63, y, ["#ffb385", "#ff8fab", "#c38fd6"][min(2, y // 12)] if y < 30 else "#4a7ab8")
+        s.disc(32, 30, 9, "#ffd166"); s.rect(0, 30, 63, 47, "#4a7ab8")
+        for y in range(32, 47, 3): s.rect(20, y, 44, y, "#7fa8d8")
+    elif kind == "mountains":
+        s.rect(0, 0, 63, 47, "#bfe6ff")
+        for x in range(64):
+            h1 = 30 - abs(x - 20) * 0.9; h2 = 26 - abs(x - 46) * 0.8
+            s.rect(x, int(max(h1, 8)) if h1 > 0 else 40, x, 47, "#6a8a9e")
+            if h2 > 0: s.rect(x, int(max(h2, 6)) + 6, x, 47, "#4f6f80")
+        s.rect(0, 40, 63, 47, "#6a994e")
+    elif kind == "ring":
+        s.rect(0, 0, 63, 47, "#fff0f4")
+        s.disc(32, 26, 11, "#ffd166"); s.disc(32, 26, 8, "#fff0f4")
+        s.disc(32, 13, 4, "#bfe6ff"); s.set(31, 12, "#ffffff")
+        for x, y in ((10, 8), (52, 10), (12, 38), (50, 38)): s.disc(x, y, 2, "#ff8fab")
+    else:  # hearts
+        s.rect(0, 0, 63, 47, "#ffe3ea")
+        for cx, c in ((24, "#ff5d8f"), (40, "#c2577a")):
+            s.disc(cx - 4, 20, 5, c); s.disc(cx + 4, 20, 5, c)
+            for i, y in enumerate(range(21, 32)): s.rect(cx - 9 + i, y, cx + 9 - i, y, c)
+    return s
+
+
 BUILDINGS = {
+    "wishing_tree": wishing_tree(False), "wishing_tree_night": wishing_tree(True),
+    "easel": easel(), "memory_sign": memory_sign(), "toss_stage": toss_stage(),
+    "speaker": speaker(), "disco_ball": disco_ball(False), "disco_ball_night": disco_ball(True),
     "photobooth_building": photobooth_building(False), "photobooth_building_night": photobooth_building(True),
     "cupid_fountain": cupid_fountain(False), "cupid_fountain_night": cupid_fountain(True),
     "bar_back": bar_back(False), "bar_back_night": bar_back(True), "bar_front": bar_front(),
     "closet": closet(),
 }
+
+MEMORIES = {f"0{i + 1}_{k}": memory_photo(k) for i, k in enumerate(["sunset", "mountains", "ring", "hearts"])}
 
 DECOR = {
     "flower_backdrop": flower_backdrop(),
@@ -619,7 +730,8 @@ def main():
         character(*args).save(ASSETS / "characters" / f"{name}.png")
     bartender().save(ASSETS / "npc" / "bartender.png")
     for folder, items in (("dresses", DRESSES), ("props", PROPS), ("drinks", DRINKS),
-                          ("decor", DECOR), ("stations", STATION_ICONS), ("stations", BUILDINGS)):
+                          ("decor", DECOR), ("stations", STATION_ICONS), ("stations", BUILDINGS),
+                          ("memories", MEMORIES)):
         for name, sprite in items.items():
             sprite.save(ASSETS / folder / f"{name}.png")
 

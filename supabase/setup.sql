@@ -99,6 +99,23 @@ grant execute on function public.add_single(text, text, text, text) to anon, aut
 grant execute on function public.delete_own_single(uuid, uuid) to anon, authenticated;
 
 
+-- ── Wishing tree: everyone can read and hang a wish, admins can delete ─────────
+create table if not exists public.wishes (
+  id         uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  name       text not null default '' check (char_length(name) <= 40),
+  text       text not null check (char_length(text) between 1 and 140),
+  color      text not null default '#ff5d8f' check (color ~ '^#[0-9a-fA-F]{6}$')
+);
+alter table public.wishes enable row level security;
+drop policy if exists "everyone reads wishes" on public.wishes;
+drop policy if exists "guests add wishes" on public.wishes;
+drop policy if exists "admin deletes wishes" on public.wishes;
+create policy "everyone reads wishes" on public.wishes for select to anon, authenticated using (true);
+create policy "guests add wishes"     on public.wishes for insert to anon, authenticated with check (true);
+create policy "admin deletes wishes"  on public.wishes for delete to authenticated using (public.is_admin());
+
+
 -- ── Guest names: no sign-up; one name per phone, one phone per name ──────────────
 -- Each phone has a random secret token (kept in the browser). claim_name() gives
 -- the name to the first phone that asks; that phone keeps it and can't take another.
