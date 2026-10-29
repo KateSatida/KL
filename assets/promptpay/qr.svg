@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <rect width="300" height="300" fill="#fff" stroke="#1c3f74" stroke-width="6"/>
+  <text x="150" y="130" text-anchor="middle" font-family="sans-serif" font-size="22" fill="#1c3f74">Put your</text>
+  <text x="150" y="160" text-anchor="middle" font-family="sans-serif" font-size="22" fill="#1c3f74">PromptPay QR here</text>
+  <text x="150" y="195" text-anchor="middle" font-family="monospace" font-size="14" fill="#666">assets/promptpay/</text>
+</svg>

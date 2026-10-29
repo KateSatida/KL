@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Guestbook Admin</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin">
+  <main class="admin-main">
+    <!-- Login (your Supabase admin user, see README) -->
+    <form id="login" class="card login hidden">
+      <h2>💌 Admin login</h2>
+      <label>Email</label><input id="email" type="email" autocomplete="username" required>
+      <label>Password</label><input id="password" type="password" autocomplete="current-password" required>
+      <p id="login-error" class="muted"></p>
+      <button class="btn primary">Log in</button>
+    </form>
+
+    <div id="dashboard" class="hidden">
+      <header class="admin-header">
+        <h1>💌 Your guestbook</h1>
+        <div class="row">
+          <button id="zip" class="btn primary">⬇ Download all photos (ZIP)</button>
+          <button id="logout" class="btn">Log out</button>
+        </div>
+      </header>
+      <nav class="tabs" id="admin-tabs">
+        <button class="tab active" data-tab="photos">📸 Photos</button>
+        <button class="tab" data-tab="messages">🍸 Messages</button>
+        <button class="tab" data-tab="singles">💘 Singles</button>
+        <button class="tab" data-tab="guests">👥 Guest names</button>
+      </nav>
+      <section id="admin-content"></section>
+    </div>
+  </main>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

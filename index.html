@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Wedding Guestbook</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💒</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="demo-banner" class="demo-banner hidden">Demo mode · add Supabase keys in js/env.js</div>
+
+  <!-- 1. Join screen: dress up your character -->
+  <section id="join" class="screen">
+    <div class="card join-card">
+      <h1 id="wedding-title">Wedding Guestbook</h1>
+      <p id="wedding-sub" class="muted"></p>
+      <p id="wedding-welcome"></p>
+      <div id="join-customizer"></div>
+      <button id="join-btn" class="btn primary big">Enter the party 🎉</button>
+    </div>
+  </section>
+
+  <!-- 2. The world -->
+  <section id="game" class="screen hidden">
+    <canvas id="world"></canvas>
+
+    <header class="hud-top">
+      <span id="hud-title" class="pill"></span>
+      <span id="hud-online" class="pill">👥 0</span>
+      <span class="spacer"></span>
+      <button id="hud-status" class="btn small">💬 Status</button>
+      <button id="hud-wardrobe" class="btn small">👗 Outfit</button>
+    </header>
+
+    <button id="station-prompt" class="btn primary hidden"></button>
+
+    <aside id="chat" class="chat collapsed">
+      <button id="chat-toggle" class="chat-toggle">💬 Chat <span id="chat-near" class="muted"></span><span id="chat-badge" class="badge hidden">•</span></button>
+      <div id="chat-log" class="chat-log"></div>
+      <form id="chat-form" class="chat-form">
+        <input id="chat-input" maxlength="300" autocomplete="off" placeholder="Walk close to someone to chat…">
+        <button class="btn small primary">Send</button>
+      </form>
+    </aside>
+
+    <div id="connection" class="pill connection hidden">Reconnecting…</div>
+  </section>
+
+  <!-- Pop-up window used by every station -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-box">
+      <button class="modal-close" aria-label="Close">✕</button>
+      <h2 id="modal-title"></h2>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
