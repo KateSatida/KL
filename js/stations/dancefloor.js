@@ -110,7 +110,7 @@ export default function danceFloor(def, game) {
       ctx.fillStyle = "#3a3a46";
       roundRect(ctx, ox - 6, oy - 6, cols * tile + 12, rows * tile + 12, 8);
       ctx.fill();
-      const beat = Math.floor(now / (night ? 450 : 1200));
+      const beat = Math.floor(now / (night ? 300 : 1200));
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           ctx.fillStyle = pal[(r * 3 + c * 2 + beat) % pal.length];
@@ -125,6 +125,47 @@ export default function danceFloor(def, game) {
       }
       const ball = night ? img.disco_ball_night : img.disco_ball;
       if (ball) ctx.drawImage(ball, Math.round(d.x + d.w / 2 - 24), oy - 66, 48, 60);
+    },
+    // Night disco: light beams from the spinning ball and sparkles on the floor
+    drawAfterNight(ctx, d, now, world) {
+      const dark = world.scenery.darkness;
+      if (dark < 0.05) return;
+      const tile = 40, cols = Math.floor(d.w / tile), rows = Math.floor((d.h - 40) / tile);
+      const ox = d.x + (d.w - cols * tile) / 2, oy = d.y + 10, fw = cols * tile, fh = rows * tile;
+      const ball = { x: d.x + d.w / 2, y: oy - 36 };
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const beams = ["255,93,143", "76,201,240", "255,209,102", "199,125,255", "128,237,153", "255,255,255"];
+      beams.forEach((rgb, i) => {                                   // sweeping beams
+        const a = now / 1400 + i * (Math.PI * 2 / beams.length);
+        const tx = ox + fw / 2 + Math.cos(a) * fw * 0.45, ty = oy + fh / 2 + Math.sin(a * 1.3) * fh * 0.42;
+        const nx = -(ty - ball.y), ny = tx - ball.x, len = Math.hypot(nx, ny) || 1, spread = 26;
+        const g = ctx.createLinearGradient(ball.x, ball.y, tx, ty);
+        g.addColorStop(0, `rgba(${rgb},${0.45 * dark})`);
+        g.addColorStop(1, `rgba(${rgb},0)`);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(ball.x, ball.y);
+        ctx.lineTo(tx + nx / len * spread, ty + ny / len * spread);
+        ctx.lineTo(tx - nx / len * spread, ty - ny / len * spread);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = `rgba(${rgb},${0.35 * dark})`;               // spot where the beam lands
+        ctx.beginPath(); ctx.ellipse(tx, ty, 34, 16, 0, 0, Math.PI * 2); ctx.fill();
+      });
+      for (let i = 0; i < 40; i++) {                                  // mirror-ball sparkles
+        const sx = ox + ((i * 97 + now / 30 * (1 + i % 3)) % fw);
+        const sy = oy + ((i * 61 + now / 45 * (1 + i % 2)) % fh);
+        const tw = Math.abs(Math.sin(now / 180 + i));
+        ctx.fillStyle = `rgba(255,255,255,${0.8 * tw * dark})`;
+        ctx.fillRect(Math.round(sx), Math.round(sy), 4, 4);
+      }
+      for (let i = 0; i < 8; i++) {                                   // glints on the ball
+        const a = now / 400 + i * 0.8;
+        ctx.fillStyle = `rgba(255,255,255,${0.9 * dark * Math.max(0, Math.sin(a * 3))})`;
+        ctx.fillRect(Math.round(ball.x + Math.cos(a) * 14) - 2, Math.round(ball.y + Math.sin(i) * 12) - 2, 4, 4);
+      }
+      ctx.restore();
     },
     // moving coloured spotlights at night
     lights: (d) => {

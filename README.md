@@ -261,6 +261,21 @@ size, it's fitted onto the backdrop). From a phone: open the repository on
 github.com → `assets` → **Add file → Upload files** → upload your file named
 exactly `logo.png` → **Commit changes**. The site updates in about a minute.
 
+**Neon backdrop (night).** At night the backdrop turns into a neon sign: your logo
+glows on a dark board inside a neon frame, fading through colours, with bulbs
+along the flower arch. Change it on the backdrop in `config/game.json`:
+
+```json
+"neon": { "colors": ["#ff5d8f", "#4cc9f0", "#c77dff", "#ffd166"], "seconds": 4, "frame": [8, 10, 48, 37] }
+```
+
+`colors`: the neon colours it cycles through (use one colour to keep it fixed);
+`seconds`: how long each colour stays; `frame`: where the neon frame goes (in the
+backdrop picture's pixels). Remove `"neon"` to switch it off.
+
+**Disco (night).** At night the dance floor flashes faster, coloured light beams
+sweep from the spinning disco ball and sparkles twinkle on the floor.
+
 **Bride & groom.** `"npcs"` in `config/game.json` places characters on the map
 that greet guests who walk up to them, taking turns with a random line:
 

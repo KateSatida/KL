@@ -177,7 +177,36 @@
     }
   ],
   "decorations": [
-    { "image": "assets/decor/flower_backdrop.png", "x": 1300, "y": 1450, "scale": 3, "overlay": "assets/logo.png", "overlayBox": [ 14, 16, 36, 22 ] },
+    {
+      "image": "assets/decor/flower_backdrop.png",
+      "x": 1300,
+      "y": 1450,
+      "scale": 3,
+      "overlay": "assets/logo.png",
+      "overlayBox": [
+        14,
+        16,
+        36,
+        22
+      ],
+      "night": "assets/decor/flower_backdrop_night.png",
+      "glow": 30,
+      "neon": {
+        "colors": [
+          "#ff5d8f",
+          "#4cc9f0",
+          "#c77dff",
+          "#ffd166"
+        ],
+        "seconds": 4,
+        "frame": [
+          8,
+          10,
+          48,
+          37
+        ]
+      }
+    },
     { "image": "assets/decor/lamp_post.png", "night": "assets/decor/lamp_post_night.png", "x": 480, "y": 620 },
     { "image": "assets/decor/lamp_post.png", "night": "assets/decor/lamp_post_night.png", "x": 480, "y": 1060 },
     { "image": "assets/decor/lamp_post.png", "night": "assets/decor/lamp_post_night.png", "x": 1120, "y": 620 },
