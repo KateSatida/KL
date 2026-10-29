@@ -10,14 +10,28 @@ const removeBtn = (kind, row, node) => el("button", { class: "btn small", onclic
   try { await admin.remove(kind, row); node.remove(); } catch (e) { alert(e.message); }
 } }, "🗑 Delete");
 
+// Pictures load one by one as they scroll into view
+const lazyImages = new IntersectionObserver((entries) => {
+  for (const e of entries) {
+    if (!e.isIntersecting) continue;
+    lazyImages.unobserve(e.target);
+    const img = e.target;
+    admin.photoImage(img._row).then((src) => { img.src = src; img.parentElement.href = src; })
+      .catch(() => { img.alt = "Could not load photo"; });
+  }
+}, { rootMargin: "300px" });
+
 const views = {
   async photos() {
     const items = await admin.photos();
     if (!items.length) return el("p", { class: "muted" }, "No photos yet. (If guests did upload photos, check that your email is in the admins list in supabase/setup.sql.)");
     return el("div", { class: "admin-grid" }, items.map((p) => {
       const node = el("div", { class: "admin-item" });
+      const img = el("img", { alt: "Loading…", style: "min-height:120px;background:#f3e9ec" });
+      img._row = p;
+      lazyImages.observe(img);
       node.append(
-        el("a", { href: p.image, target: "_blank" }, el("img", { src: p.image, loading: "lazy" })),
+        el("a", { target: "_blank" }, img),
         el("div", { class: "meta" }, el("b", {}, p.name || "Guest"), ` · ${timeAgo(p.created_at)}\n`, p.note || "",
           el("div", { class: "row", style: "margin-top:8px" }, removeBtn("photos", p, node))),
       );
@@ -79,7 +93,7 @@ async function downloadZip() {
     const notes = [];
     for (const [i, p] of photos.entries()) {
       const file = `${String(i + 1).padStart(3, "0")}-${(p.name || "guest").replace(/[^\w-]+/g, "_")}.jpg`;
-      zip.file(file, await fetch(p.image).then((r) => r.blob()));
+      zip.file(file, await fetch(await admin.photoImage(p)).then((r) => r.blob()));
       notes.push(`${file}\n${p.name} · ${new Date(p.created_at).toLocaleString()}\n${p.note}\n`);
     }
     const messages = await admin.messages();

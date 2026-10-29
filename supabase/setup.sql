@@ -19,13 +19,20 @@ $$;
 
 
 -- ── Photo booth: guests can add, only admins can see ───────────────────────────
+-- The picture itself is stored in the `image` column (a JPEG as a data URL),
+-- so guests never need permission to read anything back.
 create table if not exists public.photos (
   id         uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
   name       text not null default '' check (char_length(name) <= 40),
   note       text not null default '' check (char_length(note) <= 1300),
-  path       text not null check (path ~ '^[0-9a-f-]{36}\.jpg$')
+  path       text check (path ~ '^[0-9a-f-]{36}\.jpg$'),          -- only used by early versions
+  image      text check (image like 'data:image/jpeg;base64,%' and char_length(image) <= 4000000)
 );
+-- upgrade tables made by an earlier version of this file
+alter table public.photos add column if not exists image text
+  check (image like 'data:image/jpeg;base64,%' and char_length(image) <= 4000000);
+alter table public.photos alter column path drop not null;
 alter table public.photos enable row level security;
 drop policy if exists "guests add photos" on public.photos;
 drop policy if exists "admin reads photos" on public.photos;
@@ -148,4 +155,11 @@ create policy "guests upload photos"       on storage.objects for insert to anon
 create policy "admin reads photo files"    on storage.objects for select to authenticated using (bucket_id = 'photos' and public.is_admin());
 create policy "admin deletes photo files"  on storage.objects for delete to authenticated using (bucket_id = 'photos' and public.is_admin());
 create policy "guests upload singles"      on storage.objects for insert to anon, authenticated with check (bucket_id = 'singles');
+-- uploads read the new file back, so the (public) singles files must be readable
+drop policy if exists "everyone reads single files" on storage.objects;
+create policy "everyone reads single files" on storage.objects for select to anon, authenticated using (bucket_id = 'singles');
 create policy "admin deletes single files" on storage.objects for delete to authenticated using (bucket_id = 'singles' and public.is_admin());
+
+
+-- Tell Supabase's API to pick up the new tables and functions right away
+notify pgrst, 'reload schema';

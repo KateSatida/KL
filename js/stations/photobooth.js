@@ -109,7 +109,7 @@ export default function photobooth(def, game) {
           await game.backend.uploadPhoto({ name: game.state.name, note: [note.value, privateNote.value].filter(Boolean).join("\n\n"), blob });
           toast(game.backend.online ? "Saved! The couple will love it 💖" : "Saved to your device (demo mode: not uploaded)");
           closeModal();
-        } catch (e) { toast(e.message); save.disabled = false; }
+        } catch (e) { toast(`Saved to your phone, but upload failed: ${e.message}`, 8000); save.disabled = false; }
       } }, "💾 Save photo");
 
       const fileInput = el("input", { type: "file", accept: "image/*", capture: "user", class: "hidden" });
