@@ -64,8 +64,12 @@ export default function danceFloor(def, game) {
     return el("div", {},
       el("p", { class: "muted" }, "Request a song for the dance floor. Everyone can see the list and play the links."),
       el("div", { class: "row", style: "flex-wrap:nowrap" }, input, send),
-      music.addSongsLink ? el("p", {}, el("a", { class: "btn small", href: music.addSongsLink, target: "_blank", rel: "noopener" }, "🟢 Add it to our Spotify playlist"),
-        el("small", { class: "muted" }, " (needs a Spotify account)")) : null,
+      music.addSongsLink ? (() => {
+        const app = /spotify/.test(music.addSongsLink) ? "Spotify" : "YouTube";
+        return el("p", {}, el("a", { class: "btn small", href: music.addSongsLink, target: "_blank", rel: "noopener" },
+          `${app === "Spotify" ? "🟢" : "🔴"} Add it to our ${app} playlist`),
+        el("small", { class: "muted" }, ` (needs a ${app} account)`));
+      })() : null,
       el("h3", {}, "Requests"), list,
     );
   };
