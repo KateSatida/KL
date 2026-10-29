@@ -35,6 +35,13 @@
     "nightFrom": "18:00",
     "dayFrom": "06:00"
   },
+  "music": {
+    "_help": "Background music: paste a Spotify or YouTube link in \"playlist\" (fixed, guests can't change it; leave empty to hide the 🎵 button). \"danceFloor\": a playlist to play at the dance floor. \"addSongsLink\": optional link to a collaborative Spotify playlist so guests can add songs in Spotify.",
+    "title": "Wedding playlist",
+    "playlist": "",
+    "danceFloor": "",
+    "addSongsLink": ""
+  },
   "stations": [
     {
       "id": "photobooth",

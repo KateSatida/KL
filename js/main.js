@@ -6,6 +6,7 @@ import { customizer } from "./customize.js";
 import { World } from "./world.js";
 import { createStations } from "./stations/index.js";
 import { setupChat } from "./chat.js";
+import { setupPlayer } from "./player.js";
 
 const config = await loadConfig();
 const w = config.wedding;
@@ -166,5 +167,6 @@ async function startGame() {
   setInterval(showTime, 15000);
 
   setupChat(game);
+  setupPlayer(config);
   world.start();
 }
