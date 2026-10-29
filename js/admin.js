@@ -96,9 +96,9 @@ views.songs = async () => {
   }));
 };
 
-// Bouquet toss: watch who stands in the circle, then pick a random one.
-let room = null, players = [], refreshBouquet = () => {};
-const getRoom = () => room || (room = admin.watchRoom({ onPlayers: (ps) => { players = ps; refreshBouquet(); } }));
+// Live connection to the game (tells open games about new music links)
+let room = null;
+const getRoom = () => room || (room = admin.watchRoom({ onPlayers: () => {} }));
 
 // Music links: saved in Supabase, guests pick them up straight away.
 views.music = async () => {
@@ -124,32 +124,6 @@ views.music = async () => {
     el("p", { class: "muted" }, "Paste a YouTube or Spotify link: playlist, album, song or video. Leave the dance floor empty to keep the background music there."),
     save, note);
 };
-views.bouquet = async () => {
-  const config = await loadConfig();
-  const zone = config.stations.find((s) => s.type === "bouquet");
-  if (!zone) return el("p", {}, "There is no bouquet station in config/game.json.");
-  const inCircle = () => players.filter((p) => p.x >= zone.x && p.x <= zone.x + zone.w && p.y >= zone.y && p.y <= zone.y + zone.h);
-  const list = el("p", { class: "muted" }, "Connecting…");
-  const result = el("h2", {});
-  const refresh = () => {
-    const names = inCircle().map((p) => p.name);
-    list.textContent = names.length ? `In the circle (${names.length}): ${names.join(", ")}` : "Nobody is in the circle yet.";
-  };
-  refreshBouquet = refresh;
-  getRoom();
-  refresh();
-  const btn = el("button", { class: "btn primary big", onclick: async () => {
-    const pool = inCircle();
-    if (!pool.length && !confirm("Nobody seems to be in the circle yet. Toss anyway?")) return;
-    await getRoom().broadcast("bouquet", { at: Date.now() });
-    result.textContent = `💐 Tossed! ${pool.length} guest${pool.length === 1 ? "" : "s"} in the circle get a bouquet.`;
-  } }, "💐 Toss now!");
-  return el("div", { class: "card" },
-    el("p", {}, "Ask guests to stand in the bouquet circle on the map. Then press the button: everyone in the circle catches a random bouquet with its flower meaning and one of your notes. You can toss as many times as you like."),
-    list, btn, result,
-    el("p", { class: "muted" }, "Keep this page open while tossing. It shows who is in the circle live (updated a moment after they stop walking)."));
-};
-
 async function show(tab) {
   for (const b of $("#admin-tabs").children) b.classList.toggle("active", b.dataset.tab === tab);
   $("#admin-content").replaceChildren(el("p", { class: "muted" }, "Loading…"));

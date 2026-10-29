@@ -1,13 +1,13 @@
-// Bouquet toss: guests stand in the petal circle. When the couple presses
-// "Toss now!" on the admin page, a bouquet flies to EVERYONE in the circle.
-// Each guest catches a random flower (added to their outfit) and sees its
-// meaning plus a random note card from the couple.
+// Bouquet toss: a guest at the station taps "Toss the bouquet!", a bouquet
+// flies to them (everyone sees it) and they catch a random flower: it's added
+// to their outfit and a card shows the flower's meaning and a random note
+// from the couple. They can toss again for another flower.
 //
 // config/game.json → this station:
 //   "bouquets": [{ "name", "image" (32x32 PNG, held in the hand), "meaning" }, …]
 //   "notes":    ["assets/bouquet_notes/01.png", …]   (any PNG/JPG images)
 import { el, openModal, closeModal, store, toast } from "../ui.js";
-import { drawStation, inside, label } from "../world.js";
+import { drawStation, inside } from "../world.js";
 
 export const inCircle = (def, p) => inside(p, def, 0);
 const pickRandom = (list, avoid) => {
@@ -42,49 +42,41 @@ export default function bouquet(def, game) {
     showCard(caught);
   };
 
-  // the toss: animate a bouquet to everyone standing in the circle
-  game.on("bouquet", () => {
+  // a toss (mine or another guest's): the bouquet flies from the stage to them
+  game.on("bouquet", ({ id }) => {
     const world = game.world;
     const from = { x: def.x + def.w / 2, y: def.y + def.h - 34 - 110 };
-    const catchers = [...world.players.values()].filter((p) => inCircle(def, { x: p.rx, y: p.ry }));
-    const meIn = world.me && inCircle(def, world.me);
-    const start = performance.now(), flight = 2400;
-    toast(catchers.length ? "💐 The bouquets are flying…" : "💐 The couple tossed the bouquet!", 2500);
+    const start = performance.now(), flight = 1800;
     world.effects.push((ctx, now) => {
+      const p = world.players.get(id);
+      if (!p) return false;
+      const to = { x: p.rx, y: p.ry - 60 };
       const t = Math.min(1, (now - start) / flight);
-      for (const [i, p] of catchers.entries()) {
-        const to = { x: p.rx, y: p.ry - 60 };
-        if (t < 1) {
-          const k = Math.min(1, t * (1 + i * 0.08));
-          drawBouquet(ctx, from.x + (to.x - from.x) * k, from.y + (to.y - from.y) * k - Math.sin(k * Math.PI) * 240, now + i * 50);
-        } else {
-          for (let h = 0; h < 6; h++) {                               // hearts burst
-            const a = (now / 500 + h * 1.05 + i) % (Math.PI * 2), r = 26 + ((now / 25 + h * 13) % 30);
-            ctx.fillStyle = ["#ff5d8f", "#ffd166", "#ffffff"][h % 3];
-            ctx.fillRect(Math.round(to.x + Math.cos(a) * r), Math.round(to.y + Math.sin(a) * r * 0.6), 6, 6);
-          }
+      if (t < 1) {
+        drawBouquet(ctx, from.x + (to.x - from.x) * t, from.y + (to.y - from.y) * t - Math.sin(t * Math.PI) * 220, now);
+      } else {
+        for (let h = 0; h < 8; h++) {                                // hearts burst
+          const a = (now / 500 + h * 0.8) % (Math.PI * 2), r = 26 + ((now / 25 + h * 13) % 30);
+          ctx.fillStyle = ["#ff5d8f", "#ffd166", "#ffffff"][h % 3];
+          ctx.fillRect(Math.round(to.x + Math.cos(a) * r), Math.round(to.y + Math.sin(a) * r * 0.6), 6, 6);
         }
       }
-      return now - start < flight + 3500;
+      return now - start < flight + 2500;
     });
-    setTimeout(() => {
-      if (meIn) catchOne();
-      else if (catchers.length) toast(`🎉 ${catchers.length} guest${catchers.length > 1 ? "s" : ""} caught a bouquet!`, 5000);
-    }, flight);
+    if (id === world.me?.id) setTimeout(catchOne, flight);
   });
 
+  const toss = () => {
+    closeModal();
+    game.broadcast("bouquet", { id: game.world.me.id });
+  };
+
   const open = () => {
-    const n = [...game.world.players.values()].filter((p) => inCircle(def, { x: p.rx, y: p.ry })).length;
     const mine = store.get("myBouquet");
-    const practice = !game.backend.online ? el("button", { class: "btn", onclick: () => {
-      closeModal();
-      game.broadcast("bouquet", { at: Date.now() });
-    } }, "🧪 Practice toss (demo mode)") : null;
-    openModal(`${def.icon} ${def.label}`, el("div", {},
-      el("p", {}, def.intro || "Stand in the circle! When the couple tosses the bouquets, everyone in the circle catches one: a random flower with its meaning and a note from the couple. 💐"),
-      el("p", { class: "muted" }, `In the circle right now: ${n}`),
-      mine ? el("button", { class: "btn primary", onclick: () => showCard(mine) }, "🌸 See my bouquet card") : null,
-      practice,
+    openModal(`${def.icon} ${def.label}`, el("div", { style: "text-align:center" },
+      el("p", {}, def.intro || "Toss the bouquet and catch a random flower! You'll see what it means and get a little note from the couple. 💐"),
+      el("button", { class: "btn green big", onclick: toss }, mine ? "💐 Toss again" : "💐 Toss the bouquet!"),
+      mine ? el("p", {}, el("button", { class: "btn", onclick: () => showCard(mine) }, "🌸 See my bouquet card")) : null,
     ));
   };
 
