@@ -4,6 +4,13 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const ROOM = "wedding-world";
 
+const blobToDataUrl = (blob) => new Promise((resolve, reject) => {
+  const r = new FileReader();
+  r.onload = () => resolve(r.result);
+  r.onerror = reject;
+  r.readAsDataURL(blob);
+});
+
 const uuid = () => crypto.randomUUID?.() ||
   "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) => (c ^ (Math.random() * 16) >> (c / 4)).toString(16));
 
@@ -49,10 +56,10 @@ export function createSupabaseBackend(url, key) {
     },
 
     // ---- photo booth (private: only the admin can read) ----------------------
+    // The JPEG is stored in the photos table itself: guests may insert rows but
+    // never read them, which file storage doesn't allow.
     async uploadPhoto({ name, note, blob }) {
-      const path = `${uuid()}.jpg`;
-      check(await db.storage.from("photos").upload(path, blob, { contentType: "image/jpeg" }));
-      check(await db.from("photos").insert({ name, note, path }));
+      check(await db.from("photos").insert({ name, note, image: await blobToDataUrl(blob) }));
     },
 
     // ---- bar message wall ----------------------------------------------------
@@ -84,11 +91,13 @@ export function createSupabaseBackend(url, key) {
       async session() { return check(await db.auth.getSession()).session; },
       async signIn(email, password) { check(await db.auth.signInWithPassword({ email, password })); },
       async signOut() { await db.auth.signOut(); },
+      // List without the pictures (fast); load each picture with photoImage().
       async photos() {
-        const rows = check(await db.from("photos").select("*").order("created_at", { ascending: false }));
-        if (!rows.length) return rows;
-        const signed = check(await db.storage.from("photos").createSignedUrls(rows.map((r) => r.path), 3600));
-        return rows.map((r, i) => ({ ...r, image: signed[i]?.signedUrl }));
+        return check(await db.from("photos").select("id, created_at, name, note, path").order("created_at", { ascending: false }));
+      },
+      async photoImage(row) {
+        if (row.path) return check(await db.storage.from("photos").createSignedUrl(row.path, 3600)).signedUrl;
+        return check(await db.from("photos").select("image").eq("id", row.id).single()).image;
       },
       async messages() {
         return check(await db.from("messages").select("*").order("created_at", { ascending: false }));

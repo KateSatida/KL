@@ -26,8 +26,8 @@ There is no server to run or pay for.
  guest phones ──► github.io (the game files)
       │
       └────────► Supabase: Realtime (who's where, chat)
-                           Database (messages, singles, photo notes)
-                           Storage  (photos: private, singles: public)
+                           Database (messages, singles, booth photos + notes: private)
+                           Storage  (singles' pictures: public)
 ```
 
 ---
@@ -249,7 +249,8 @@ tests/                     `pip install pytest && pytest`
 
 **Supabase free plan** (check https://supabase.com/pricing, these change):
 - Roughly 200 phones connected at once.
-- 1 GB of file storage, which is a few thousand photos.
+- 500 MB database, which holds the booth photos: about 2,000+ of them.
+- 1 GB of file storage for the singles' pictures.
 - Monthly Realtime message and bandwidth quotas.
 - **Free projects pause after about a week with no activity.** Open the game once a week before the wedding, or click **Restore** in the dashboard if it paused.
 
@@ -260,7 +261,7 @@ with a few friends first and watch **Reports → Realtime** in Supabase.
 
 **Privacy:**
 - Guest photos, names and Instagram handles are personal data (PDPA).
-- Booth photos are stored in a **private** bucket that only your admin email can read.
+- Booth photos are stored in a **private** table that only your admin email can read.
 - Single cards and bar messages are **public** inside the game, and the stations say so.
 - Chat is filtered by distance on each phone, so it is not a private channel. Don't use it for secrets.
 - After the wedding, download the ZIP and delete the data (or the Supabase project).
