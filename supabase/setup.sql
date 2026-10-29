@@ -99,10 +99,10 @@ grant execute on function public.add_single(text, text, text, text) to anon, aut
 grant execute on function public.delete_own_single(uuid, uuid) to anon, authenticated;
 
 
--- ── Guest names: no sign-up, but each name can only be used by one phone ──────────
+-- ── Guest names: no sign-up; one name per phone, one phone per name ──────────────
 -- Each phone has a random secret token (kept in the browser). claim_name() gives
--- the name to the first phone that asks; the same phone can always use it again.
--- Free a name by deleting its row (admin page → Guests tab, or Table Editor).
+-- the name to the first phone that asks; that phone keeps it and can't take another.
+-- Delete a row (admin page → Guest names) to free both the name and the phone.
 create table if not exists public.guest_names (
   id         uuid primary key default gen_random_uuid(),
   name_key   text not null unique,          -- lower-case, single spaces: "Mai" = "mai" = " MAI "
@@ -125,14 +125,12 @@ declare
   v_key  text := lower(v_name);
 begin
   if char_length(v_name) not between 1 and 24 then return false; end if;
+  if exists (select 1 from public.guest_names where token = p_token and name_key <> v_key) then
+    return false;                                  -- this phone already has another name
+  end if;
   insert into public.guest_names (name_key, name, token) values (v_key, v_name, p_token)
   on conflict (name_key) do nothing;
-  if not exists (select 1 from public.guest_names where name_key = v_key and token = p_token) then
-    return false;                                  -- someone else has this name
-  end if;
-  -- one name per phone: free the name this phone used before (if it changed name)
-  delete from public.guest_names where token = p_token and name_key <> v_key;
-  return true;
+  return exists (select 1 from public.guest_names where name_key = v_key and token = p_token);
 end $$;
 grant execute on function public.claim_name(text, uuid) to anon, authenticated;
 

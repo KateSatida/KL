@@ -11,9 +11,13 @@ on their phone, dress up a 32×32 character, walk around, and visit stations:
 | 💘 **Single Station** | Upload a photo + Instagram. A random single shows on the big projector every few seconds. |
 | 💬 **Chat** | Proximity chat: you only see messages from guests standing close to you. |
 
-**Guests don't sign up or log in.** They just type a name. Each name can only
-be used by one phone (capital letters and spaces don't count, so "Mai" and
-"mai" are the same name). The same phone can always come back with its name.
+**Guests don't sign up or log in.** They just type a name the first time.
+After that, **each phone keeps its name**: refreshing, closing or reopening the
+page takes them straight back in as the same character. A phone can't switch to
+another name, and nobody else can take it (capital letters and spaces don't
+count, so "Mai" and "mai" are the same name). To reset a phone, delete its name
+on the admin page.
+
 Only you log in with an email, for the admin page.
 
 **Free hosting:**
