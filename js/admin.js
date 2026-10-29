@@ -138,15 +138,14 @@ views.bouquet = async () => {
   refreshBouquet = refresh;
   getRoom();
   refresh();
-  const btn = el("button", { class: "btn primary big", onclick: () => {
+  const btn = el("button", { class: "btn primary big", onclick: async () => {
     const pool = inCircle();
-    if (!pool.length) return alert("Nobody is standing in the bouquet circle yet.");
-    const w = pool[Math.floor(Math.random() * pool.length)];
-    getRoom().broadcast("bouquet", { id: w.id, name: w.name });
-    result.textContent = `💐 ${w.name} caught the bouquet!`;
+    if (!pool.length && !confirm("Nobody seems to be in the circle yet. Toss anyway?")) return;
+    await getRoom().broadcast("bouquet", { at: Date.now() });
+    result.textContent = `💐 Tossed! ${pool.length} guest${pool.length === 1 ? "" : "s"} in the circle get a bouquet.`;
   } }, "💐 Toss now!");
   return el("div", { class: "card" },
-    el("p", {}, "Ask single guests to stand in the bouquet circle on the map. Then press the button: everyone sees the bouquet fly to a random guest in the circle."),
+    el("p", {}, "Ask guests to stand in the bouquet circle on the map. Then press the button: everyone in the circle catches a random bouquet with its flower meaning and one of your notes. You can toss as many times as you like."),
     list, btn, result,
     el("p", { class: "muted" }, "Keep this page open while tossing. It shows who is in the circle live (updated a moment after they stop walking)."));
 };

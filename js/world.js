@@ -90,6 +90,12 @@ export class World {
     } else {
       const { x, y, ...rest } = data;
       Object.assign(p, rest);
+      // presence carries where they stopped: if we missed a walk message and
+      // they're standing still, walk them to the right spot
+      const still = Math.hypot(p.tx - p.x, p.ty - p.y) < 2;
+      if (!isMe && still && Number.isFinite(x) && Number.isFinite(y) && Math.hypot(x - p.x, y - p.y) > 20) {
+        p.tx = x; p.ty = y;
+      }
     }
     if (isMe) this.me = p;
     const lookKey = JSON.stringify(p.look || {});

@@ -714,6 +714,53 @@ BUILDINGS = {
     "closet": closet(),
 }
 
+# ---- bouquets (assets/bouquets): held in the right hand, 32x32 like props ---------
+
+HEADS = [(21, 14), (24, 13), (27, 15), (22, 17), (26, 18), (24, 16)]
+
+
+def bouquet_of(kind):
+    s = Sprite()
+    for x in (22, 24, 26):                                # stems
+        s.rect(x, 18, x, 25, "#6a994e")
+    wrap = {"rose": "#f6e3cf", "sunflower": "#d9a066", "lavender": "#ffffff", "jasmine": "#ff8fab"}.get(kind, "#ffd6e0")
+    for i, y in enumerate(range(19, 27)):                 # paper cone
+        s.rect(20 + i // 3, y, 28 - i // 3, y, wrap)
+    s.rect(23, 23, 25, 23, "#d23a4a")                     # ribbon
+    def petals(cx, cy, c, centre=None, r=1.6):
+        s.disc(cx, cy, r, c)
+        if centre: s.set(cx, cy, centre)
+    if kind == "rose":
+        for cx, cy in HEADS: petals(cx, cy, "#d23a4a", "#8e1b3a")
+    elif kind == "tulip":
+        for cx, cy in HEADS[:5]:
+            s.rect(cx - 1, cy - 1, cx + 1, cy + 1, "#ff8fab"); s.set(cx, cy - 2, "#ff8fab"); s.set(cx - 1, cy - 2, "#ffc2d4")
+    elif kind == "sunflower":
+        for cx, cy in HEADS[:3] + [(24, 18)]: petals(cx, cy, "#ffd166", "#7a4b2a", 2)
+    elif kind == "lavender":
+        for x in (21, 23, 25, 27):
+            for y in range(9 + x % 3, 18, 2): s.set(x, y, "#a77bd6"); s.set(x + 1, y + 1, "#c38fd6")
+    elif kind == "daisy":
+        for cx, cy in HEADS: petals(cx, cy, "#ffffff", "#ffd166")
+    elif kind == "peony":
+        for cx, cy in HEADS[:4]: petals(cx, cy, "#ffb3c6", "#ff8fab", 2.2)
+    elif kind == "lily":
+        for cx, cy in HEADS[:4]:
+            s.rect(cx - 2, cy, cx + 2, cy, "#ffffff"); s.rect(cx, cy - 2, cx, cy + 2, "#ffffff"); s.set(cx, cy, "#ffd166")
+    elif kind == "orchid":
+        for cx, cy in HEADS[:5]: petals(cx, cy, "#c77dff", "#ffffff", 1.6)
+    elif kind == "jasmine":
+        for cx, cy in HEADS + [(23, 11), (26, 11)]: s.set(cx, cy, "#ffffff"); s.set(cx + 1, cy, "#ffffff"); s.set(cx, cy + 1, "#fff1b8")
+    elif kind == "babys_breath":
+        rnd = random.Random(5)
+        for _ in range(26): s.set(rnd.randint(19, 29), rnd.randint(9, 19), "#ffffff")
+        for _ in range(8): s.set(rnd.randint(19, 29), rnd.randint(11, 19), "#7fb35f")
+    return s.outline("#5a4a4a")
+
+
+BOUQUETS = {f"{i + 1:02d}_{k}": bouquet_of(k) for i, k in enumerate(
+    ["rose", "tulip", "sunflower", "lavender", "daisy", "peony", "lily", "orchid", "jasmine", "babys_breath"])}
+
 MEMORIES = {f"0{i + 1}_{k}": memory_photo(k) for i, k in enumerate(["sunset", "mountains", "ring", "hearts"])}
 
 DECOR = {
@@ -731,7 +778,7 @@ def main():
     bartender().save(ASSETS / "npc" / "bartender.png")
     for folder, items in (("dresses", DRESSES), ("props", PROPS), ("drinks", DRINKS),
                           ("decor", DECOR), ("stations", STATION_ICONS), ("stations", BUILDINGS),
-                          ("memories", MEMORIES)):
+                          ("memories", MEMORIES), ("bouquets", BOUQUETS)):
         for name, sprite in items.items():
             sprite.save(ASSETS / folder / f"{name}.png")
 
