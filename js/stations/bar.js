@@ -72,6 +72,7 @@ export default function bar(def, game) {
         { id: "support", label: "💝 Support us", render: supportTab },
       ]));
     },
+    lights: (d) => [{ x: d.x + d.w / 2, y: d.y + d.h / 2, r: Math.max(d.w, d.h) * 0.7, strength: 0.8, color: "rgb(255,200,140)" }],
     draw(ctx, d, now) {
       drawStation(ctx, d);
       if (npcImg && d.npc) {

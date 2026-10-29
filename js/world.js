@@ -1,6 +1,7 @@
 // The game world: map, players, movement, and drawing everything on the canvas.
 import { composeLook, loadImage, SIZE } from "./sprites.js";
 import { isModalOpen } from "./ui.js";
+import { Scenery } from "./scenery.js";
 
 const NEAR_STATION = 50;   // how close (px) you must be to use a station
 
@@ -20,6 +21,7 @@ export class World {
     this.onNearStation = () => {};
     this.onWalk = () => {};        // called when I start/stop/turn: {x, y, tx, ty, dir}
     this.keyDir = "0,0";
+    this.scenery = new Scenery(config);   // grass, decorations, day/night
     this.background = null;
     if (this.w.background) loadImage(this.w.background).then((img) => { this.background = img; });
 
@@ -130,6 +132,7 @@ export class World {
   }
 
   update(dt) {
+    this.scenery.update(dt);
     const me = this.me;
     if (!me) return;
     let dx = 0, dy = 0;
@@ -194,42 +197,61 @@ export class World {
     ctx.setTransform(camera.zoom, 0, 0, camera.zoom, -camera.x * camera.zoom, -camera.y * camera.zoom);
     ctx.imageSmoothingEnabled = false;
 
+    const sc = this.scenery;
     this.drawFloor();
     for (const s of this.stations) (s.module.draw || drawStation)(ctx, s.def, now, this);
-    for (const d of this.config.decorations || []) {
-      ctx.font = `${d.size || 32}px serif`;
-      ctx.textAlign = "center";
-      ctx.fillText(d.emoji, d.x, d.y);
-    }
+    for (const d of sc.layer("ground")) sc.drawDecor(ctx, d);
 
-    const scale = this.w.spriteScale;
-    const statusR = this.w.statusRadius;
-    const sorted = [...this.players.values()].sort((a, b) => a.ry - b.ry);
-    for (const p of sorted) {
-      const size = SIZE * scale;
-      const bob = p.moving ? Math.abs(Math.sin(now / 90)) * 3 : 0;
-      const x = p.rx, y = p.ry;
-      // shadow
-      ctx.fillStyle = "#00000022";
-      ctx.beginPath(); ctx.ellipse(x, y, 16, 5, 0, 0, Math.PI * 2); ctx.fill();
-      if (p.sprite) {
-        ctx.save();
-        ctx.translate(x, y - size - bob + 2);
-        if (p.dir === -1) { ctx.scale(-1, 1); ctx.translate(-size / 2, 0); } else ctx.translate(-size / 2, 0);
-        ctx.drawImage(p.sprite, 0, 0, size, size);
-        ctx.restore();
-      }
-      label(ctx, p.name, x, y + 16, p === this.me ? "#c2577a" : "#4a3640");
-      const near = p === this.me || (this.me && dist(p, this.me) <= statusR);
-      const bubble = p.bubble && p.bubble.until > now ? p.bubble.text : null;
-      if (bubble) speech(ctx, bubble, x, y - size - 8, "#ffffff");
-      else if (p.status && near) speech(ctx, p.status, x, y - size - 8, "#fff6d6");
-    }
+    // People and tall decorations, back to front, so you can walk behind a tree
+    const players = [...this.players.values()];
+    const items = [
+      ...players.map((p) => ({ y: p.ry, draw: () => this.drawPlayer(p, now) })),
+      ...sc.layer("sorted").map((d) => ({ y: d.y, draw: () => sc.drawDecor(ctx, d) })),
+    ].sort((a, b) => a.y - b.y);
+    for (const item of items) item.draw();
+    for (const d of sc.layer("top")) sc.drawDecor(ctx, d);
+
+    // Night: darken everything except around lights, stations that glow and people
+    const lights = [
+      ...sc.decorLights(),
+      ...this.stations.flatMap((s) => s.module.lights?.(s.def) || []),
+      ...players.map((p) => ({ x: p.rx, y: p.ry - 30, r: 80, strength: 0.55 })),
+    ];
+    sc.drawNight(ctx, [camera.zoom, 0, 0, camera.zoom, -camera.x * camera.zoom, -camera.y * camera.zoom], lights);
+
+    // Text last, so it stays readable at night
+    for (const s of this.stations) (s.module.drawLabel || drawStationLabel)(ctx, s.def, now, this);
+    for (const p of players.sort((a, b) => a.ry - b.ry)) this.drawPlayerText(p, now);
+  }
+
+  drawPlayer(p, now) {
+    const ctx = this.ctx;
+    const size = SIZE * this.w.spriteScale;
+    const bob = p.moving ? Math.abs(Math.sin(now / 90)) * 3 : 0;
+    ctx.fillStyle = "#00000022";                                   // shadow
+    ctx.beginPath(); ctx.ellipse(p.rx, p.ry, 16, 5, 0, 0, Math.PI * 2); ctx.fill();
+    if (!p.sprite) return;
+    ctx.save();
+    ctx.translate(p.rx, p.ry - size - bob + 2);
+    if (p.dir === -1) { ctx.scale(-1, 1); ctx.translate(-size / 2, 0); } else ctx.translate(-size / 2, 0);
+    ctx.drawImage(p.sprite, 0, 0, size, size);
+    ctx.restore();
+  }
+
+  drawPlayerText(p, now) {
+    const ctx = this.ctx;
+    const size = SIZE * this.w.spriteScale;
+    label(ctx, p.name, p.rx, p.ry + 16, p === this.me ? "#c2577a" : "#4a3640");
+    const near = p === this.me || (this.me && dist(p, this.me) <= this.w.statusRadius);
+    const bubble = p.bubble && p.bubble.until > now ? p.bubble.text : null;
+    if (bubble) speech(ctx, bubble, p.rx, p.ry - size - 8, "#ffffff");
+    else if (p.status && near) speech(ctx, p.status, p.rx, p.ry - size - 8, "#fff6d6");
   }
 
   drawFloor() {
     const { ctx, w } = this;
     if (this.background) { ctx.drawImage(this.background, 0, 0, w.width, w.height); return; }
+    if (w.theme) { this.scenery.drawGround(ctx); return; }      // outdoor lawn
     ctx.fillStyle = w.floorColor;
     ctx.fillRect(0, 0, w.width, w.height);
     ctx.fillStyle = w.floorPattern;
@@ -247,6 +269,8 @@ export class World {
 
 // ---- drawing helpers (also used by station modules) ---------------------------
 
+// Station area + its icon: the pixel-art "sprite" if set in config, else the emoji.
+const stationIcons = new Map();
 export function drawStation(ctx, s) {
   ctx.fillStyle = s.color || "#fff";
   roundRect(ctx, s.x, s.y, s.w, s.h, 18);
@@ -254,9 +278,22 @@ export function drawStation(ctx, s) {
   ctx.strokeStyle = "#00000022";
   ctx.lineWidth = 3;
   ctx.stroke();
-  ctx.textAlign = "center";
-  ctx.font = "56px serif";
-  ctx.fillText(s.icon || "⭐", s.x + s.w / 2, s.y + s.h / 2 + 10);
+  if (s.sprite && !stationIcons.has(s.sprite)) {
+    stationIcons.set(s.sprite, null);
+    loadImage(s.sprite).then((img) => stationIcons.set(s.sprite, img));
+  }
+  const icon = stationIcons.get(s.sprite);
+  if (icon) {
+    const size = icon.width * (s.spriteScale || 3);
+    ctx.drawImage(icon, Math.round(s.x + s.w / 2 - size / 2), Math.round(s.y + s.h / 2 - size / 2 - 12), size, size);
+  } else {
+    ctx.textAlign = "center";
+    ctx.font = "56px serif";
+    ctx.fillText(s.icon || "⭐", s.x + s.w / 2, s.y + s.h / 2 + 10);
+  }
+}
+
+export function drawStationLabel(ctx, s) {
   label(ctx, s.label, s.x + s.w / 2, s.y + s.h - 18, "#4a3640", 18);
 }
 

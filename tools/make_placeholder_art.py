@@ -21,12 +21,22 @@ def hexrgba(c):
 
 
 class Sprite:
-    def __init__(self):
-        self.px = [[(0, 0, 0, 0)] * 32 for _ in range(32)]
+    def __init__(self, w=32, h=32):
+        self.w, self.h = w, h
+        self.px = [[(0, 0, 0, 0)] * w for _ in range(h)]
 
     def set(self, x, y, c):
-        if 0 <= x < 32 and 0 <= y < 32:
+        if 0 <= x < self.w and 0 <= y < self.h:
             self.px[y][x] = hexrgba(c)
+
+    def get(self, x, y):
+        return self.px[y][x] if 0 <= x < self.w and 0 <= y < self.h else (0, 0, 0, 0)
+
+    def disc(self, cx, cy, r, c):
+        for y in range(int(cy - r) - 1, int(cy + r) + 2):
+            for x in range(int(cx - r) - 1, int(cx + r) + 2):
+                if (x - cx) ** 2 + (y - cy) ** 2 <= r * r:
+                    self.set(x, y, c)
 
     def rect(self, x0, y0, x1, y1, c):
         for y in range(y0, y1 + 1):
@@ -35,7 +45,7 @@ class Sprite:
 
     def outline(self, c=OUT):
         """Draw a 1px outline around every filled pixel."""
-        filled = {(x, y) for y in range(32) for x in range(32) if self.px[y][x][3]}
+        filled = {(x, y) for y in range(self.h) for x in range(self.w) if self.px[y][x][3]}
         for x, y in filled:
             for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                 if (x + dx, y + dy) not in filled:
@@ -48,7 +58,7 @@ class Sprite:
         path.parent.mkdir(parents=True, exist_ok=True)
         raw = b"".join(b"\x00" + b"".join(bytes(p) for p in row) for row in self.px)
         chunk = lambda t, d: struct.pack(">I", len(d)) + t + d + struct.pack(">I", zlib.crc32(t + d))
-        png = (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", 32, 32, 8, 6, 0, 0, 0))
+        png = (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", self.w, self.h, 8, 6, 0, 0, 0))
                + chunk(b"IDAT", zlib.compress(raw, 9)) + chunk(b"IEND", b""))
         path.write_bytes(png)
         print("created", path.relative_to(ASSETS.parent))
@@ -273,11 +283,183 @@ def bartender():
     return s
 
 
+# ---- outdoor decorations (assets/decor) ----------------------------------------
+# Sizes are in pixels; the game draws them 2x bigger (see "scale" in config/game.json).
+# A "_night" version is shown after dark; its bright yellow pixels glow automatically.
+
+import random
+
+GREENS = ["#4f7a3a", "#6a994e", "#7fb35f"]
+FLOWERS = ["#ff8fab", "#ffffff", "#ffd6a5", "#ff5d8f", "#fff1b8"]
+
+
+def flower_backdrop():
+    s = Sprite(64, 48)
+    rnd = random.Random(7)
+    s.rect(8, 10, 55, 47, "#fff4e6")                     # cream drape
+    for x in range(11, 55, 7):
+        s.rect(x, 12, x, 47, "#f3e1cc")                  # folds
+    s.rect(4, 8, 7, 47, "#8b5a2b")                       # posts
+    s.rect(56, 8, 59, 47, "#8b5a2b")
+    s.rect(4, 6, 59, 9, "#8b5a2b")                       # beam
+    s.outline()
+    spots = [(x, rnd.randint(3, 11)) for x in range(2, 62, 3)]
+    spots += [(rnd.choice([3, 4, 7, 8, 55, 56, 59, 60]), y) for y in range(10, 44, 3)]
+    for x, y in spots:                                    # greenery + flowers
+        s.disc(x, y, 2, rnd.choice(GREENS))
+    for x, y in spots:
+        if rnd.random() < 0.55:
+            s.disc(x + rnd.choice([-1, 0, 1]), y, 1, rnd.choice(FLOWERS))
+    return s
+
+
+def led_string(on):
+    s = Sprite(64, 16)
+    def sag(x): return 3 + round(8 * (1 - ((x - 31.5) / 32) ** 2))
+    for x in range(64):
+        s.set(x, sag(x), "#3b3b3b")
+    for x in range(4, 64, 8):
+        y = sag(x) + 1
+        if on:
+            s.rect(x - 1, y, x + 1, y + 2, "#ffd166")
+            s.set(x, y + 1, "#fffbe0")
+            s.set(x, y + 3, "#ffe9a8")
+        else:
+            s.rect(x - 1, y, x + 1, y + 2, "#d9cfa0")
+            s.set(x, y + 1, "#bfb38a")
+    return s
+
+
+def lamp_post(on):
+    s = Sprite(16, 48)
+    s.rect(7, 14, 8, 44, "#3a3a46")                      # pole
+    s.rect(5, 44, 10, 47, "#3a3a46")                     # base
+    s.rect(4, 5, 11, 13, "#3a3a46")                      # lamp box
+    s.rect(6, 2, 9, 4, "#3a3a46")                        # cap
+    s.rect(5, 6, 10, 12, "#fff1a8" if on else "#b8c4cc")  # glass
+    if on:
+        s.rect(7, 8, 8, 10, "#fffbe0")
+    return s
+
+
+def tree():
+    s = Sprite(48, 64)
+    s.rect(21, 38, 26, 63, "#7a4b2a")
+    s.rect(23, 40, 24, 63, "#8f5b34")
+    for cx, cy, r, c in [(24, 22, 17, "#4f7a3a"), (15, 26, 10, "#4f7a3a"), (33, 26, 10, "#4f7a3a"),
+                         (24, 18, 13, "#6a994e"), (18, 22, 7, "#6a994e"), (30, 21, 7, "#6a994e"),
+                         (21, 13, 5, "#7fb35f"), (29, 16, 4, "#7fb35f")]:
+        s.disc(cx, cy, r, c)
+    return s.outline("#2f4a24")
+
+
+def bush():
+    s = Sprite(32, 24)
+    rnd = random.Random(3)
+    for cx, cy, r, c in [(16, 15, 9, "#4f7a3a"), (8, 17, 6, "#4f7a3a"), (24, 17, 6, "#4f7a3a"),
+                         (14, 12, 6, "#6a994e"), (21, 13, 5, "#6a994e")]:
+        s.disc(cx, cy, r, c)
+    s.outline("#2f4a24")
+    for _ in range(6):
+        s.set(rnd.randint(6, 25), rnd.randint(9, 19), rnd.choice(FLOWERS))
+    return s
+
+
+def flower_pot():
+    s = Sprite(16, 16)
+    s.rect(4, 9, 11, 15, "#c96f4a")
+    s.rect(3, 8, 12, 9, "#b25c3a")
+    for cx, cy, c in [(5, 5, "#ff8fab"), (10, 5, "#ffffff"), (8, 3, "#ff5d8f"), (7, 6, "#ffd6a5")]:
+        s.disc(cx, cy, 1.5, c)
+    s.rect(7, 6, 8, 8, "#6a994e")
+    return s.outline()
+
+
+def cake():
+    s = Sprite(32, 32)
+    s.rect(6, 29, 25, 30, "#c9b8a6")                     # stand
+    s.rect(14, 26, 17, 28, "#c9b8a6")
+    s.rect(7, 19, 24, 25, "#ffffff")                     # tiers
+    s.rect(10, 13, 21, 18, "#ffffff")
+    s.rect(13, 8, 18, 12, "#ffffff")
+    s.outline()
+    for y in (19, 13, 8):
+        for x in range(6, 26, 2):
+            if s.get(x, y)[:3] == (255, 255, 255):
+                s.set(x, y, "#ff8fab")                   # pink trim
+    s.set(15, 5, "#ff5d8f"); s.set(16, 5, "#ff5d8f"); s.rect(15, 6, 16, 7, "#ff5d8f")  # heart topper
+    return s
+
+
+# ---- station icons (assets/stations) ----------------------------------------------
+
+def icon_camera():
+    s = Sprite()
+    s.rect(4, 10, 27, 25, "#3a3a46")
+    s.rect(8, 7, 13, 9, "#3a3a46")
+    s.rect(4, 13, 27, 14, "#5a5a6a")
+    s.outline()
+    s.disc(16, 18, 5.5, "#1f1f29")
+    s.disc(16, 18, 4, "#8ec9f0")
+    s.disc(15, 17, 1.5, "#ffffff")
+    s.rect(23, 11, 25, 12, "#ff5d8f")
+    return s
+
+
+def icon_cocktail():
+    s = Sprite()
+    for i, y in enumerate(range(6, 16)):
+        s.rect(5 + i, y, 26 - i, y, "#e8f4ff" if y < 8 else "#ff7eb6")
+    s.rect(15, 16, 16, 25, "#e8f4ff")
+    s.rect(10, 26, 21, 27, "#e8f4ff")
+    s.outline("#7a8a99")
+    s.disc(21, 5, 2, "#6a994e")
+    s.set(21, 5, "#d23a4a")
+    return s
+
+
+def icon_heart():
+    s = Sprite()
+    s.disc(11, 12, 6, "#ff5d8f")
+    s.disc(20, 12, 6, "#ff5d8f")
+    for i, y in enumerate(range(13, 27)):
+        s.rect(5 + i, y, 26 - i, y, "#ff5d8f")
+    s.outline()
+    s.rect(9, 9, 11, 10, "#ffc2d4")
+    for i in range(22):                                   # arrow
+        s.set(3 + i, 25 - i, "#8b5a2b")
+    s.rect(25, 2, 27, 4, "#ffd166")
+    return s
+
+
+def icon_dress():
+    s = Sprite()
+    s.rect(15, 2, 16, 4, "#8b5a2b")                      # hanger
+    s.rect(8, 5, 23, 6, "#8b5a2b")
+    s.rect(12, 7, 19, 13, "#8ec9f0")
+    for i, y in enumerate(range(14, 29)):
+        w = 4 + i // 2 + i // 4
+        s.rect(16 - w, y, 15 + w, y, "#8ec9f0")
+    s.outline()
+    s.rect(12, 13, 19, 13, "#ffffff")
+    return s
+
+
+DECOR = {
+    "flower_backdrop": flower_backdrop(),
+    "led_string": led_string(False), "led_string_night": led_string(True),
+    "lamp_post": lamp_post(False), "lamp_post_night": lamp_post(True),
+    "tree": tree(), "bush": bush(), "flower_pot": flower_pot(), "cake": cake(),
+}
+STATION_ICONS = {"camera": icon_camera(), "cocktail": icon_cocktail(), "heart": icon_heart(), "dress": icon_dress()}
+
+
 def main():
     for name, args in CHARACTERS.items():
         character(*args).save(ASSETS / "characters" / f"{name}.png")
     bartender().save(ASSETS / "npc" / "bartender.png")
-    for folder, items in (("dresses", DRESSES), ("props", PROPS), ("drinks", DRINKS)):
+    for folder, items in (("dresses", DRESSES), ("props", PROPS), ("drinks", DRINKS),
+                          ("decor", DECOR), ("stations", STATION_ICONS)):
         for name, sprite in items.items():
             sprite.save(ASSETS / folder / f"{name}.png")
 
