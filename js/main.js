@@ -9,7 +9,7 @@ import { setupChat } from "./chat.js";
 import { setupPlayer, setMusic, startMusic, embedFor } from "./player.js";
 import { inside } from "./world.js";
 import { isNightNow } from "./scenery.js";
-import { coupleLoginForm, coupleMenu, setupConfetti } from "./couple.js";
+import { coupleMenu, setupConfetti } from "./couple.js";
 
 const config = await loadConfig();
 // Music links the couple set on the admin page override config/game.json
@@ -119,8 +119,6 @@ async function enter() {
   startGame();
 }
 $("#join-btn").addEventListener("click", enter);
-
-$("#couple-login").addEventListener("click", () => openModal("💍 Couple login", coupleLoginForm(config, backend)));
 
 if (role) {                                               // the couple goes straight in
   $("#join").classList.add("hidden");

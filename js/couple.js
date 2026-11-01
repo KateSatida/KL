@@ -1,6 +1,6 @@
-// The bride & groom: log in to play as yourselves, and a ✨ menu with powers
-// only you have (confetti for everyone, day / night for everyone).
-// Uses the admin login (emails listed in supabase/setup.sql).
+// The bride & groom play as themselves (start from the admin page's 💍 Couple
+// tab), with a ✨ menu of powers only they have (confetti and day / night for
+// everyone). Uses the admin login (emails listed in supabase/setup.sql).
 import { el, closeModal, store, toast } from "./ui.js";
 
 // "couple" in config/game.json: the outfit each of you starts with
@@ -9,43 +9,19 @@ const DEFAULT_LOOKS = {
   groom: { character: "assets/characters/01_short_dark_hair.png", dress: "assets/dresses/black_suit.png" },
 };
 
-export function coupleLoginForm(config, backend) {
-  const email = el("input", { type: "email", autocomplete: "username", placeholder: "Admin email" });
-  const password = el("input", { type: "password", autocomplete: "current-password", placeholder: "Password" });
-  let role = "bride";
-  const roleRow = el("div", { class: "tabs" });
-  for (const [r, label] of [["bride", "👰 Bride"], ["groom", "🤵 Groom"]]) {
-    roleRow.append(el("button", { class: "tab" + (r === role ? " active" : ""), onclick: (e) => {
-      role = r;
-      for (const b of roleRow.children) b.classList.toggle("active", b === e.currentTarget);
-    } }, label));
-  }
-  const name = el("input", { maxlength: 24, placeholder: "Your name (you can change it later in 💬 Status)" });
-  const error = el("p", { class: "muted" });
-  const go = el("button", { class: "btn green big", onclick: async () => {
-    if (!name.value.trim()) return toast("Type your name 😊");
-    go.disabled = true;
-    error.textContent = "";
-    try {
-      await backend.admin.signIn(email.value.trim(), password.value);
-      const look = config.couple?.[role]?.look || DEFAULT_LOOKS[role];
-      const old = store.get("coupleState");
-      store.set("coupleState", { name: name.value.trim().slice(0, 24), status: old?.status || "", look: old?.role === role ? old.look : look, role });
-      store.set("coupleRole", role);
-      location.reload();                                  // start again as the bride / groom
-    } catch (e) {
-      error.textContent = e.message;
-      go.disabled = false;
-    }
-  } }, "💍 Enter as the couple");
-  return el("div", {},
-    el("p", { class: "muted" }, "For the bride and groom only: log in with the admin email and password."),
-    email, el("div", { style: "height:8px" }), password,
-    el("label", {}, "I am the"), roleRow,
-    el("label", {}, "Name"), name,
-    error,
-    el("div", { style: "text-align:center;margin-top:10px" }, go),
-  );
+// Called from the admin page (already logged in): remember "I'm the bride/groom"
+// on this device, then the game starts as them.
+export function playAsCouple(config, role, name) {
+  const look = config.couple?.[role]?.look || DEFAULT_LOOKS[role];
+  const old = store.get("coupleState");
+  const sameRole = old?.role === role;
+  store.set("coupleState", {
+    name: (name || "").trim().slice(0, 24) || (role === "bride" ? "Bride" : "Groom"),
+    status: sameRole ? old.status || "" : "",
+    look: sameRole ? old.look : look,
+    role,
+  });
+  store.set("coupleRole", role);
 }
 
 export function coupleMenu(game) {

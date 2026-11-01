@@ -4,6 +4,7 @@ import { $, el, timeAgo } from "./ui.js";
 import { backend } from "./backend/index.js";
 import { loadConfig } from "./config.js";
 import { embedFor } from "./player.js";
+import { playAsCouple } from "./couple.js";
 
 const admin = backend.admin;
 
@@ -99,6 +100,38 @@ views.songs = async () => {
 // Live connection to the game (tells open games about new music links)
 let room = null;
 const getRoom = () => room || (room = admin.watchRoom({ onPlayers: () => {} }));
+
+// Couple: your names (saved in Supabase) and buttons to enter the game as yourselves
+views.couple = async () => {
+  const config = await loadConfig();
+  const saved = await backend.getSettings().catch(() => ({}));
+  const bride = el("input", { maxlength: 24, value: saved.couple_bride_name || "", placeholder: "Bride's name" });
+  const groom = el("input", { maxlength: 24, value: saved.couple_groom_name || "", placeholder: "Groom's name" });
+  const note = el("p", { class: "muted" });
+  const saveNames = async () => {
+    const values = { couple_bride_name: bride.value.trim(), couple_groom_name: groom.value.trim() };
+    await admin.saveSettings(values);
+    return values;
+  };
+  const play = (role) => el("button", { class: "btn green big", onclick: async () => {
+    try {
+      const values = await saveNames();
+      playAsCouple(config, role, role === "bride" ? values.couple_bride_name : values.couple_groom_name);
+      location.href = "./";                                   // the game, as the bride / groom
+    } catch (e) { note.textContent = `Error: ${e.message}`; }
+  } }, role === "bride" ? "👰 Play as the bride" : "🤵 Play as the groom");
+  return el("div", { class: "card" },
+    el("p", {}, "Enter the game as yourselves: gold name tag, sparkle trail, and the ✨ menu (confetti, day / night for everyone). Guests can't see this option."),
+    el("label", {}, "👰 Bride's name"), bride,
+    el("label", {}, "🤵 Groom's name"), groom,
+    el("div", { class: "row", style: "margin-top:12px" },
+      el("button", { class: "btn", onclick: async () => {
+        try { await saveNames(); note.textContent = "Names saved ✔"; } catch (e) { note.textContent = `Error: ${e.message}`; }
+      } }, "💾 Save names"),
+      play("bride"), play("groom")),
+    note,
+    el("p", { class: "muted" }, "You can still change your name in the game with 💬 Status. On two phones, log in to this page on each and press your button."));
+};
 
 // Music links: saved in Supabase, guests pick them up straight away.
 views.music = async () => {
