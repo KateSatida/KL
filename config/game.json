@@ -251,9 +251,28 @@
     { "image": "assets/decor/cake.png", "x": 1000, "y": 640 }
   ],
   "npcs": [
-    { "name": "Bride 👰", "sprite": "assets/npc/bride.png", "x": 1262, "y": 1508, "radius": 150, "lines": [ "Hello! 👋", "Welcome! 💕", "Thanks for joining us! 🥰" ] },
-    { "name": "Groom 🤵", "sprite": "assets/npc/groom.png", "x": 1338, "y": 1508, "radius": 150, "dir": -1, "lines": [ "Hello! 👋", "Welcome! 💕", "Thanks for joining us! 🥰" ] }
+    { "name": "Bride 👰", "sprite": "assets/npc/bride.png", "x": 1262, "y": 1508, "radius": 150, "lines": [ "Hello! 👋", "Welcome! 💕", "Thanks for joining us! 🥰" ], "role": "bride" },
+    { "name": "Groom 🤵", "sprite": "assets/npc/groom.png", "x": 1338, "y": 1508, "radius": 150, "dir": -1, "lines": [ "Hello! 👋", "Welcome! 💕", "Thanks for joining us! 🥰" ], "role": "groom" }
   ],
+  "couple": {
+    "_help": "The bride & groom log in with 💍 Couple login on the join screen. 'look' is the outfit they start with; 'badge' shows before their name. While one of you is online, your stand-in in 'npcs' (same 'role') steps away.",
+    "bride": {
+      "badge": "👰",
+      "look": {
+        "character": "assets/characters/02_long_dark_hair.png",
+        "dress": "assets/dresses/white_gown.png",
+        "prop": "assets/props/veil.png",
+        "bonus": "assets/props/bouquet.png"
+      }
+    },
+    "groom": {
+      "badge": "🤵",
+      "look": {
+        "character": "assets/characters/01_short_dark_hair.png",
+        "dress": "assets/dresses/black_suit.png"
+      }
+    }
+  },
   "photobooth": {
     "intro": "Smile! Pick a frame, write us a note, and snap a photo. It will be saved for the couple."
   },

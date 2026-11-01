@@ -12,8 +12,13 @@ export class Npcs {
 
   // When I walk up they greet me, taking turns (one speech bubble at a time),
   // each time with a random line.
-  update(me, now) {
-    const near = this.list.filter((n) => me && Math.hypot(me.x - n.x, me.y - n.y) <= n.radius);
+  // onlineRoles: roles of real players online (e.g. the bride logged in), whose
+  // stand-in character steps away while they're here
+  visible(onlineRoles) { return this.list.filter((n) => !n.role || !onlineRoles.has(n.role)); }
+
+  update(me, now, onlineRoles = new Set()) {
+    const shown = this.visible(onlineRoles);
+    const near = shown.filter((n) => me && Math.hypot(me.x - n.x, me.y - n.y) <= n.radius);
     const turn = 2400;                                   // ms each one talks
     near.forEach((n, i) => {
       if (!n.near) n.speakAt = now + i * turn;           // just arrived: first one talks now
