@@ -172,6 +172,19 @@ body.demo #join { padding-bottom: 40px; }
 .bouquet-meaning { font-size: 18px; margin: 4px 0 12px; }
 .bouquet-note { width: 100%; max-width: 420px; border-radius: 10px; }
 
+.fortune-card { text-align: center; }
+.fortune-face { margin: 0 auto; max-width: 320px; padding: 20px 16px; border-radius: 18px; color: #fff;
+  background: linear-gradient(160deg, #3a1d5c, #6a3d9a 60%, #c38fd6); box-shadow: 0 0 0 4px #ffd166, 0 8px 24px #6a3d9a55; }
+.fortune-title { font-size: 26px; font-weight: 700; color: #ffd166; }
+.fortune-text { font-size: 18px; line-height: 1.5; }
+.fortune-item { width: 80px; height: 96px; image-rendering: pixelated; margin: 8px auto 0; display: block; }
+.option .btn.small { white-space: nowrap; padding: 4px 10px; font-size: 13px; }
+.option canvas.item-preview { width: 53px; height: 64px; image-rendering: pixelated; }
+.fortune-gift { font-weight: 700; margin-bottom: 0; }
+.fortune-face .muted { color: #f3e6ff; }
+.fortune-shuffle { font-size: 72px; animation: shuffle .35s infinite alternate; }
+@keyframes shuffle { from { transform: rotate(-12deg); } to { transform: rotate(12deg); } }
+
 /* ---- Admin ---- */
 .admin-main { max-width: 1100px; margin: 0 auto; padding: 20px; }
 .admin-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }

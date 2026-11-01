@@ -1,7 +1,7 @@
 // Character creator: pick a character, dress and prop, or draw your own layer.
 // Used on the join screen and again from the Wardrobe station.
 import { el, toast } from "./ui.js";
-import { composeLook } from "./sprites.js";
+import { composeLook, cropPreview, CHARM_AREA } from "./sprites.js";
 import { pixelEditor } from "./pixel-editor.js";
 
 // Tabs shown in the creator. "folder" = a folder in assets/ (listed in assets/manifest.json).
@@ -11,6 +11,13 @@ const TABS = [
   { id: "prop", label: "🕶️ Prop", folder: "props" },
   { id: "drink", label: "🥂 Drink", folder: "drinks" },
   { id: "custom", label: "🎨 Draw", draw: true },
+  { id: "items", label: "🎁 Items", items: true },
+];
+
+// Things guests get in the game (not picked here): they can take them off.
+const ITEM_LAYERS = [
+  { key: "bonus", label: "💐 Bouquet" },
+  { key: "charm", label: "🔮 Lucky item" },
 ];
 
 // state = { name, status, look: {...} }  (edited in place)
@@ -75,9 +82,27 @@ export function customizer(config, state, { showName = true, lockedName = null, 
     );
   };
 
+  const itemsPanel = () => {
+    const have = ITEM_LAYERS.filter((l) => state.look[l.key]);
+    if (!have.length) return el("p", { class: "muted" }, "No items yet. Catch a bouquet 💐 or visit the horoscope 🔮 to get some!");
+    const box = el("div", { class: "options" });
+    for (const l of have) {
+      box.append(el("div", { class: "option" },
+        l.key === "charm" ? cropPreview(state.look[l.key], CHARM_AREA, "item-preview") : el("img", { src: state.look[l.key], alt: l.label }), l.label,
+        el("button", { class: "btn small", style: "margin-top:4px", onclick: () => {
+          delete state.look[l.key];
+          refresh();
+          if (onDrawingDone) onDrawingDone();               // wardrobe: save right away
+          else panel.replaceChildren(itemsPanel());
+          toast(`${l.label} removed`);
+        } }, "✕ Remove")));
+    }
+    return el("div", {}, el("p", { class: "muted" }, "Items you got in the game. Remove any you don't want to wear."), box);
+  };
+
   const show = async (tab) => {
     for (const b of tabBar.children) b.classList.toggle("active", b.dataset.id === tab.id);
-    panel.replaceChildren(tab.draw ? await drawPanel() : optionsFor(tab));
+    panel.replaceChildren(tab.draw ? await drawPanel() : tab.items ? itemsPanel() : optionsFor(tab));
   };
   for (const tab of TABS) tabBar.append(el("button", { class: "tab", "data-id": tab.id, onclick: () => show(tab) }, tab.label));
   show(TABS[0]);

@@ -13,6 +13,7 @@ on their phone, dress up a 32×32 character, walk around, and visit stations:
 | 🌳 **Wishing Tree** | Guests hang a coloured ribbon with a wish; the ribbons appear on the tree for everyone. |
 | 🖼️ **Memory Lane** | Easels with your photos and a slideshow with captions. |
 | 💃 **Dance Floor** | Light-up floor (disco lights at night). Guests standing on it dance; a music button plays a tune on their phone. |
+| 🔮 **Horoscope ดูดวง** | Guests draw a random fortune card (in Thai) and get a lucky item to wear. |
 | 💐 **Bouquet Toss** | Guests toss the bouquet themselves and catch a random flower (worn in their outfit) with its meaning and a note from you. |
 
 **Guests don't sign up or log in.** They just type a name the first time.
@@ -305,6 +306,18 @@ that greet guests who walk up to them, taking turns with a random line:
 Change the names (e.g. your real names), lines, or position; replace
 `assets/npc/bride.png` / `groom.png` with your own 32×32 drawings; `"dir": -1`
 makes a character face left.
+
+**Horoscope cards (ดูดวง).** The fortune cards are listed on the `horo` station
+in `config/game.json`, and you can edit them on GitHub:
+
+```json
+{ "title": "ดวงความรัก 💕", "text": "ความรักกำลังเบ่งบาน …", "item": "assets/charms/red_string.png",
+  "itemName": "ด้ายแดง", "luck": "+ ความรัก" }
+```
+
+`item` is a 32×32 PNG in `assets/charms/` with the item drawn in the top-right
+corner (it floats next to the character). Guests can take off their lucky item
+or bouquet in **👗 Outfit → 🎁 Items**.
 
 **Station icons.** Each station's `"sprite"` is a 32×32 PNG in
 `assets/stations/`, drawn 3× bigger on the map. Remove `"sprite"` to use the
