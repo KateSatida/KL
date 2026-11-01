@@ -8,6 +8,7 @@
 //   "notes":    ["assets/bouquet_notes/01.png", …]   (any PNG/JPG images)
 import { el, openModal, closeModal, store, toast } from "../ui.js";
 import { drawStation, inside } from "../world.js";
+import { addItem } from "../items.js";
 
 export const inCircle = (def, p) => inside(p, def, 0);
 const pickRandom = (list, avoid) => {
@@ -38,6 +39,7 @@ export default function bouquet(def, game) {
     if (!flower) return;
     const caught = { image: flower.image, note: pickRandom(notes, last?.note) || null };
     store.set("myBouquet", caught);
+    addItem("bonus", flower.image, game.state.look);       // kept in 🎁 Items
     game.setLook({ ...game.state.look, bonus: flower.image });
     showCard(caught);
   };

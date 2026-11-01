@@ -3,6 +3,7 @@
 // this station → "cards": [{ "title", "text", "item", "itemName", "luck" }, …]
 import { el, openModal, closeModal, store, toast } from "../ui.js";
 import { cropPreview, CHARM_AREA } from "../sprites.js";
+import { addItem } from "../items.js";
 
 export default function fortune(def, game) {
   const cards = def.cards || [];
@@ -36,6 +37,7 @@ export default function fortune(def, game) {
     const pool = cards.length > 1 ? cards.filter((c) => c.title !== last?.title) : cards;
     const card = pool[Math.floor(Math.random() * pool.length)];
     store.set("myFortune", card);
+    if (card.item) addItem("charm", card.item, game.state.look);   // kept in 🎁 Items, even if not worn now
     // a little shuffle animation before showing the card
     openModal(`${def.icon} ${def.label}`, el("div", { class: "fortune-card" },
       el("div", { class: "fortune-shuffle" }, "🃏"),

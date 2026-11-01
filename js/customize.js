@@ -2,6 +2,7 @@
 // Used on the join screen and again from the Wardrobe station.
 import { el, toast } from "./ui.js";
 import { composeLook, cropPreview, CHARM_AREA } from "./sprites.js";
+import { getItems } from "./items.js";
 import { pixelEditor } from "./pixel-editor.js";
 
 // Tabs shown in the creator. "folder" = a folder in assets/ (listed in assets/manifest.json).
@@ -14,11 +15,7 @@ const TABS = [
   { id: "items", label: "🎁 Items", items: true },
 ];
 
-// Things guests get in the game (not picked here): they can take them off.
-const ITEM_LAYERS = [
-  { key: "bonus", label: "💐 Bouquet" },
-  { key: "charm", label: "🔮 Lucky item" },
-];
+
 
 // state = { name, status, look: {...} }  (edited in place)
 // onDrawingDone(): called after "Use drawing" (the wardrobe saves right away)
@@ -82,22 +79,33 @@ export function customizer(config, state, { showName = true, lockedName = null, 
     );
   };
 
+  // 🎁 Items: everything collected in the game; wear one per slot or take it off
   const itemsPanel = () => {
-    const have = ITEM_LAYERS.filter((l) => state.look[l.key]);
-    if (!have.length) return el("p", { class: "muted" }, "No items yet. Catch a bouquet 💐 or visit the horoscope 🔮 to get some!");
-    const box = el("div", { class: "options" });
-    for (const l of have) {
-      box.append(el("div", { class: "option" },
-        l.key === "charm" ? cropPreview(state.look[l.key], CHARM_AREA, "item-preview") : el("img", { src: state.look[l.key], alt: l.label }), l.label,
-        el("button", { class: "btn small", style: "margin-top:4px", onclick: () => {
-          delete state.look[l.key];
-          refresh();
-          if (onDrawingDone) onDrawingDone();               // wardrobe: save right away
-          else panel.replaceChildren(itemsPanel());
-          toast(`${l.label} removed`);
-        } }, "✕ Remove")));
+    const owned = getItems(state.look);
+    if (!owned.bonus.length && !owned.charm.length) {
+      return el("p", { class: "muted" }, "No items yet. Catch a bouquet 💐 or visit the horoscope 🔮 to get some!");
     }
-    return el("div", {}, el("p", { class: "muted" }, "Items you got in the game. Remove any you don't want to wear."), box);
+    const section = (slot, title) => {
+      if (!owned[slot].length) return null;
+      const box = el("div", { class: "options" });
+      for (const url of owned[slot]) {
+        const wearing = state.look[slot] === url;
+        const pic = slot === "charm" ? cropPreview(url, CHARM_AREA, "item-preview") : el("img", { src: url, alt: "" });
+        box.append(el("div", { class: "option" + (wearing ? " selected" : "") }, pic,
+          el("button", { class: "btn small" + (wearing ? "" : " green"), style: "margin-top:4px", onclick: () => {
+            if (wearing) delete state.look[slot]; else state.look[slot] = url;
+            refresh();
+            if (onDrawingDone) onDrawingDone();               // wardrobe: save right away
+            else panel.replaceChildren(itemsPanel());
+            toast(wearing ? "Taken off" : "Wearing it ✨");
+          } }, wearing ? "✕ Take off" : "✔ Wear")));
+      }
+      return el("div", {}, el("h3", { style: "margin:10px 0 4px" }, title), box);
+    };
+    return el("div", {},
+      el("p", { class: "muted" }, "Everything you've collected. Wear one bouquet and one lucky item at a time."),
+      section("bonus", "💐 Bouquets"),
+      section("charm", "🔮 Lucky items"));
   };
 
   const show = async (tab) => {
