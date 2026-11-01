@@ -34,7 +34,7 @@ $("#wedding-welcome").textContent = w.welcome;
 $("#hud-title").textContent = `💒 ${w.couple}`;
 if (!backend.online) { $("#demo-banner").classList.remove("hidden"); document.body.classList.add("demo"); }
 
-// The bride & groom log in (💍 Couple login) and play as themselves.
+// The bride & groom play as themselves (started from the admin page's 💍 Couple tab).
 let role = store.get("coupleRole");                       // "bride" | "groom" | null
 if (role && !(await backend.admin.session().catch(() => null))) { store.set("coupleRole", null); role = null; }
 
