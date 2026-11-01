@@ -9,7 +9,7 @@ import { setupChat } from "./chat.js";
 import { setupPlayer, setMusic, startMusic, embedFor } from "./player.js";
 import { inside } from "./world.js";
 import { isNightNow } from "./scenery.js";
-import { coupleLoginForm, coupleMenu, setupConfetti } from "./couple.js";
+import { coupleMenu, setupConfetti } from "./couple.js";
 
 const config = await loadConfig();
 // Music links the couple set on the admin page override config/game.json
@@ -34,7 +34,7 @@ $("#wedding-welcome").textContent = w.welcome;
 $("#hud-title").textContent = `💒 ${w.couple}`;
 if (!backend.online) { $("#demo-banner").classList.remove("hidden"); document.body.classList.add("demo"); }
 
-// The bride & groom log in (💍 Couple login) and play as themselves.
+// The bride & groom play as themselves (started from the admin page's 💍 Couple tab).
 let role = store.get("coupleRole");                       // "bride" | "groom" | null
 if (role && !(await backend.admin.session().catch(() => null))) { store.set("coupleRole", null); role = null; }
 
@@ -119,8 +119,6 @@ async function enter() {
   startGame();
 }
 $("#join-btn").addEventListener("click", enter);
-
-$("#couple-login").addEventListener("click", () => openModal("💍 Couple login", coupleLoginForm(config, backend)));
 
 if (role) {                                               // the couple goes straight in
   $("#join").classList.add("hidden");

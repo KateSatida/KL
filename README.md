@@ -276,11 +276,12 @@ backdrop picture's pixels). Remove `"neon"` to switch it off.
 **Disco (night).** At night the dance floor flashes faster, coloured light beams
 sweep from the spinning disco ball and sparkles twinkle on the floor.
 
-**Playing as the couple.** On the join screen, tap **💍 Couple login**, log in
-with the admin email and password, choose 👰 Bride or 🤵 Groom and type your
-name. You enter in your wedding outfit with a gold name tag and a sparkle
-trail (the outfit is set under `"couple"` in `config/game.json`; you can still
-change it in the Wardrobe). Change your name any time in **💬 Status**.
+**Playing as the couple.** On the admin page, open **💍 Couple**, type your
+names once (**💾 Save names**), then tap **👰 Play as the bride** or **🤵 Play as
+the groom**. You go straight into the game with your name, in your wedding
+outfit, with a gold name tag and a sparkle trail. Guests never see this option.
+You can still change your name in the game with **💬 Status**; the outfit is set
+under `"couple"` in `config/game.json` (and you can change it in the Wardrobe).
 While you're online, your stand-in at the backdrop steps away; when you go
 offline it comes back. The **✨** button in the top bar (only for you) has:
 
@@ -289,9 +290,9 @@ offline it comes back. The **✨** button in the top bar (only for you) has:
   so guests who join later get it too), or go back to following the clock.
 - **Log out of couple mode**.
 
-Both of you can log in on two phones at the same time with the same admin
-account (one as bride, one as groom), or add a second email to `admins` in
-`supabase/setup.sql`.
+Both of you can play at the same time on two phones: log in to the admin page on
+each (same admin account is fine) and press your own button. To give your
+partner their own login, add their email to `admins` in `supabase/setup.sql`.
 
 **Bride & groom.** `"npcs"` in `config/game.json` places characters on the map
 that greet guests who walk up to them, taking turns with a random line:
