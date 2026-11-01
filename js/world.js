@@ -228,7 +228,7 @@ export class World {
     const lights = [
       ...sc.decorLights(),
       ...sc.neonLights(now),
-      ...this.stations.flatMap((s) => [...(s.module.lights?.(s.def) || []), ...stationLights(s.def)]),
+      ...this.stations.flatMap((s) => [...(s.module.lights?.(s.def) || []), ...stationLights(s.def), ...stationGlow(s.def)]),
       ...players.map((p) => ({ x: p.rx, y: p.ry - 30, r: 80, strength: 0.55 })),
       ...this.npcs.visible(this.onlineRoles || new Set()).map((n) => ({ x: n.x, y: n.y - 30, r: 80, strength: 0.55 })),
     ];
@@ -374,6 +374,16 @@ export function drawStationFront(ctx, s) {
   if (!a.front) return;
   const b = artBox(s, a.front);
   ctx.drawImage(a.front, b.x, b.y, b.w, b.h);
+}
+
+// Every station gets a warm pool of light at night so none sit in the dark.
+// Per station in config: "nightLight": false to switch off, or
+// { "color": "rgb(255,210,150)", "size": 0.6, "strength": 0.75 }.
+function stationGlow(s) {
+  if (s.nightLight === false || s.type === "projector") return [];
+  const o = s.nightLight || {};
+  return [{ x: s.x + s.w / 2, y: s.y + s.h * 0.55, r: Math.max(s.w, s.h) * (o.size || 0.6),
+    strength: o.strength ?? 0.75, color: o.color || "rgb(255,210,150)" }];
 }
 
 function stationLights(s) {

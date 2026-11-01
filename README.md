@@ -274,6 +274,11 @@ along the flower arch. Change it on the backdrop in `config/game.json`:
 `seconds`: how long each colour stays; `frame`: where the neon frame goes (in the
 backdrop picture's pixels). Remove `"neon"` to switch it off.
 
+**Station lights (night).** Every station gets a warm pool of light at night.
+On a station in `config/game.json`, `"nightLight": false` switches it off, or
+`"nightLight": { "color": "rgb(255,210,150)", "size": 0.6, "strength": 0.75 }`
+changes it.
+
 **Disco (night).** At night the dance floor flashes faster, coloured light beams
 sweep from the spinning disco ball and sparkles twinkle on the floor.
 
@@ -316,8 +321,9 @@ in `config/game.json`, and you can edit them on GitHub:
 ```
 
 `item` is a 32×32 PNG in `assets/charms/` with the item drawn in the top-right
-corner (it floats next to the character). Guests can take off their lucky item
-or bouquet in **👗 Outfit → 🎁 Items**.
+corner (it floats next to the character). Every bouquet and lucky item a guest
+gets is kept in **👗 Outfit → 🎁 Items**, where they can take it off and wear it
+again (one bouquet and one lucky item at a time).
 
 **Station icons.** Each station's `"sprite"` is a 32×32 PNG in
 `assets/stations/`, drawn 3× bigger on the map. Remove `"sprite"` to use the
