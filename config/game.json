@@ -1,11 +1,6 @@
 {
   "_help": "Edit this file to change texts, the map, stations, decorations and day/night times. See README.md. Refresh the browser after saving.",
-  "wedding": {
-    "title": "K & L Wedding Guestbook",
-    "couple": "K & L",
-    "date": "12 December 2026",
-    "welcome": "Thank you for celebrating with us! Dress up, walk around, and leave us a memory."
-  },
+  "wedding": { "title": "K & L Wedding Guestbook", "couple": "K & L", "date": "12 December 2026", "welcome": "Thank you for celebrating with us! Dress up, walk around, and leave us a memory." },
   "world": {
     "width": 1600,
     "height": 1640,
@@ -174,6 +169,33 @@
       "w": 420,
       "h": 300,
       "_help": "\"music\": \"assets/music/your-song.mp3\" to play your own song instead of the built-in tune"
+    },
+    {
+      "id": "horo",
+      "type": "fortune",
+      "label": "Horoscope ดูดวง",
+      "icon": "🔮",
+      "x": 890,
+      "y": 840,
+      "w": 240,
+      "h": 270,
+      "art": "assets/stations/fortune_tent.png",
+      "artNight": "assets/stations/fortune_tent_night.png",
+      "glow": 40,
+      "intro": "จั่วไพ่ดูดวงหนึ่งใบ แล้วรับของนำโชคไปใส่! 🔮",
+      "_help": "Edit the cards below: title, text (the fortune), item (a 32x32 PNG in assets/charms/, drawn floating at the top right), itemName and luck.",
+      "cards": [
+        { "title": "ดวงดีมาก ✨", "text": "ช่วงนี้มีแต่เรื่องดี ๆ เข้ามา สิ่งที่ตั้งใจไว้จะสมหวัง", "item": "assets/charms/clover.png", "itemName": "ใบโคลเวอร์สี่แฉก", "luck": "+ โชคดีทุกเรื่อง" },
+        { "title": "ดวงความรัก 💕", "text": "ความรักกำลังเบ่งบาน คนโสดมีเกณฑ์เจอเนื้อคู่เร็ว ๆ นี้", "item": "assets/charms/red_string.png", "itemName": "ด้ายแดง", "luck": "+ ความรัก" },
+        { "title": "ดวงเสน่ห์ 😍", "text": "เสน่ห์แรงมาก ใครเห็นก็ต้องหลงรัก", "item": "assets/charms/pink_heart.png", "itemName": "หัวใจสีชมพู", "luck": "+ เสน่ห์" },
+        { "title": "ดวงการเงิน 💰", "text": "เงินทองไหลมาเทมา มีโชคลาภไม่คาดฝัน", "item": "assets/charms/money_bag.png", "itemName": "ถุงเงิน", "luck": "+ การเงิน" },
+        { "title": "ดวงร่ำรวย 🪙", "text": "ทำอะไรก็เป็นเงินเป็นทอง เก็บออมได้มากขึ้น", "item": "assets/charms/gold_coin.png", "itemName": "เหรียญทอง", "luck": "+ ความร่ำรวย" },
+        { "title": "ดวงค้าขาย 🐱", "text": "ค้าขายรุ่งเรือง ลูกค้าเต็มร้าน กิจการเจริญ", "item": "assets/charms/lucky_cat.png", "itemName": "แมวกวัก", "luck": "+ การค้า" },
+        { "title": "ดวงการงาน ⭐", "text": "งานรุ่ง มีผู้ใหญ่อุปถัมภ์ ได้เลื่อนขั้นเร็ว", "item": "assets/charms/star.png", "itemName": "ดาวนำโชค", "luck": "+ การงาน" },
+        { "title": "ดวงโชคลาภ 🍀", "text": "มีเกณฑ์ได้รางวัล ลองเสี่ยงโชคดูนะ!", "item": "assets/charms/horseshoe.png", "itemName": "เกือกม้า", "luck": "+ โชคลาภ" },
+        { "title": "ดวงสุขภาพ 🪷", "text": "สุขภาพแข็งแรง จิตใจสงบ นอนหลับฝันดี", "item": "assets/charms/lotus.png", "itemName": "ดอกบัว", "luck": "+ สุขภาพ" },
+        { "title": "ดวงครอบครัว 🐘", "text": "ครอบครัวอบอุ่น มีความสุขพร้อมหน้าพร้อมตา", "item": "assets/charms/elephant.png", "itemName": "ช้างนำโชค", "luck": "+ ครอบครัว" }
+      ]
     }
   ],
   "decorations": [
@@ -210,7 +232,7 @@
     { "image": "assets/decor/lamp_post.png", "night": "assets/decor/lamp_post_night.png", "x": 480, "y": 620 },
     { "image": "assets/decor/lamp_post.png", "night": "assets/decor/lamp_post_night.png", "x": 480, "y": 1060 },
     { "image": "assets/decor/lamp_post.png", "night": "assets/decor/lamp_post_night.png", "x": 1120, "y": 620 },
-    { "image": "assets/decor/lamp_post.png", "night": "assets/decor/lamp_post_night.png", "x": 1120, "y": 1060 },
+    { "image": "assets/decor/lamp_post.png", "night": "assets/decor/lamp_post_night.png", "x": 1145, "y": 1200 },
     { "image": "assets/decor/led_string.png", "night": "assets/decor/led_string_night.png", "glow": 30, "glowStrength": 0.7, "x": 536, "y": 336, "layer": "top" },
     { "image": "assets/decor/led_string.png", "night": "assets/decor/led_string_night.png", "glow": 30, "glowStrength": 0.7, "x": 664, "y": 336, "layer": "top" },
     { "image": "assets/decor/led_string.png", "night": "assets/decor/led_string_night.png", "glow": 30, "glowStrength": 0.7, "x": 792, "y": 336, "layer": "top" },
@@ -234,7 +256,7 @@
     { "image": "assets/decor/bush.png", "x": 470, "y": 420 },
     { "image": "assets/decor/bush.png", "x": 1130, "y": 420 },
     { "image": "assets/decor/bush.png", "x": 470, "y": 1150 },
-    { "image": "assets/decor/bush.png", "x": 1130, "y": 1150 },
+    { "image": "assets/decor/bush.png", "x": 1060, "y": 1190 },
     { "image": "assets/decor/bush.png", "x": 1100, "y": 1520 },
     { "image": "assets/decor/flower_pot.png", "x": 715, "y": 420 },
     { "image": "assets/decor/flower_pot.png", "x": 885, "y": 420 },

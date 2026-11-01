@@ -14,10 +14,11 @@ import wishingTree from "./wishing-tree.js";
 import memoryLane from "./memory-lane.js";
 import dancefloor from "./dancefloor.js";
 import bouquet from "./bouquet.js";
+import fortune from "./fortune.js";
 
 export const STATION_TYPES = {
   photobooth, bar, singles, projector, wardrobe,
-  "wishing-tree": wishingTree, "memory-lane": memoryLane, dancefloor, bouquet,
+  "wishing-tree": wishingTree, "memory-lane": memoryLane, dancefloor, bouquet, fortune,
 };
 
 export function createStations(config, game) {

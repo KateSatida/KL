@@ -2,11 +2,12 @@
 
 export const SIZE = 32;
 // Drawing order, bottom to top. Add a new layer name here if you create a new
-// asset folder. "bonus" is for prizes, e.g. the caught bouquet.
-export const LAYER_ORDER = ["character", "dress", "prop", "drink", "bonus"];
+// asset folder. "bonus" is for prizes (the caught bouquet), "charm" for the
+// lucky item from the horoscope station.
+export const LAYER_ORDER = ["character", "dress", "prop", "drink", "bonus", "charm"];
 // When a guest uses their own drawing, it replaces the outfit pieces;
 // these layers are still drawn on top of it:
-const ON_TOP_OF_DRAWING = ["drink", "bonus"];
+const ON_TOP_OF_DRAWING = ["drink", "bonus", "charm"];
 
 const images = new Map();
 
@@ -21,6 +22,18 @@ export function loadImage(url) {
     }));
   }
   return images.get(url);
+}
+
+// A zoomed-in picture of part of a sprite, e.g. a lucky item in its corner.
+// area = [x, y, w, h] in the sprite's pixels.
+export const CHARM_AREA = [22, 0, 10, 12];
+export function cropPreview(src, area, className = "") {
+  const [x, y, w, h] = area;
+  const c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  if (className) c.className = className;
+  loadImage(src).then((img) => { if (img) c.getContext("2d").drawImage(img, x, y, w, h, 0, 0, w, h); });
+  return c;
 }
 
 // look = { character: url, dress: url, prop: url, drink: url, custom: dataURL }

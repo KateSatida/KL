@@ -1,5 +1,6 @@
 // Single station: post your photo + Instagram so you show up on the projector.
 import { el, openModal, closeModal, fileToJpeg, store, tabs, toast } from "../ui.js";
+import { drawStation } from "../world.js";
 
 const MY_CARDS = "singles.mine";   // {id: deleteToken} saved on this device
 
@@ -88,5 +89,50 @@ export default function singles(def, game) {
         { id: "browse", label: "👀 Browse singles", render: () => browseSingles(game) },
       ]));
     },
+    // the fountain building + moving water
+    draw(ctx, d, now, world) {
+      drawStation(ctx, d, now, world);
+      if (d.art) drawFountainWater(ctx, d, now);
+    },
   };
+}
+
+// Water animation on the cupid fountain picture (96x80, drawn artScale=3 times).
+// Positions are in the picture's pixels: streams, upper bowl and basin.
+const STREAMS = [32, 35, 61, 64];
+function drawFountainWater(ctx, d, now) {
+  const k = d.artScale || 3, w = 96 * k, h = 80 * k;
+  const ox = d.x + d.w / 2 - w / 2, oy = d.y + d.h - 34 - h;
+  const px = (x, y, size, color) => { ctx.fillStyle = color; ctx.fillRect(Math.round(ox + x * k), Math.round(oy + y * k), size, size); };
+  // drops falling down each stream
+  STREAMS.forEach((sx, i) => {
+    for (let j = 0; j < 4; j++) {
+      const t = ((now / 22 + i * 40 + j * 160) % 640) / 640;           // 0..1 down the stream
+      px(sx + Math.sin(t * 6 + i) * 0.4, 38 + t * 26, 4, j % 2 ? "#ffffff" : "#d6f0ff");
+    }
+  });
+  // little jet bubbling up from the upper bowl
+  for (let j = 0; j < 6; j++) {
+    const t = ((now / 15 + j * 110) % 660) / 660;
+    const x = 48 + Math.sin(j * 2.3) * 6 * t, y = 33 - Math.sin(t * Math.PI) * 6;
+    px(x, y, 3, "#e8f8ff");
+  }
+  // ripples where the streams land in the basin
+  ctx.save();
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 2;
+  STREAMS.forEach((sx, i) => {
+    const t = ((now + i * 300) % 1200) / 1200;
+    ctx.globalAlpha = 0.7 * (1 - t);
+    ctx.beginPath();
+    ctx.ellipse(ox + sx * k, oy + 65 * k, 4 + t * 26, 2 + t * 8, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+  ctx.restore();
+  // sparkles on the water
+  for (let j = 0; j < 10; j++) {
+    const a = Math.abs(Math.sin(now / 260 + j * 1.7));
+    if (a < 0.75) continue;
+    px(14 + ((j * 37) % 68), 63 + ((j * 13) % 7), 3, "#ffffff");
+  }
 }

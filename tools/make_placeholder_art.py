@@ -713,7 +713,33 @@ def memory_photo(kind):
     return s
 
 
+def fortune_tent(night):
+    s = Sprite(64, 56)
+    for i, y in enumerate(range(6, 50)):                  # tent body (trapezoid)
+        s.rect(26 - i // 2, y, 37 + i // 2, y, "#6a3d9a" if (i // 4) % 2 else "#7d4cb3")
+    s.rect(4, 50, 59, 55, "#5a2f86")                     # base
+    s.rect(31, 0, 32, 5, "#ffd166")                      # flag pole + flag
+    s.rect(33, 0, 37, 2, "#ff5d8f")
+    s.rect(20, 26, 43, 55, "#2a1d3a")                    # opening
+    s.rect(20, 26, 23, 55, "#c38fd6"); s.rect(40, 26, 43, 55, "#c38fd6")   # curtains
+    s.rect(24, 44, 39, 46, "#8b5a2b")                    # table
+    s.rect(26, 47, 37, 55, "#a85a8a")                    # tablecloth
+    s.disc(31.5, 38, 5, "#bfe6ff" if not night else "#fffbe0")   # crystal ball
+    s.disc(30, 36, 1.5, "#ffffff")
+    s.rect(28, 43, 35, 43, "#ffd166")                    # ball stand
+    s.outline("#2a1d3a")
+    for x, y in ((14, 20), (48, 22), (20, 12), (44, 14), (10, 34), (54, 36)):   # stars
+        s.set(x, y, "#ffd166"); s.set(x - 1, y, "#ffe9a8"); s.set(x + 1, y, "#ffe9a8")
+        s.set(x, y - 1, "#ffe9a8"); s.set(x, y + 1, "#ffe9a8")
+    s.rect(6, 40, 8, 49, "#3b3b3b")                      # lantern
+    s.rect(5, 36, 9, 40, "#fff3b0" if night else "#e8a7b8")
+    if night:
+        s.disc(31.5, 38, 3, "#fff3b0")
+    return s
+
+
 BUILDINGS = {
+    "fortune_tent": fortune_tent(False), "fortune_tent_night": fortune_tent(True),
     "wishing_tree": wishing_tree(False), "wishing_tree_night": wishing_tree(True),
     "easel": easel(), "memory_sign": memory_sign(), "toss_stage": toss_stage(),
     "speaker": speaker(), "disco_ball": disco_ball(False), "disco_ball_night": disco_ball(True),
@@ -769,6 +795,50 @@ def bouquet_of(kind):
 
 BOUQUETS = {f"{i + 1:02d}_{k}": bouquet_of(k) for i, k in enumerate(
     ["rose", "tulip", "sunflower", "lavender", "daisy", "peony", "lily", "orchid", "jasmine", "babys_breath"])}
+
+# ---- lucky items from the horoscope (assets/charms): float at the top right ----
+
+def charm_of(kind):
+    s = Sprite()
+    ox, oy = 24, 2                                        # top-right corner, floating
+    if kind == "clover":
+        for dx, dy in ((2, 0), (0, 2), (4, 2), (2, 4)): s.disc(ox + dx, oy + dy, 1.6, "#6a994e")
+        s.set(ox + 2, oy + 2, "#b5e48c"); s.rect(ox + 3, oy + 5, ox + 3, oy + 8, "#4f7a3a")
+    elif kind == "lucky_cat":
+        s.rect(ox, oy + 2, ox + 6, oy + 8, "#ffffff"); s.rect(ox, oy, ox + 1, oy + 1, "#ffffff"); s.rect(ox + 5, oy, ox + 6, oy + 1, "#ffffff")
+        s.set(ox + 2, oy + 3, "#3b2a2a"); s.set(ox + 4, oy + 3, "#3b2a2a"); s.rect(ox, oy + 5, ox + 6, oy + 5, "#d23a4a"); s.set(ox + 3, oy + 6, "#ffd166")
+        s.rect(ox + 7, oy + 1, ox + 7, oy + 4, "#ffffff")  # raised paw
+    elif kind == "gold_coin":
+        s.disc(ox + 3, oy + 4, 3.5, "#ffd166"); s.disc(ox + 3, oy + 4, 2, "#f2b134"); s.set(ox + 3, oy + 4, "#ffe9a8")
+    elif kind == "money_bag":
+        s.rect(ox + 2, oy, ox + 4, oy + 1, "#c9a26b"); s.disc(ox + 3, oy + 5, 3.5, "#d9a066"); s.rect(ox + 2, oy + 4, ox + 4, oy + 6, "#2a9d4f")
+    elif kind == "pink_heart":
+        s.disc(ox + 1.5, oy + 2, 1.8, "#ff5d8f"); s.disc(ox + 4.5, oy + 2, 1.8, "#ff5d8f")
+        for i, y in enumerate(range(oy + 3, oy + 7)): s.rect(ox + i, y, ox + 6 - i, y, "#ff5d8f")
+        s.set(ox + 1, oy + 1, "#ffc2d4")
+    elif kind == "red_string":
+        for i in range(8): s.set(ox + i % 7, oy + 4 + (1 if i % 2 else -1) * (i % 3 == 0), "#d23a4a")
+        s.rect(ox, oy + 4, ox + 6, oy + 4, "#d23a4a"); s.disc(ox + 3, oy + 4, 1.2, "#ff5d8f")
+    elif kind == "horseshoe":
+        for x in range(7):
+            for y in range(8):
+                if 2.2 <= ((x - 3) ** 2 + (y - 4) ** 2) ** 0.5 <= 3.6 and y < 7: s.set(ox + x, oy + y, "#aeb7bf")
+        s.set(ox, oy + 7, "#aeb7bf"); s.set(ox + 6, oy + 7, "#aeb7bf")
+    elif kind == "star":
+        s.rect(ox + 3, oy, ox + 3, oy + 7, "#ffd166"); s.rect(ox, oy + 3, ox + 6, oy + 3, "#ffd166")
+        s.rect(ox + 2, oy + 2, ox + 4, oy + 4, "#ffd166"); s.set(ox + 3, oy + 3, "#fffbe0")
+    elif kind == "lotus":
+        for dx in (0, 2, 4, 6): s.rect(ox + dx, oy + 3, ox + dx, oy + 6, "#ff8fab")
+        s.rect(ox + 2, oy + 1, ox + 4, oy + 6, "#ffb3c6"); s.rect(ox, oy + 7, ox + 6, oy + 7, "#6a994e")
+    elif kind == "elephant":
+        s.rect(ox, oy + 2, ox + 5, oy + 6, "#9e9e9e"); s.rect(ox + 6, oy + 3, ox + 6, oy + 8, "#9e9e9e")
+        s.rect(ox, oy + 7, ox + 1, oy + 8, "#9e9e9e"); s.rect(ox + 4, oy + 7, ox + 5, oy + 8, "#9e9e9e"); s.set(ox + 4, oy + 3, "#3b2a2a")
+        s.rect(ox + 1, oy + 2, ox + 3, oy + 2, "#d23a4a")
+    return s.outline("#5a4a4a")
+
+
+CHARMS = {k: charm_of(k) for k in ["clover", "lucky_cat", "gold_coin", "money_bag", "pink_heart", "red_string",
+                                   "horseshoe", "star", "lotus", "elephant"]}
 
 MEMORIES = {f"0{i + 1}_{k}": memory_photo(k) for i, k in enumerate(["sunset", "mountains", "ring", "hearts"])}
 
@@ -827,7 +897,7 @@ def main():
     logo().save(ASSETS / "logo.png")
     for folder, items in (("dresses", DRESSES), ("props", PROPS), ("drinks", DRINKS),
                           ("decor", DECOR), ("stations", STATION_ICONS), ("stations", BUILDINGS),
-                          ("memories", MEMORIES), ("bouquets", BOUQUETS)):
+                          ("memories", MEMORIES), ("bouquets", BOUQUETS), ("charms", CHARMS)):
         for name, sprite in items.items():
             sprite.save(ASSETS / folder / f"{name}.png")
 
