@@ -8,13 +8,22 @@ import { createStations } from "./stations/index.js";
 import { setupChat } from "./chat.js";
 import { setupPlayer, setMusic, startMusic, embedFor } from "./player.js";
 import { inside } from "./world.js";
+import { isNightNow } from "./scenery.js";
+import { coupleLoginForm, coupleMenu, setupConfetti } from "./couple.js";
 
 const config = await loadConfig();
 // Music links the couple set on the admin page override config/game.json
 config.music = config.music || {};
+config.time = config.time || {};
+let theWorld = null;                                      // set once the game starts
 const applySettings = (s = {}) => {
   if (s.music_playlist !== undefined) config.music.playlist = s.music_playlist;
   if (s.music_dance !== undefined) config.music.danceFloor = s.music_dance;
+  // day / night chosen by the couple ("" = follow the clock)
+  if (s.time_mode !== undefined) {
+    config.time.mode = s.time_mode || "auto";
+    if (theWorld) theWorld.scenery.night = isNightNow(config.time);
+  }
 };
 applySettings(await backend.getSettings().catch(() => ({})));
 const w = config.wedding;
@@ -25,8 +34,13 @@ $("#wedding-welcome").textContent = w.welcome;
 $("#hud-title").textContent = `💒 ${w.couple}`;
 if (!backend.online) { $("#demo-banner").classList.remove("hidden"); document.body.classList.add("demo"); }
 
+// The bride & groom log in (💍 Couple login) and play as themselves.
+let role = store.get("coupleRole");                       // "bride" | "groom" | null
+if (role && !(await backend.admin.session().catch(() => null))) { store.set("coupleRole", null); role = null; }
+
 // What this guest looks like. Saved on the device so a refresh keeps the outfit.
-const state = store.get("guest", { name: "", status: "", look: {} });
+const stateKey = role ? "coupleState" : "guest";
+const state = store.get(stateKey, { name: "", status: "", look: {} });
 $("#join-customizer").append(customizer(config, state, { lockedName: store.get("myName") }));
 
 // Shared "game" object handed to every station module.
@@ -41,7 +55,14 @@ const game = {
   emit(name, data) { (listeners[name] || []).forEach((fn) => fn(data)); },
   // Tell everyone (including me) that something happened, e.g. "message"
   broadcast(name, data) { game.room?.broadcast(name, data); game.emit(name, data); },
-  save() { store.set("guest", state); },
+  role,
+  save() { store.set(stateKey, state); },
+  setName(name) {                                         // only the couple can rename
+    state.name = (name || "").trim().slice(0, 24) || state.name;
+    game.save();
+    game.world.upsertPlayer({ id: game.world.me.id, name: state.name });
+    game.sharePresence();
+  },
   setLook(look) {
     state.look = look;
     game.save();
@@ -57,7 +78,7 @@ const game = {
   // Who I am + where I'm standing, for guests who join later.
   sharePresence() {
     const me = game.world.me;
-    game.room?.update({ name: state.name, status: state.status, look: state.look, x: Math.round(me.x), y: Math.round(me.y), dir: me.dir });
+    game.room?.update({ name: state.name, status: state.status, look: state.look, role: role || undefined, x: Math.round(me.x), y: Math.round(me.y), dir: me.dir });
   },
 };
 window.game = game; // handy for debugging in the browser console
@@ -99,7 +120,15 @@ async function enter() {
 }
 $("#join-btn").addEventListener("click", enter);
 
-const myName = store.get("myName");
+$("#couple-login").addEventListener("click", () => openModal("💍 Couple login", coupleLoginForm(config, backend)));
+
+if (role) {                                               // the couple goes straight in
+  $("#join").classList.add("hidden");
+  $("#game").classList.remove("hidden");
+  startGame();
+}
+
+const myName = !role && store.get("myName");
 if (myName) {
   state.name = myName;
   $("#join-btn").textContent = `Entering as ${myName}…`;
@@ -135,11 +164,12 @@ async function startGame() {
   const stations = createStations(config, game);
   const world = new World($("#world"), config, stations);
   game.world = world;
+  theWorld = world;
 
   const myId = crypto.randomUUID?.() || String(Math.random()).slice(2);
   const spawn = config.world.spawn;
   await world.upsertPlayer({
-    id: myId, name: state.name, status: state.status, look: state.look,
+    id: myId, name: state.name, status: state.status, look: state.look, role: role || undefined,
     x: spawn.x + Math.round(Math.random() * 160 - 80), y: spawn.y + Math.round(Math.random() * 80 - 40),
   }, true);
 
@@ -157,7 +187,7 @@ async function startGame() {
 
   game.room = backend.joinRoom({
     id: myId,
-    state: { name: state.name, status: state.status, look: state.look, x: world.me.x, y: world.me.y, dir: 1 },
+    state: { name: state.name, status: state.status, look: state.look, role: role || undefined, x: world.me.x, y: world.me.y, dir: 1 },
     onStatus: (online) => $("#connection").classList.toggle("hidden", online),
     onPlayers: async (list) => {
       const ids = new Set(list.map((p) => p.id));
@@ -180,9 +210,15 @@ async function startGame() {
 
   $("#hud-status").addEventListener("click", () => {
     const input = el("input", { maxlength: 60, value: state.status, placeholder: "e.g. Looking for the dessert table 🍰" });
-    const done = () => { game.setStatus(input.value); closeModal(); };
+    let done2 = null;
+    const done = () => { done2?.(); game.setStatus(input.value); closeModal(); };
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") done(); });
+    const nameInput = role ? el("input", { maxlength: 24, value: state.name, placeholder: "Your name" }) : null;
+    if (nameInput) done2 = () => game.setName(nameInput.value);
     openModal("💬 Your status", el("div", {},
+      nameInput ? el("label", {}, "Your name") : null,
+      nameInput,
+      el("label", {}, "Status"),
       el("p", { class: "muted" }, "Shown above your head when other guests are near you."),
       input,
       el("div", { class: "row", style: "justify-content:flex-end;margin-top:10px" },
@@ -201,5 +237,10 @@ async function startGame() {
 
   setupChat(game);
   setupMusic(world);
+  setupConfetti(game);
+  if (role) {
+    $("#hud-couple").classList.remove("hidden");
+    $("#hud-couple").addEventListener("click", () => openModal("✨ Couple", coupleMenu(game)));
+  }
   world.start();
 }

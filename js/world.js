@@ -143,7 +143,8 @@ export class World {
 
   update(dt) {
     this.scenery.update(dt);
-    this.npcs.update(this.me, performance.now());
+    this.onlineRoles = new Set([...this.players.values()].map((p) => p.role).filter(Boolean));
+    this.npcs.update(this.me, performance.now(), this.onlineRoles);
     const me = this.me;
     if (!me) return;
     let dx = 0, dy = 0;
@@ -218,7 +219,7 @@ export class World {
     const items = [
       ...players.map((p) => ({ y: p.ry, draw: () => this.drawPlayer(p, now) })),
       ...sc.layer("sorted").map((d) => ({ y: d.y, draw: () => sc.drawDecor(ctx, d) })),
-      ...this.npcs.list.map((n) => ({ y: n.y, draw: () => this.drawNpc(n, now) })),
+      ...this.npcs.visible(this.onlineRoles || new Set()).map((n) => ({ y: n.y, draw: () => this.drawNpc(n, now) })),
     ].sort((a, b) => a.y - b.y);
     for (const item of items) item.draw();
     for (const d of sc.layer("top")) sc.drawDecor(ctx, d);
@@ -229,7 +230,7 @@ export class World {
       ...sc.neonLights(now),
       ...this.stations.flatMap((s) => [...(s.module.lights?.(s.def) || []), ...stationLights(s.def)]),
       ...players.map((p) => ({ x: p.rx, y: p.ry - 30, r: 80, strength: 0.55 })),
-      ...this.npcs.list.map((n) => ({ x: n.x, y: n.y - 30, r: 80, strength: 0.55 })),
+      ...this.npcs.visible(this.onlineRoles || new Set()).map((n) => ({ x: n.x, y: n.y - 30, r: 80, strength: 0.55 })),
     ];
     sc.drawNight(ctx, [camera.zoom, 0, 0, camera.zoom, -camera.x * camera.zoom, -camera.y * camera.zoom], lights);
 
@@ -243,7 +244,7 @@ export class World {
     // Text last, so it stays readable at night
     for (const s of this.stations) (s.module.drawLabel || drawStationLabel)(ctx, s.def, now, this);
     for (const p of players.sort((a, b) => a.ry - b.ry)) this.drawPlayerText(p, now);
-    for (const n of this.npcs.list) {
+    for (const n of this.npcs.visible(this.onlineRoles || new Set())) {
       label(ctx, n.name, n.x, n.y + 16, "#c2577a");
       if (n.line) speech(ctx, n.line, n.x, n.y - SIZE * this.w.spriteScale - 8, "#ffffff");
     }
@@ -265,6 +266,7 @@ export class World {
   drawPlayer(p, now) {
     const ctx = this.ctx;
     const size = SIZE * this.w.spriteScale;
+    if (p.role) this.drawSparkles(p, now);
     let bob = p.moving ? Math.abs(Math.sin(now / 90)) * 3 : 0;
     let dir = p.dir;
     // standing still on a dance floor: bounce and turn to the beat
@@ -283,10 +285,41 @@ export class World {
     ctx.restore();
   }
 
+  // the bride & groom leave a little golden sparkle trail
+  drawSparkles(p, now) {
+    const ctx = this.ctx;
+    p.trail ||= [];
+    const last = p.trail[p.trail.length - 1];
+    if (!last || now - last.t > 70) {
+      p.trail.push({ x: p.rx + (Math.random() - 0.5) * 30, y: p.ry - 10 - Math.random() * 50, t: now });
+    }
+    p.trail = p.trail.filter((s) => now - s.t < 900);
+    for (const s of p.trail) {
+      const k = 1 - (now - s.t) / 900;
+      ctx.fillStyle = `rgba(255, 215, 90, ${k})`;
+      const z = Math.round(2 + k * 4);
+      ctx.fillRect(Math.round(s.x), Math.round(s.y - (1 - k) * 10), z, z);
+    }
+  }
+
   drawPlayerText(p, now) {
     const ctx = this.ctx;
     const size = SIZE * this.w.spriteScale;
-    label(ctx, p.name, p.rx, p.ry + 16, p === this.me ? "#c2577a" : "#4a3640");
+    if (p.role) {                                                 // gold name tag for the couple
+      const badge = this.config.couple?.[p.role]?.badge || (p.role === "bride" ? "👰" : "🤵");
+      ctx.save();
+      ctx.font = "700 15px Mali, sans-serif";
+      const text = `${badge} ${p.name}`, w = ctx.measureText(text).width + 16;
+      ctx.fillStyle = "#fff6d6";
+      ctx.strokeStyle = "#d4a017";
+      ctx.lineWidth = 2;
+      roundRect(ctx, p.rx - w / 2, p.ry + 4, w, 22, 11);
+      ctx.fill(); ctx.stroke();
+      ctx.restore();
+      label(ctx, text, p.rx, p.ry + 20, "#a8740a", 15);
+    } else {
+      label(ctx, p.name, p.rx, p.ry + 16, p === this.me ? "#c2577a" : "#4a3640");
+    }
     const near = p === this.me || (this.me && dist(p, this.me) <= this.w.statusRadius);
     const bubble = p.bubble && p.bubble.until > now ? p.bubble.text : null;
     if (bubble) speech(ctx, bubble, p.rx, p.ry - size - 8, "#ffffff");
