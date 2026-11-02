@@ -178,7 +178,14 @@ Browse → "Remove my card").
 `assets/frames/`. The example frames also contain the example names, so edit or replace them.
 Where the typed note sits on the photo is set by `NOTE_BOX` at the top of `js/stations/photobooth.js`.
 
-**Colours and font.** Change them at the top of `css/style.css`.
+**Colours and font.** Change them at the top of `css/style.css` (pink
+`--primary`, green `--green`, cream `--cream`).
+
+**Invitation envelope.** First-time guests see a cream retro envelope (red wax
+seal, red stamp, pink-and-green airmail border). Tapping it opens the flap, the
+letter slides out and unfolds into the welcome page. The address text is in
+`index.html` (`To: our dearest guest`); "From" uses the couple and date in
+`config/game.json`. Returning guests go straight into the party.
 
 **Decorations and day/night.** The map is an outdoor lawn. Everything on it is a
 pixel-art PNG in `assets/decor/` (flower backdrop, LED string lights, lamp posts,

@@ -43,6 +43,7 @@ $("#wedding-title").textContent = w.title;
 $("#wedding-sub").textContent = `${w.couple} · ${w.date}`;
 $("#wedding-welcome").textContent = w.welcome;
 $("#hud-title").textContent = `💒 ${w.couple}`;
+$("#env-from").textContent = `From: ${w.couple} · ${w.date}`;
 if (!backend.online) { $("#demo-banner").classList.remove("hidden"); document.body.classList.add("demo"); }
 
 // The bride & groom play as themselves (started from the admin page's 💍 Couple tab).
@@ -138,6 +139,24 @@ if (role) {                                               // the couple goes str
 }
 
 const myName = !role && store.get("myName");
+
+// First visit: show the invitation envelope; tapping it opens the letter (join card)
+if (!role && !myName) {
+  const scene = $("#envelope-scene"), card = $("#join .join-card");
+  scene.classList.remove("hidden");
+  card.style.visibility = "hidden";
+  $("#envelope").addEventListener("click", () => {
+    if (scene.classList.contains("opening")) return;
+    scene.classList.add("opening");
+    const quick = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setTimeout(() => {
+      scene.classList.add("gone");
+      card.style.visibility = "";
+      card.classList.add("unfold");
+      setTimeout(() => scene.classList.add("hidden"), 700);
+    }, quick ? 0 : 1500);
+  }, { once: false });
+}
 if (myName) {
   state.name = myName;
   $("#join-btn").textContent = `Entering as ${myName}…`;

@@ -14,7 +14,24 @@
 
   <!-- 1. Join screen: dress up your character -->
   <section id="join" class="screen">
-    <div class="card join-card">
+    <!-- The invitation envelope: tap to open, the letter becomes the join card -->
+    <div id="envelope-scene" class="envelope-scene hidden">
+      <button id="envelope" class="envelope" aria-label="Open the invitation">
+        <span class="env-back"></span>
+        <span class="env-letter">
+          <span class="env-letter-title">You're invited! 💌</span>
+          <span class="env-letter-line"></span><span class="env-letter-line"></span><span class="env-letter-line short"></span>
+        </span>
+        <span class="env-pocket"></span>
+        <span class="env-flap"></span>
+        <span class="env-seal" id="env-seal">K♥L</span>
+        <span class="env-stamp"><span>♥</span></span>
+        <span class="env-postmark"></span>
+        <span class="env-address"><span id="env-to">To: our dearest guest</span><span id="env-from" class="env-from"></span></span>
+      </button>
+      <p class="env-hint">Tap to open 💌</p>
+    </div>
+    <div class="card join-card letter">
       <h1 id="wedding-title">Wedding Guestbook</h1>
       <p id="wedding-sub" class="muted"></p>
       <p id="wedding-welcome"></p>

@@ -1,5 +1,9 @@
 /* ---- Theme colours: change these to match your wedding ---- */
 :root {
+  --green: #6fae7e;
+  --green-dark: #4f8a5e;
+  --mint: #e3f5e6;
+  --cream: #f6ead2;
   --bg: #fdf3ee;
   --card: #ffffff;
   --text: #4a3640;
@@ -47,12 +51,75 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
 
 /* ---- Join screen ---- */
 .screen { position: fixed; inset: 0; }
-#join { overflow-y: auto; padding: 16px; display: flex; justify-content: center; align-items: flex-start;
+#join { overflow-y: auto; overflow-x: hidden; padding: 16px; display: flex; justify-content: center; align-items: flex-start;
   background: radial-gradient(circle at top, #ffe3ea, var(--bg) 60%); }
 .card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: 0 8px 30px #e0708f22; }
 .join-card { width: 100%; max-width: 720px; text-align: center; margin: auto 0; }
 .join-card h1 { color: var(--primary-dark); font-size: 28px; }
 #join-btn { margin-top: 16px; }
+
+/* ---- Invitation envelope (join screen) ---- */
+#join { background: radial-gradient(circle at 20% 10%, #ffe3ea, transparent 55%), radial-gradient(circle at 85% 90%, var(--mint), transparent 55%), #fbefe9; }
+.envelope-scene { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px; z-index: 2; background: inherit; transition: opacity .6s ease .1s; }
+.envelope-scene.gone { opacity: 0; pointer-events: none; }
+.envelope { position: relative; width: min(360px, 86vw); aspect-ratio: 3 / 2; border: 0; padding: 0; background: none; cursor: pointer;
+  perspective: 900px; animation: env-float 3s ease-in-out infinite; font-family: var(--font); }
+.envelope-scene.opening .envelope { animation: none; }
+@keyframes env-float { 50% { transform: translateY(-8px) rotate(-1deg); } }
+.env-back, .env-pocket, .env-flap { position: absolute; inset: 0; border-radius: 6px; }
+/* cream paper with a little grain */
+.env-back { background: linear-gradient(135deg, #f1e2c4, var(--cream)); box-shadow: 0 14px 30px #7a5a4a33; }
+.env-pocket { z-index: 3; background: linear-gradient(160deg, #fbf1dc, #efdfbe);
+  clip-path: polygon(0 0, 50% 52%, 100% 0, 100% 100%, 0 100%); box-shadow: inset 0 0 0 2px #e2cda4; }
+.env-pocket::before { content: ""; position: absolute; inset: 7px; border-radius: 4px; pointer-events: none;   /* airmail border */
+  border: 6px solid transparent;
+  border-image: repeating-linear-gradient(45deg, #e0708f 0 10px, #fbf1dc 10px 16px, var(--green) 16px 26px, #fbf1dc 26px 32px) 6; }
+.env-flap { z-index: 4; background: linear-gradient(180deg, #ecd9b4, #f6e8cc); clip-path: polygon(0 0, 100% 0, 50% 58%);
+  transform-origin: top center; transition: transform .7s cubic-bezier(.5, 0, .3, 1), z-index 0s linear .35s; }
+.envelope-scene.opening .env-flap { transform: rotateX(180deg); z-index: 1; filter: brightness(.95); }
+.env-seal { position: absolute; z-index: 5; left: 50%; top: 52%; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%;
+  display: grid; place-items: center; color: #ffd9d9; font-weight: 700; font-size: 15px; letter-spacing: 1px;
+  background: radial-gradient(circle at 35% 30%, #e05252, #a51d24 70%); box-shadow: 0 0 0 4px #b8262dcc, 0 3px 6px #0004;
+  transition: transform .35s ease, opacity .35s ease; }
+.envelope-scene.opening .env-seal { transform: scale(1.4) rotate(-20deg); opacity: 0; }
+.env-stamp { position: absolute; z-index: 5; right: 7%; bottom: 10%; width: 48px; height: 58px; padding: 4px; transform: rotate(4deg);
+  /* perforated edge: a ring of "holes" around a red stamp */
+  background: radial-gradient(circle, transparent 0 2.6px, #c0392b 3px) -4px -4px / 8px 8px; filter: drop-shadow(0 1px 1px #0003); }
+.env-stamp span { width: 100%; height: 100%; display: grid; place-items: center; background: #c0392b; color: #ffe1e1;
+  font-size: 22px; box-shadow: inset 0 0 0 2px #c0392b, inset 0 0 0 4px #ffe1e1aa; }
+.env-postmark { position: absolute; z-index: 5; right: 20%; bottom: 20%; width: 64px; height: 30px; opacity: .45; transform: rotate(-8deg);
+  background: repeating-linear-gradient(180deg, transparent 0 5px, #4a3640 5px 7px); border-radius: 40%; }
+.env-address { position: absolute; z-index: 5; left: 9%; bottom: 13%; display: grid; gap: 2px; text-align: left; color: #6a4a3a;
+  font: 600 15px/1.3 var(--font); }
+.env-from { font-weight: 400; font-size: 13px; color: var(--green-dark); }
+.env-letter { position: absolute; z-index: 2; left: 7%; right: 7%; top: 8%; height: 84%; border-radius: 4px; padding: 14px 16px;
+  background: #fffaf0; box-shadow: 0 2px 6px #0002; display: flex; flex-direction: column; gap: 9px; text-align: left;
+  transition: transform .8s cubic-bezier(.3, .7, .3, 1) .45s; }
+.envelope-scene.opening .env-letter { transform: translateY(-62%); }
+.env-letter-title { font: 700 18px var(--font); color: var(--primary-dark); }
+.env-letter-line { height: 3px; border-radius: 3px; background: #f0d7de; }
+.env-letter-line.short { width: 60%; background: #d6ecd9; }
+.env-hint { margin: 0; font-weight: 700; color: var(--primary-dark); animation: hint 1.6s ease-in-out infinite; }
+@keyframes hint { 50% { opacity: .45; } }
+.envelope-scene.opening .env-hint { visibility: hidden; }
+/* the letter (join card) unfolds after the envelope opens */
+.join-card.letter { background: #fffaf0; border-radius: 6px; position: relative; padding-top: 30px;
+  box-shadow: 0 10px 30px #c2577a22, inset 0 0 0 8px #fffaf0, inset 0 0 0 10px #f0d7de; }
+.join-card.letter::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 10px; border-radius: 6px 6px 0 0;
+  background: repeating-linear-gradient(45deg, var(--primary) 0 14px, #fffaf0 14px 20px, var(--green) 20px 34px, #fffaf0 34px 40px); }
+.join-card.letter::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 10px; border-radius: 0 0 6px 6px;
+  background: inherit; background-image: repeating-linear-gradient(45deg, var(--primary) 0 14px, #fffaf0 14px 20px, var(--green) 20px 34px, #fffaf0 34px 40px); }
+.join-card.letter h1 { color: var(--primary-dark); }
+.join-card.letter #wedding-sub { color: var(--green-dark); font-weight: 600; }
+.join-card.unfold { animation: unfold .8s cubic-bezier(.2, .8, .3, 1) both; transform-origin: top center; }
+@keyframes unfold { from { transform: perspective(900px) rotateX(-70deg) translateY(-30px); opacity: 0; } to { transform: none; opacity: 1; } }
+.join-card .btn.big.primary { box-shadow: 0 4px 0 var(--primary-dark); }
+@media (prefers-reduced-motion: reduce) {
+  .envelope, .env-hint { animation: none; }
+  .env-flap, .env-letter, .env-seal, .envelope-scene { transition: none; }
+  .join-card.unfold { animation: none; }
+}
 
 /* ---- Customizer ---- */
 .customizer { display: grid; grid-template-columns: 220px 1fr; gap: 16px; text-align: left; margin-top: 12px; }
