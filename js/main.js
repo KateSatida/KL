@@ -19,6 +19,10 @@ let theWorld = null;                                      // set once the game s
 const applySettings = (s = {}) => {
   if (s.music_playlist !== undefined) config.music.playlist = s.music_playlist;
   if (s.music_dance !== undefined) config.music.danceFloor = s.music_dance;
+  // Memory Lane photos from a Google Drive folder (admin page → 🖼️ Memory Lane)
+  config.memories = config.memories || {};
+  if (s.memories_folder !== undefined) config.memories.folder = s.memories_folder;
+  if (s.google_api_key !== undefined) config.memories.apiKey = s.google_api_key;
   // day / night chosen by the couple ("" = follow the clock)
   if (s.time_mode !== undefined) {
     config.time.mode = s.time_mode || "auto";

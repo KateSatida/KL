@@ -1,12 +1,40 @@
 // Memory Lane: easels showing your photos; tap for a slideshow with captions.
-// Photos are listed in config/game.json → this station's "photos".
+// Photos come from a Google Drive folder set on the admin page (🖼️ Memory
+// Lane tab), or else from this station's "photos" in config/game.json.
 import { el, openModal } from "../ui.js";
 import { loadImage } from "../sprites.js";
+import { listDrivePhotos } from "../drive.js";
 
 export default function memoryLane(def, game) {
-  const photos = def.photos || [];
+  let photos = def.photos || [];
   const images = new Map();
-  for (const p of photos) loadImage(p.image).then((img) => images.set(p.image, img));
+  // load each photo; if the first address fails, try its backup (Drive)
+  const loadAll = () => {
+    for (const p of photos) {
+      p.key ||= p.image;                                     // stays the same if we switch address
+      if (images.has(p.key)) continue;
+      images.set(p.key, null);
+      loadImage(p.image).then(async (img) => {
+        if (!img && p.fallback) {
+          img = await loadImage(p.fallback);
+          if (img) p.image = p.fallback;                     // the slideshow uses the working address
+        }
+        images.set(p.key, img);
+      });
+    }
+  };
+  const fromDrive = async () => {
+    const m = game.config.memories || {};
+    try {
+      const list = await listDrivePhotos(m.folder, m.apiKey);
+      if (list?.length) { photos = list; loadAll(); }
+    } catch (e) {
+      console.warn("Memory Lane: could not read the Google Drive folder:", e.message);
+    }
+  };
+  loadAll();
+  fromDrive();
+  game.on("settings", (s) => { if ("memories_folder" in s || "google_api_key" in s) setTimeout(fromDrive, 100); });
   let easel = null, sign = null;
   loadImage("assets/stations/easel.png").then((i) => { easel = i; });
   loadImage("assets/stations/memory_sign.png").then((i) => { sign = i; });
@@ -19,7 +47,9 @@ export default function memoryLane(def, game) {
     const count = el("small", { class: "muted" });
     const show = (n) => {
       i = (n + photos.length) % photos.length;
-      img.src = photos[i].image;
+      const p = photos[i];
+      img.onerror = () => { if (p.fallback && !img.src.startsWith(p.fallback)) img.src = p.fallback; };
+      img.src = p.image;
       caption.textContent = photos[i].caption || "";
       count.textContent = `${i + 1} / ${photos.length}`;
     };
@@ -48,7 +78,7 @@ export default function memoryLane(def, game) {
         ctx.fillStyle = "#00000022";
         ctx.beginPath(); ctx.ellipse(s.x, s.y - 2, w * 0.45, 7, 0, 0, Math.PI * 2); ctx.fill();
         ctx.drawImage(easel, x, y, w, h);
-        const photo = photos.length && images.get(photos[(n + cycle) % photos.length].image);
+        const photo = photos.length && images.get(photos[(n + cycle) % photos.length].key);
         if (!photo) return;
         const fx = x + 3 * k, fy = y + 3 * k, fw = 18 * k, fh = 16 * k;       // inside the frame
         const r = Math.max(fw / photo.width, fh / photo.height);
