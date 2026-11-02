@@ -3,7 +3,7 @@
 // Lane tab), or else from this station's "photos" in config/game.json.
 import { el, openModal } from "../ui.js";
 import { loadImage } from "../sprites.js";
-import { listDrivePhotos } from "../drive.js";
+import { listDrivePhotos, photoFromLink } from "../drive.js";
 
 export default function memoryLane(def, game) {
   let photos = def.photos || [];
@@ -25,6 +25,11 @@ export default function memoryLane(def, game) {
   };
   const fromDrive = async () => {
     const m = game.config.memories || {};
+    // 1) photo links pasted on the admin page (no API key needed)
+    const pasted = (m.links || []).map((p) => photoFromLink(p.link, p.caption)).filter(Boolean);
+    if (pasted.length) { photos = pasted; loadAll(); }
+    else if (m.links) { photos = def.photos || []; loadAll(); }     // all links removed: back to the default photos
+    // 2) a whole Drive folder (needs an API key)
     try {
       const list = await listDrivePhotos(m.folder, m.apiKey);
       if (list?.length) { photos = list; loadAll(); }
@@ -34,7 +39,9 @@ export default function memoryLane(def, game) {
   };
   loadAll();
   fromDrive();
-  game.on("settings", (s) => { if ("memories_folder" in s || "google_api_key" in s) setTimeout(fromDrive, 100); });
+  game.on("settings", (s) => {
+    if (Object.keys(s).some((k) => k.startsWith("memor") || k === "google_api_key")) setTimeout(fromDrive, 100);
+  });
   let easel = null, sign = null;
   loadImage("assets/stations/easel.png").then((i) => { easel = i; });
   loadImage("assets/stations/memory_sign.png").then((i) => { sign = i; });

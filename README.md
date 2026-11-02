@@ -198,8 +198,14 @@ Day/night follows **each guest's phone clock**, set in `time`:
 `"night"` to force one. To preview, add `?time=night` (or `?time=20:30`) to the
 end of the game link. The top bar shows ☀️ or 🌙.
 
-**Memory Lane photos (Google Drive).** On the admin page, open **🖼️ Memory
-Lane**, paste your Drive folder link and a Google API key, then **💾 Save**.
+**Memory Lane photos.** On the admin page, open **🖼️ Memory Lane**:
+
+- **📷 Photo links (easiest, no API key):** paste one link per photo with a
+  caption, in order, then **💾 Save photos**. For Google Drive: set the photo
+  (or its folder) to "Anyone with the link", then in the Drive app ⋮ → Share →
+  **Copy link**. Any other `https://` image link works too.
+- **📁 Whole Drive folder:** paste your Drive folder link and a Google API key,
+  then **💾 Save**.
 Guests see the photos right away; add, remove or rename photos in Drive any time.
 
 - Share the folder as **"Anyone with the link" → Viewer** (Drive → folder → Share).
