@@ -18,6 +18,19 @@ export const driveImageUrls = (id) => [
   `https://drive.google.com/thumbnail?id=${id}&sz=w1600`,
 ];
 
+// A photo link pasted on the admin page → { image, fallback, caption }.
+// Google Drive file links ("…/file/d/ID/view") become direct image addresses;
+// any other https image link is used as it is.
+export function photoFromLink(link, caption = "") {
+  const id = driveFileId(link);
+  if (id) { const [image, fallback] = driveImageUrls(id); return { image, fallback, caption }; }
+  if (/^https:\/\/\S+$/.test(String(link).trim())) return { image: String(link).trim(), caption };
+  return null;
+}
+
+// Photo links are stored in settings as memory_aa, memory_ab, … (one per photo)
+export const memoryKey = (i) => "memory_" + String.fromCharCode(97 + Math.floor(i / 26)) + String.fromCharCode(97 + (i % 26));
+
 // "01_Where it all began.jpg" -> "Where it all began"
 const captionFrom = (name) => name.replace(/\.[a-z0-9]+$/i, "").replace(/^\d+[\s._-]*/, "").replace(/[_]+/g, " ").trim();
 

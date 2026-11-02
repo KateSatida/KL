@@ -23,6 +23,13 @@ const applySettings = (s = {}) => {
   config.memories = config.memories || {};
   if (s.memories_folder !== undefined) config.memories.folder = s.memories_folder;
   if (s.google_api_key !== undefined) config.memories.apiKey = s.google_api_key;
+  const linkKeys = Object.keys(s).filter((k) => /^memory_[a-z]{2}$/.test(k));
+  if (linkKeys.length) {
+    const links = { ...(config.memories.linkMap || {}) };
+    for (const k of linkKeys) links[k] = s[k];
+    config.memories.linkMap = links;
+    config.memories.links = Object.keys(links).sort().map((k) => { try { return JSON.parse(links[k] || "null"); } catch { return null; } }).filter((x) => x?.link);
+  }
   // day / night chosen by the couple ("" = follow the clock)
   if (s.time_mode !== undefined) {
     config.time.mode = s.time_mode || "auto";

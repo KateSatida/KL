@@ -5,7 +5,7 @@ import { backend } from "./backend/index.js";
 import { loadConfig } from "./config.js";
 import { embedFor } from "./player.js";
 import { playAsCouple } from "./couple.js";
-import { listDrivePhotos, driveFolderId } from "./drive.js";
+import { listDrivePhotos, driveFolderId, photoFromLink, memoryKey } from "./drive.js";
 
 const admin = backend.admin;
 
@@ -165,13 +165,62 @@ views.memories = async () => {
     } catch (e) { note.textContent = `Error: ${e.message}`; }
   } }, "💾 Save");
   if (saved.memories_folder) test();
-  return el("div", { class: "card" },
+
+  // --- photo links, one by one (no API key needed) ---
+  const rows = el("div");
+  const addRow = (link = "", caption = "") => {
+    const linkIn = el("input", { value: link, placeholder: "Photo link (Google Drive: ⋮ → Share → Copy link)" });
+    const capIn = el("input", { value: caption, maxlength: 120, placeholder: "Caption, e.g. Where it all began 🌅" });
+    const thumb = el("img", { style: "width:64px;height:64px;object-fit:cover;border-radius:8px;background:#f3e9ec" });
+    const show = () => {
+      const p = photoFromLink(linkIn.value);
+      thumb.onerror = () => { thumb.onerror = null; if (p?.fallback) thumb.src = p.fallback; };
+      thumb.src = p ? p.image : "";
+    };
+    linkIn.addEventListener("change", show);
+    show();
+    const row = el("div", { class: "card", style: "margin:8px 0;padding:10px" },
+      el("div", { class: "row", style: "flex-wrap:nowrap;align-items:flex-start" }, thumb,
+        el("div", { style: "flex:1;display:grid;gap:6px" }, linkIn, capIn),
+        el("button", { class: "btn small", onclick: () => row.remove() }, "✕")));
+    row._get = () => ({ link: linkIn.value.trim(), caption: capIn.value.trim() });
+    rows.append(row);
+  };
+  const savedLinks = Object.keys(saved).filter((k) => /^memory_[a-z]{2}$/.test(k)).sort()
+    .map((k) => { try { return JSON.parse(saved[k] || "null"); } catch { return null; } }).filter((x) => x?.link);
+  savedLinks.forEach((p) => addRow(p.link, p.caption));
+  if (!savedLinks.length) addRow();
+  const oldCount = Object.keys(saved).filter((k) => /^memory_[a-z]{2}$/.test(k)).length;
+  const linksNote = el("p", { class: "muted" });
+  const saveLinks = el("button", { class: "btn primary", onclick: async () => {
+    const list = [...rows.children].map((r) => r._get()).filter((p) => p.link);
+    const bad = list.find((p) => !photoFromLink(p.link));
+    if (bad) return alert(`This doesn't look like a photo link:\n${bad.link}`);
+    const values = {};
+    list.forEach((p, i) => { values[memoryKey(i)] = JSON.stringify(p); });
+    for (let i = list.length; i < Math.max(oldCount, list.length + 1); i++) values[memoryKey(i)] = "";   // clear removed ones
+    try {
+      await admin.saveSettings(values);
+      await getRoom().broadcast("settings", values);
+      linksNote.textContent = `Saved ${list.length} photo(s) ✔ Guests see them right away.`;
+    } catch (e) { linksNote.textContent = `Error: ${e.message}`; }
+  } }, "💾 Save photos");
+
+  return el("div", {},
+    el("div", { class: "card" },
+      el("h3", {}, "📷 Photo links"),
+      el("p", {}, "Paste a link for each photo, in the order you want. For Google Drive photos: set each photo (or the folder) to \"Anyone with the link\", then ⋮ → Share → Copy link."),
+      rows,
+      el("div", { class: "row" }, el("button", { class: "btn", onclick: () => addRow() }, "➕ Add photo"), saveLinks),
+      linksNote),
+    el("div", { class: "card", style: "margin-top:16px" },
+    el("h3", {}, "📁 Or a whole Drive folder (needs a Google API key)"),
     el("p", {}, "Show photos from a Google Drive folder on Memory Lane. Add, remove or rename photos in Drive any time; guests see the changes when they open the game."),
     el("label", {}, "Folder link (shared as \"Anyone with the link\")"), folder,
     el("label", {}, "Google API key"), key,
     el("p", { class: "muted" }, "Captions come from the file names, in name order: \"01 Where it all began.jpg\" → \"Where it all began\"."),
     el("div", { class: "row" }, save, el("button", { class: "btn", onclick: test }, "🔍 Test")),
-    note, preview);
+    note, preview));
 };
 
 // Music links: saved in Supabase, guests pick them up straight away.
