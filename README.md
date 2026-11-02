@@ -17,8 +17,8 @@ on their phone, dress up a 32×32 character, walk around, and visit stations:
 | 💐 **Bouquet Toss** | Guests toss the bouquet themselves and catch a random flower (worn in their outfit) with its meaning and a note from you. |
 
 **Guests don't sign up or log in.** They just type a name the first time.
-After that, **each phone keeps its name**: refreshing, closing or reopening the
-page takes them straight back in as the same character. A phone can't switch to
+After that, **each phone keeps its name**: when they open the link again they
+open the envelope and tap **Enter the party as …** to come back as the same character. A phone can't switch to
 another name, and nobody else can take it (capital letters and spaces don't
 count, so "Mai" and "mai" are the same name). To reset a phone, delete its name
 on the admin page.
@@ -185,7 +185,8 @@ Where the typed note sits on the photo is set by `NOTE_BOX` at the top of `js/st
 seal, red stamp, pink-and-green airmail border). Tapping it opens the flap, the
 letter slides out and unfolds into the welcome page. The address text is in
 `index.html` (`To: our dearest guest`); "From" uses the couple and date in
-`config/game.json`. Returning guests go straight into the party.
+`config/game.json`. Returning guests see the envelope addressed to their name and
+tap **Enter the party** themselves (their name stays locked to their phone).
 
 **Decorations and day/night.** The map is an outdoor lawn. Everything on it is a
 pixel-art PNG in `assets/decor/` (flower backdrop, LED string lights, lamp posts,
