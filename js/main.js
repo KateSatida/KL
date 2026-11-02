@@ -140,8 +140,9 @@ if (role) {                                               // the couple goes str
 
 const myName = !role && store.get("myName");
 
-// First visit: show the invitation envelope; tapping it opens the letter (join card)
-if (!role && !myName) {
+// Guests always see the invitation envelope; tapping it opens the letter (join
+// card) and they tap "Enter the party" themselves. Returning guests keep their name.
+if (!role) {
   const scene = $("#envelope-scene"), card = $("#join .join-card");
   scene.classList.remove("hidden");
   card.style.visibility = "hidden";
@@ -159,8 +160,8 @@ if (!role && !myName) {
 }
 if (myName) {
   state.name = myName;
-  $("#join-btn").textContent = `Entering as ${myName}…`;
-  enter().finally(() => { $("#join-btn").textContent = "Enter the party 🎉"; });
+  $("#join-btn").textContent = `Enter the party as ${myName} 🎉`;
+  $("#env-to").textContent = `To: ${myName} 💕`;          // the envelope is addressed to them
 }
 
 // Background music everywhere; dance playlist (or the guest's own) on the dance floor.
