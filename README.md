@@ -198,18 +198,21 @@ Day/night follows **each guest's phone clock**, set in `time`:
 `"night"` to force one. To preview, add `?time=night` (or `?time=20:30`) to the
 end of the game link. The top bar shows ☀️ or 🌙.
 
-**Memory Lane photos.** Put your photos (any .jpg or .png) in
-`assets/memories/` and list them under the Memory Lane station in
-`config/game.json`:
+**Memory Lane photos (Google Drive).** On the admin page, open **🖼️ Memory
+Lane**, paste your Drive folder link and a Google API key, then **💾 Save**.
+Guests see the photos right away; add, remove or rename photos in Drive any time.
 
-```json
-"photos": [
-  { "image": "assets/memories/first-date.jpg", "caption": "Where it all began 🌅" },
-  { "image": "assets/memories/proposal.jpg", "caption": "She said yes! 💍" }
-]
-```
-
-Keep photos small (about 1000 px wide) so they load fast on phones.
+- Share the folder as **"Anyone with the link" → Viewer** (Drive → folder → Share).
+- Captions come from the file names, sorted by name: `01 Where it all began.jpg`
+  shows "Where it all began" (the number only sets the order).
+- **Get a free API key** (once, about 5 minutes, works in a phone browser):
+  1. Open https://console.cloud.google.com and sign in → create a project.
+  2. Search **"Google Drive API"** → **Enable**.
+  3. **APIs & Services → Credentials → Create credentials → API key**, copy it.
+  4. Recommended: edit the key → **Application restrictions: Websites** →
+     add `https://katesatida.github.io/*`; **API restrictions** → Google Drive API.
+- Without a folder, the photos listed under `"photos"` on the Memory Lane station
+  in `config/game.json` are used.
 
 **Music (YouTube / Spotify).** Change the links any time on the admin page,
 tab **🎵 Music** (no code needed; guests in the game switch right away):

@@ -5,6 +5,7 @@ import { backend } from "./backend/index.js";
 import { loadConfig } from "./config.js";
 import { embedFor } from "./player.js";
 import { playAsCouple } from "./couple.js";
+import { listDrivePhotos, driveFolderId } from "./drive.js";
 
 const admin = backend.admin;
 
@@ -131,6 +132,46 @@ views.couple = async () => {
       play("bride"), play("groom")),
     note,
     el("p", { class: "muted" }, "You can still change your name in the game with 💬 Status. On two phones, log in to this page on each and press your button."));
+};
+
+// Memory Lane photos from a Google Drive folder
+views.memories = async () => {
+  const saved = await backend.getSettings().catch(() => ({}));
+  const folder = el("input", { value: saved.memories_folder || "", placeholder: "https://drive.google.com/drive/folders/..." });
+  const key = el("input", { value: saved.google_api_key || "", placeholder: "Google API key (AIza...)" });
+  const note = el("p", { class: "muted" });
+  const preview = el("div", { class: "admin-grid" });
+  const test = async () => {
+    note.textContent = "Checking the folder…";
+    preview.replaceChildren();
+    try {
+      const list = await listDrivePhotos(folder.value, key.value.trim());
+      if (!list) { note.textContent = "Paste the folder link and the API key."; return false; }
+      note.textContent = list.length ? `Found ${list.length} photo(s) ✔` : "The folder has no photos (or isn't shared with 'Anyone with the link').";
+      preview.replaceChildren(...list.map((p) => el("div", { class: "admin-item" },
+        el("img", { src: p.image, loading: "lazy", onerror: (e) => { e.target.onerror = null; e.target.src = p.fallback; } }),
+        el("div", { class: "meta" }, p.caption))));
+      return list.length > 0;
+    } catch (e) { note.textContent = `Google says: ${e.message}`; return false; }
+  };
+  const save = el("button", { class: "btn primary", onclick: async () => {
+    if (folder.value.trim() && !driveFolderId(folder.value)) return alert("That doesn't look like a Google Drive folder link.");
+    const values = { memories_folder: folder.value.trim(), google_api_key: key.value.trim() };
+    try {
+      await admin.saveSettings(values);
+      await getRoom().broadcast("settings", values);
+      await test();
+      note.textContent += " Saved ✔ Guests see the new photos right away.";
+    } catch (e) { note.textContent = `Error: ${e.message}`; }
+  } }, "💾 Save");
+  if (saved.memories_folder) test();
+  return el("div", { class: "card" },
+    el("p", {}, "Show photos from a Google Drive folder on Memory Lane. Add, remove or rename photos in Drive any time; guests see the changes when they open the game."),
+    el("label", {}, "Folder link (shared as \"Anyone with the link\")"), folder,
+    el("label", {}, "Google API key"), key,
+    el("p", { class: "muted" }, "Captions come from the file names, in name order: \"01 Where it all began.jpg\" → \"Where it all began\"."),
+    el("div", { class: "row" }, save, el("button", { class: "btn", onclick: test }, "🔍 Test")),
+    note, preview);
 };
 
 // Music links: saved in Supabase, guests pick them up straight away.
