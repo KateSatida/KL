@@ -281,7 +281,8 @@
     "bride": {
       "badge": "👰",
       "look": {
-        "character": "assets/characters/02_long_dark_hair.png",
+        "body": "assets/bodies/01_light.png",
+        "hair": "assets/hairs/02_long_dark.png",
         "dress": "assets/dresses/white_gown.png",
         "prop": "assets/props/veil.png",
         "bonus": "assets/props/bouquet.png"
@@ -290,7 +291,8 @@
     "groom": {
       "badge": "🤵",
       "look": {
-        "character": "assets/characters/01_short_dark_hair.png",
+        "body": "assets/bodies/01_light.png",
+        "hair": "assets/hairs/01_short_dark.png",
         "dress": "assets/dresses/black_suit.png"
       }
     }

@@ -1,13 +1,14 @@
 // Character creator: pick a character, dress and prop, or draw your own layer.
 // Used on the join screen and again from the Wardrobe station.
 import { el, toast } from "./ui.js";
-import { composeLook, cropPreview, CHARM_AREA } from "./sprites.js";
+import { composeLook, cropPreview, CHARM_AREA, upgradeLook } from "./sprites.js";
 import { getItems } from "./items.js";
 import { pixelEditor } from "./pixel-editor.js";
 
 // Tabs shown in the creator. "folder" = a folder in assets/ (listed in assets/manifest.json).
 const TABS = [
-  { id: "character", label: "🧑 Character", folder: "characters", required: true },
+  { id: "body", label: "🧍 Body", folder: "bodies", required: true },
+  { id: "hair", label: "💇 Hair", folder: "hairs" },
   { id: "dress", label: "👗 Outfit", folder: "dresses" },
   { id: "prop", label: "🕶️ Prop", folder: "props" },
   { id: "drink", label: "🥂 Drink", folder: "drinks" },
@@ -20,7 +21,11 @@ const TABS = [
 // state = { name, status, look: {...} }  (edited in place)
 // onDrawingDone(): called after "Use drawing" (the wardrobe saves right away)
 export function customizer(config, state, { showName = true, lockedName = null, onDrawingDone = null } = {}) {
-  if (!state.look.character && config.layers.characters[0]) state.look.character = config.layers.characters[0].url;
+  state.look = upgradeLook(state.look);                     // old saved characters → body + hair
+  if (!state.look.body && config.layers.bodies[0]) {
+    state.look.body = config.layers.bodies[0].url;
+    if (config.layers.hairs[0]) state.look.hair = config.layers.hairs[0].url;
+  }
 
   const preview = el("canvas", { width: 32, height: 32 });
   const refresh = async () => {

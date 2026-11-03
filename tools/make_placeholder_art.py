@@ -2,7 +2,7 @@
 draw your own. Run:  python tools/make_placeholder_art.py
 
 Your own art: just drop 32x32 PNG files (transparent background) into
-assets/characters, assets/dresses, assets/props or assets/drinks.
+assets/bodies, assets/hairs, assets/dresses, assets/props or assets/drinks.
 This script never overwrites files that already exist unless you pass --force.
 """
 import struct
@@ -95,6 +95,59 @@ def character(skin, hair, style, shirt="#f2f2f2"):
     s.rect(15, 12, 16, 12, "#c45c5c")           # smile
     return s
 
+
+# ---- bodies and hair as separate layers -----------------------------------------
+
+def body(skin, shirt="#f2f2f2"):
+    """A body with no hair (head, face, undershirt, arms, legs, shoes)."""
+    s = Sprite()
+    s.rect(11, 5, 20, 14, skin)                 # head
+    s.rect(12, 15, 19, 24, shirt)               # undershirt
+    s.rect(10, 16, 11, 22, skin)                # arms
+    s.rect(20, 16, 21, 22, skin)
+    s.rect(13, 25, 14, 28, "#4a4a5a")           # legs
+    s.rect(17, 25, 18, 28, "#4a4a5a")
+    s.rect(12, 29, 14, 29, "#2a2a2a")           # shoes
+    s.rect(17, 29, 19, 29, "#2a2a2a")
+    s.outline()
+    s.set(13, 10, "#2a1d1d")                    # eyes
+    s.set(18, 10, "#2a1d1d")
+    s.set(12, 12, "#f4a3a3")                    # blush
+    s.set(19, 12, "#f4a3a3")
+    s.rect(15, 12, 16, 12, "#c45c5c")           # smile
+    return s
+
+
+def hair(color, style):
+    """Just the hair, on the same 32x32 grid as the bodies."""
+    s = Sprite()
+    s.rect(11, 3, 20, 6, color)
+    if style == "long":
+        s.rect(10, 5, 11, 17, color)
+        s.rect(20, 5, 21, 17, color)
+    elif style == "bun":
+        s.rect(13, 1, 18, 2, color)
+        s.rect(10, 5, 10, 9, color)
+        s.rect(21, 5, 21, 9, color)
+    elif style == "bob":
+        s.rect(10, 4, 11, 12, color)
+        s.rect(20, 4, 21, 12, color)
+    else:  # short
+        s.rect(10, 4, 10, 8, color)
+        s.rect(21, 4, 21, 8, color)
+    return s.outline()
+
+
+BODIES = {
+    "01_light": body("#f7d2b3"), "02_fair": body("#ffe0c7"), "03_tan": body("#e8b892"),
+    "04_brown": body("#d9a07a"), "05_deep": body("#9c6644"),
+}
+HAIRS = {
+    "01_short_dark": hair("#3a2a22", "short"), "02_long_dark": hair("#2b1d18", "long"),
+    "03_bun_brown": hair("#6b4226", "bun"), "04_short_blonde": hair("#d9a441", "short"),
+    "05_long_pink": hair("#e48bb0", "long"), "06_short_black": hair("#1f1a17", "short"),
+    "07_bob_brown": hair("#6b4226", "bob"),
+}
 
 CHARACTERS = {
     "01_short_dark_hair": ("#f7d2b3", "#3a2a22", "short"),
@@ -889,13 +942,11 @@ def logo():
 
 
 def main():
-    for name, args in CHARACTERS.items():
-        character(*args).save(ASSETS / "characters" / f"{name}.png")
     bartender().save(ASSETS / "npc" / "bartender.png")
     for name, sprite in couple().items():
         sprite.save(ASSETS / "npc" / f"{name}.png")
     logo().save(ASSETS / "logo.png")
-    for folder, items in (("dresses", DRESSES), ("props", PROPS), ("drinks", DRINKS),
+    for folder, items in (("bodies", BODIES), ("hairs", HAIRS), ("dresses", DRESSES), ("props", PROPS), ("drinks", DRINKS),
                           ("decor", DECOR), ("stations", STATION_ICONS), ("stations", BUILDINGS),
                           ("memories", MEMORIES), ("bouquets", BOUQUETS), ("charms", CHARMS)):
         for name, sprite in items.items():

@@ -1,7 +1,7 @@
 """Lists every image in assets/ into assets/manifest.json.
 
 GitHub Pages can't list folders, so the game reads this file to know which
-characters, outfits, props, drinks and frames exist. You don't have to run it
+bodies, hairstyles, outfits, props, drinks and frames exist. You don't have to run it
 by hand: tools/serve.py runs it locally and GitHub runs it on every push.
 
     python tools/build_manifest.py
@@ -12,7 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "assets"
-LAYER_FOLDERS = ["characters", "dresses", "props", "drinks"]
+LAYER_FOLDERS = ["bodies", "hairs", "dresses", "props", "drinks"]
 IMAGE_EXTS = {".png", ".gif", ".webp", ".svg", ".jpg", ".jpeg"}
 
 

@@ -5,8 +5,8 @@ import { el, closeModal, store, toast } from "./ui.js";
 
 // "couple" in config/game.json: the outfit each of you starts with
 const DEFAULT_LOOKS = {
-  bride: { character: "assets/characters/02_long_dark_hair.png", dress: "assets/dresses/white_gown.png", prop: "assets/props/veil.png", bonus: "assets/props/bouquet.png" },
-  groom: { character: "assets/characters/01_short_dark_hair.png", dress: "assets/dresses/black_suit.png" },
+  bride: { body: "assets/bodies/01_light.png", hair: "assets/hairs/02_long_dark.png", dress: "assets/dresses/white_gown.png", prop: "assets/props/veil.png", bonus: "assets/props/bouquet.png" },
+  groom: { body: "assets/bodies/01_light.png", hair: "assets/hairs/01_short_dark.png", dress: "assets/dresses/black_suit.png" },
 };
 
 // Called from the admin page (already logged in): remember "I'm the bride/groom"
