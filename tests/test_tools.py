@@ -20,7 +20,7 @@ def test_manifest_lists_existing_files():
         for item in items:
             assert (ROOT / item["url"]).is_file()
             assert not item["url"].startswith("/"), "paths must be relative for GitHub Pages"
-    assert m["layers"]["characters"], "need at least one character"
+    assert m["layers"]["bodies"], "need at least one body"
 
 
 def test_config_is_valid_json_with_relative_paths():

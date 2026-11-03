@@ -2,9 +2,24 @@
 
 export const SIZE = 32;
 // Drawing order, bottom to top. Add a new layer name here if you create a new
-// asset folder. "bonus" is for prizes (the caught bouquet), "charm" for the
-// lucky item from the horoscope station.
-export const LAYER_ORDER = ["character", "dress", "prop", "drink", "bonus", "charm"];
+// asset folder. "bonus" is the caught bouquet, "charm" the lucky item from the
+// horoscope station. Hair goes over the dress so long hair falls on the shoulders.
+export const LAYER_ORDER = ["body", "dress", "hair", "prop", "drink", "bonus", "charm"];
+
+// Older versions had one "character" picture with body + hair together.
+// Turn those saved looks into the new body + hair layers.
+const OLD_CHARACTERS = {
+  "01_short_dark_hair": ["01_light", "01_short_dark"], "02_long_dark_hair": ["01_light", "02_long_dark"],
+  "03_bun_brown_hair": ["03_tan", "03_bun_brown"], "04_short_light_hair": ["02_fair", "04_short_blonde"],
+  "05_long_pink_hair": ["04_brown", "05_long_pink"], "06_short_deep_skin": ["05_deep", "06_short_black"],
+};
+export function upgradeLook(look) {
+  if (!look?.character || look.body) return look;
+  const { character, ...rest } = look;
+  const name = character.split("/").pop().replace(/\.png$/, "");
+  const [b, h] = OLD_CHARACTERS[name] || ["01_light", null];
+  return { ...rest, body: `assets/bodies/${b}.png`, ...(h ? { hair: `assets/hairs/${h}.png` } : {}) };
+}
 // When a guest uses their own drawing, it replaces the outfit pieces;
 // these layers are still drawn on top of it:
 const ON_TOP_OF_DRAWING = ["drink", "bonus", "charm"];
@@ -39,6 +54,7 @@ export function cropPreview(src, area, className = "") {
 // look = { character: url, dress: url, prop: url, drink: url, custom: dataURL }
 // look = { character, dress, prop, drink, bonus: url, custom: dataURL, useDrawing: bool }
 export async function composeLook(look, skip = []) {
+  look = upgradeLook(look);
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = SIZE;
   const ctx = canvas.getContext("2d");

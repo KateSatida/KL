@@ -1,35 +1,67 @@
 {
   "layers": {
-    "characters": [
+    "bodies": [
       {
-        "id": "01_short_dark_hair",
-        "label": "Short Dark Hair",
-        "url": "assets/characters/01_short_dark_hair.png"
+        "id": "01_light",
+        "label": "Light",
+        "url": "assets/bodies/01_light.png"
       },
       {
-        "id": "02_long_dark_hair",
-        "label": "Long Dark Hair",
-        "url": "assets/characters/02_long_dark_hair.png"
+        "id": "02_fair",
+        "label": "Fair",
+        "url": "assets/bodies/02_fair.png"
       },
       {
-        "id": "03_bun_brown_hair",
-        "label": "Bun Brown Hair",
-        "url": "assets/characters/03_bun_brown_hair.png"
+        "id": "03_tan",
+        "label": "Tan",
+        "url": "assets/bodies/03_tan.png"
       },
       {
-        "id": "04_short_light_hair",
-        "label": "Short Light Hair",
-        "url": "assets/characters/04_short_light_hair.png"
+        "id": "04_brown",
+        "label": "Brown",
+        "url": "assets/bodies/04_brown.png"
       },
       {
-        "id": "05_long_pink_hair",
-        "label": "Long Pink Hair",
-        "url": "assets/characters/05_long_pink_hair.png"
+        "id": "05_deep",
+        "label": "Deep",
+        "url": "assets/bodies/05_deep.png"
+      }
+    ],
+    "hairs": [
+      {
+        "id": "01_short_dark",
+        "label": "Short Dark",
+        "url": "assets/hairs/01_short_dark.png"
       },
       {
-        "id": "06_short_deep_skin",
-        "label": "Short Deep Skin",
-        "url": "assets/characters/06_short_deep_skin.png"
+        "id": "02_long_dark",
+        "label": "Long Dark",
+        "url": "assets/hairs/02_long_dark.png"
+      },
+      {
+        "id": "03_bun_brown",
+        "label": "Bun Brown",
+        "url": "assets/hairs/03_bun_brown.png"
+      },
+      {
+        "id": "04_short_blonde",
+        "label": "Short Blonde",
+        "url": "assets/hairs/04_short_blonde.png"
+      },
+      {
+        "id": "05_long_pink",
+        "label": "Long Pink",
+        "url": "assets/hairs/05_long_pink.png"
+      },
+      {
+        "id": "06_short_black",
+        "label": "Short Black",
+        "url": "assets/hairs/06_short_black.png"
+      },
+      {
+        "id": "07_bob_brown",
+        "label": "Bob Brown",
+        "url": "assets/hairs/07_bob_brown.png"
       }
     ],
     "dresses": [

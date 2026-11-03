@@ -153,7 +153,9 @@ Browse → "Remove my card").
 ## 6. Customise
 
 **Your art.** Draw 32×32 PNGs with a transparent background and put them in
-`assets/characters`, `assets/dresses`, `assets/props` or `assets/drinks`.
+`assets/bodies`, `assets/hairs`, `assets/dresses`, `assets/props` or `assets/drinks`.
+A character is stacked from these layers, bottom to top: **body → dress → hair →
+prop → drink → bouquet (from the toss) → lucky item (from the horoscope)**.
 - New files appear automatically: `tools/serve.py` and GitHub both refresh the list (`assets/manifest.json`).
 - Every layer sits on the same 32×32 grid, so draw on top of a character as a guide.
 - See [`assets/README.md`](assets/README.md) for details.
