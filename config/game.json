@@ -304,8 +304,7 @@
       "What can I get you? Leave a message for everyone on the wall!",
       "The couple says thank you for coming!",
       "Cheers to love!"
-    ],
-    "promptpay": { "image": "assets/promptpay/qr.svg", "title": "Support the couple", "text": "Scan with any Thai banking app (PromptPay). Thank you so much!" }
+    ]
   },
   "singles": {
     "intro": "Single and ready to mingle? Add your photo and Instagram. You'll appear on the big projector!"

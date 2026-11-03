@@ -1,4 +1,4 @@
-// Drink bar: pick a drink to hold, PromptPay QR, and the bartender's message wall.
+// Drink bar: pick a drink to hold, and the bartender's message wall.
 import { el, openModal, tabs, toast, timeAgo } from "../ui.js";
 import { drawStation, drawStationFront, label } from "../world.js";
 import { loadImage, SIZE } from "../sprites.js";
@@ -58,18 +58,11 @@ export default function bar(def, game) {
     );
   };
 
-  const supportTab = () => el("div", { class: "qr" },
-    el("h3", {}, cfg.promptpay.title),
-    el("img", { src: cfg.promptpay.image, alt: "PromptPay QR code" }),
-    el("p", {}, cfg.promptpay.text),
-  );
-
   return {
     open() {
       openModal(`${def.icon} ${def.label}`, tabs([
         { id: "drinks", label: "🥂 Drinks", render: drinksTab },
         { id: "bartender", label: "🤵 Bartender", render: bartenderTab },
-        { id: "support", label: "💝 Support us", render: supportTab },
       ]));
     },
     lights: (d) => [{ x: d.x + d.w / 2, y: d.y + d.h / 2, r: Math.max(d.w, d.h) * 0.55, strength: 0.7, color: "rgb(255,200,140)" }],

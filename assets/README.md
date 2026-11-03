@@ -8,7 +8,6 @@
 | `drinks/`     | Drinks guests pick at the bar           | 32×32 PNG, transparent   |
 | `frames/`     | Photo-booth frames                      | 600×800 PNG or SVG, transparent middle |
 | `npc/`        | Bartender sprite                        | 32×32 PNG                |
-| `promptpay/`  | Your PromptPay QR code                  | any size PNG             |
 
 Every layer is drawn on the **same 32×32 grid** on top of each other, so draw
 each dress/prop in the exact spot it should sit on the body. Easiest way:

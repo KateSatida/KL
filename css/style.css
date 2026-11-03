@@ -210,8 +210,6 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
 
 /* ---- Bar / message wall / singles ---- */
 .drinks { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
-.qr { text-align: center; }
-.qr img { width: min(260px, 70vw); border-radius: 12px; }
 .bubble { background: #fff0f4; border-radius: 14px; padding: 10px 14px; margin: 8px 0; }
 .wall { max-height: 300px; overflow-y: auto; }
 .wall .msg { border-bottom: 1px dashed var(--line); padding: 8px 0; }
