@@ -7,7 +7,7 @@ on their phone, dress up a 32×32 character, walk around, and visit stations:
 |---|---|
 | 👗 **Character creator / Wardrobe** | Pick a character, outfit, prop and drink layer by layer, or draw their own 32×32 character (starting from their current one or a blank canvas). Set a status that floats above their head when others are near. |
 | 📸 **Photo Booth** | Take a selfie, pick a frame, type a note and write on the photo with a finger, then save it. A copy goes to your private admin page. |
-| 🍸 **Drink Bar** | Pick a drink to carry, scan your PromptPay QR, and talk to the bartender to leave messages on a shared wall. |
+| 🍸 **Drink Bar** | Pick a drink to carry and talk to the bartender to leave messages on a shared wall. |
 | 💘 **Single Station** | Upload a photo + Instagram. A random single shows on the big projector every few seconds. |
 | 💬 **Chat** | Proximity chat: you only see messages from guests standing close to you. |
 | 🌳 **Wishing Tree** | Guests hang a coloured ribbon with a wish; the ribbons appear on the tree for everyone. |
@@ -169,10 +169,6 @@ Browse → "Remove my card").
 - `stations`: position (`x`, `y`), size (`w`, `h`), label, icon and colour of each station
 - `decorations`: pixel-art pictures placed on the map (see **Decorations and day/night** below)
 - `time`: when night starts and ends
-- `bar.promptpay`: your QR image path and the text under it
-
-**PromptPay QR.** Save your QR as `assets/promptpay/qr.png`, then change
-`"image"` in `config/game.json` to `"assets/promptpay/qr.png"`.
 
 **Photo frames.** Add 600×800 PNG or SVG files with a transparent centre to
 `assets/frames/`. The example frames also contain the example names, so edit or replace them.
