@@ -26,6 +26,11 @@ export function customizer(config, state, { showName = true, lockedName = null, 
     state.look.body = config.layers.bodies[0].url;
     if (config.layers.hairs[0]) state.look.hair = config.layers.hairs[0].url;
   }
+  for (const tab of TABS) {                                 // drop pieces that were removed from the wardrobe
+    const url = state.look[tab.id];
+    if (tab.folder && url && url.startsWith(`assets/${tab.folder}/`) && !(config.layers[tab.folder] || []).some((i) => i.url === url)) delete state.look[tab.id];
+  }
+  if (!state.look.body && config.layers.bodies[0]) state.look.body = config.layers.bodies[0].url;
   if (!state.look.dress && config.layers.dresses?.[0]) state.look.dress = config.layers.dresses[0].url;   // nobody starts without an outfit
 
   const preview = el("canvas", { width: 32, height: 32 });

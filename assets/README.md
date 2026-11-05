@@ -11,6 +11,7 @@
 | `bouquets/`   | Bouquet toss prizes (right hand)        | 32×32 PNG, transparent   |
 | `charms/`     | Horoscope lucky items (top-right corner, x 22–31, y 0–11) | 32×32 PNG, transparent |
 | `npc/`        | Bride, groom and bartender              | 32×32 PNG                |
+| `couple/`    | Only the couple wears these: white gown, veil, bouquet, grey suit | 32×32 PNG, transparent |
 
 Layers are stacked bottom to top: **body → dress → hair → prop → drink →
 bouquet → lucky item**.
