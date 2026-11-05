@@ -843,7 +843,7 @@ def bouquet_of(kind):
         rnd = random.Random(5)
         for _ in range(26): s.set(rnd.randint(19, 29), rnd.randint(9, 19), "#ffffff")
         for _ in range(8): s.set(rnd.randint(19, 29), rnd.randint(11, 19), "#7fb35f")
-    return s.outline("#5a4a4a")
+    return s.outline("#b07a8a")
 
 
 BOUQUETS = {f"{i + 1:02d}_{k}": bouquet_of(k) for i, k in enumerate(
@@ -887,7 +887,7 @@ def charm_of(kind):
         s.rect(ox, oy + 2, ox + 5, oy + 6, "#9e9e9e"); s.rect(ox + 6, oy + 3, ox + 6, oy + 8, "#9e9e9e")
         s.rect(ox, oy + 7, ox + 1, oy + 8, "#9e9e9e"); s.rect(ox + 4, oy + 7, ox + 5, oy + 8, "#9e9e9e"); s.set(ox + 4, oy + 3, "#3b2a2a")
         s.rect(ox + 1, oy + 2, ox + 3, oy + 2, "#d23a4a")
-    return s.outline("#5a4a4a")
+    return s.outline("#b07a8a")
 
 
 CHARMS = {k: charm_of(k) for k in ["clover", "lucky_cat", "gold_coin", "money_bag", "pink_heart", "red_string",
@@ -939,6 +939,262 @@ def logo():
     for i, y in enumerate(range(11, 17)):
         s.rect(18 + i, y, 30 - i, y, "#ff5d8f")
     return s
+
+
+# =================================================================================
+# STYLE v2 (the couple's own style): no black outlines; each part is outlined in a
+# darker shade of its own colour; big round head, small body. The body, the long
+# hair, the blue suit and the pink dress below are the couple's own drawings;
+# everything else is drawn to match. These replace the older versions above.
+# =================================================================================
+
+def from_template(rows, palette):
+    """rows: 32 strings of 32 chars; '.' = empty, letters = palette keys."""
+    s = Sprite()
+    for y, row in enumerate(rows):
+        for x, ch in enumerate(row):
+            if ch != "." and palette.get(ch):
+                s.set(x, y, palette[ch])
+    return s
+
+
+def shade_outline(mask, dark, fill):
+    """Fill a set of (x, y) cells; cells on the edge get the dark colour."""
+    s = Sprite()
+    for x, y in mask:
+        edge = any((x + dx, y + dy) not in mask for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+        s.set(x, y, dark if edge else fill)
+    return s
+
+
+# ---- body (the couple's drawing): S = skin, H = shade ------------------------------
+BODY_T = [
+    "................................", "................................", "................................", "................................",
+    ".............SSSSSS.............", "...........SSSSSSSSSS...........", "..........SSSSSSSSSSSS..........", ".........SSSSSSSSSSSSSS.........",
+    ".........SSSSSSSSSSSSSSS........", "........SSSSSSSSSSSSSSSS........", "........SSSSSHSSSSHSSSSS........", "........SSSSSSSSSSSSSSSS........",
+    "........SSSSHSSSSSSHSSSS........", ".........SSSSHHHHHHSSSS.........", ".........SSSSSSSSSSSSSS.........", "...........SSSSSSSSSS...........",
+    "..............SSSS..............", "...........SSSSSSSSSS...........", "..........SSHSSSSSSHSS..........", "..........SHSSSSSSSSHS..........",
+    ".........SSHSSSSSSSSHSS.........", ".........SHHSSSSSSSSHHS.........", "........SSHSSSSSSSSSSHSS........", "........SSHSSSSSSSSSSHSS........",
+    "...........SSSSSSSSSS...........", "............SSSHHSSS............", "............SSSHHSSS............", "............SSSHHSSS............",
+    ".............SSHHSS.............", ".............SSHHSS.............", "............SSSHHSSS............", "...........HHHHHHHHHH...........",
+]
+SKINS = {"01_light": ("#ffcfae", "#fabb8f"), "02_fair": ("#ffe2cc", "#f6c3a0"), "03_tan": ("#ecb68e", "#d7966b"),
+         "04_brown": ("#c98d62", "#a8704a"), "05_deep": ("#8f5c3e", "#714429")}
+BODIES = {name: from_template(BODY_T, {"S": skin, "H": shade}) for name, (skin, shade) in SKINS.items()}
+
+# ---- hair: O = outline, F = fill ----------------------------------------------------
+LONG_HAIR_T = [  # the couple's drawing
+    "................................", "................................", ".............OOOOOO.............", "............OOFFFFOO............",
+    "..........OOOFFFFFFOOO..........", ".........OOFFFFFFFFFFOO.........", "........OOFFFFFFFFFFFFOO........", "........OFFFFFFOOOOOOFFO........",
+    ".......OFFFOOOOO....OFFOO.......", ".......OFFOO........OOFFO.......", ".......OOOO..........OOOO.......", ".......OO..............OO.......",
+    ".......O................O.......", ".......OF..............FO.......", ".......OF..............FO.......", ".......OFFF..........FFFO.......",
+    ".......OFFFFFF....FFFFFFO.......", ".......OFFF..........FFFO.......", ".......OOO............OOO.......",
+] + ["." * 32] * 13
+BOB_HAIR_T = LONG_HAIR_T[:12] + [
+    ".......OF..............FO.......", ".......OFF............FFO.......", ".......OOOO..........OOOO.......",
+] + ["." * 32] * 17
+
+
+def mask_from_rows(rows):
+    return {(x, y) for y, row in enumerate(rows) for x, ch in enumerate(row) if ch != "."}
+
+
+SHORT_MASK = mask_from_rows([  # cap with a side-swept fringe
+    "", "", "", ".............######.............", "...........##########...........", "..........############..........",
+    ".........##############.........", "........################........", ".......#######....#######.......", ".......###..........#####.......",
+    ".......##.............##........",
+])
+BUN_MASK = SHORT_MASK | {(x, y) for x in range(13, 19) for y in range(0, 3)} - {(13, 0), (18, 0)}
+
+
+def short_hair(dark, fill):
+    s = shade_outline(SHORT_MASK, dark, fill)
+    for x in range(10, 15):                               # fringe strands
+        s.set(x, 7, dark)
+    return s
+
+
+def bun_hair(dark, fill):
+    s = shade_outline(BUN_MASK, dark, fill)
+    s.rect(13, 3, 18, 3, dark)                            # line under the bun
+    return s
+
+
+HAIR_COLORS = {"dark": ("#3b2a1e", "#5e4331"), "black": ("#1f1a17", "#3d342d"), "brown": ("#966935", "#d09652"),
+               "blonde": ("#c08a2e", "#f0c46a"), "pink": ("#c2588a", "#f49bc2")}
+HAIRS = {
+    "01_short_dark": short_hair(*HAIR_COLORS["dark"]),
+    "02_long_dark": from_template(LONG_HAIR_T, dict(zip("OF", HAIR_COLORS["dark"]))),
+    "03_bun_brown": bun_hair(*HAIR_COLORS["brown"]),
+    "04_short_blonde": short_hair(*HAIR_COLORS["blonde"]),
+    "05_long_pink": from_template(LONG_HAIR_T, dict(zip("OF", HAIR_COLORS["pink"]))),
+    "06_short_black": short_hair(*HAIR_COLORS["black"]),
+    "07_bob_brown": from_template(BOB_HAIR_T, dict(zip("OF", HAIR_COLORS["brown"]))),
+}
+
+# ---- outfits ------------------------------------------------------------------------
+SUIT_T = ["." * 32] * 16 + [  # the couple's drawing: A dark, B mid, C shirt, D shirt light, T tie, E/G shoes
+    "..............CCCC..............", "...........BBATDTTABB...........", "..........BBBATTDTABB...........", "..........BABACDDCABBB..........",
+    ".........BBABACDDCABABB.........", ".........BAABACDDCABAAB.........", ".........AABBACDDCABBAA.........", "..........ABBACDDCABBA..........",
+    "...........ABACCCCABA...........", "............AAAAAAAAA...........", "............ABBAABBA............", "............ABBAABBA............",
+    ".............ABAABA.............", ".............ABAABA.............", "............GGGEEGGG............", "...........EEEEEEEEEE...........",
+]
+DRESS_T = ["." * 32] * 17 + [  # the couple's drawing: O outline, F fill, S shoe, D shoe dark
+    ".............O....O.............", ".............OO...O.............", "............OFOOOOOO............", "...........OOFFFFFFO............",
+    "...........OFFFFFFFO............", "...........OFFFFFFFOO...........", "...........OFFFFFFFFO...........", "..........OOFFFFFFFFO...........",
+    "..........OOFFFFFFFFO...........", "..........OOFFOFFOFFOO..........", ".........OOFFOFFFFOFFO..........", ".........OFFFOFFFFFOFOO.........",
+    "........OOOOOOOOOOOOOOOO........", "................................", "...........SSSSDDSSSS...........",
+]
+
+
+def suit(dark, mid, shirt, shirt_light, tie, shoe=("#31180e", "#662e18")):
+    return from_template(SUIT_T, {"A": dark, "B": mid, "C": shirt, "D": shirt_light, "T": tie, "E": shoe[0], "G": shoe[1]})
+
+
+def dress(outline, fill, shoe, shoe_dark, sash=None):
+    s = from_template(DRESS_T, {"O": outline, "F": fill, "S": shoe, "D": shoe_dark})
+    if sash:                                              # Thai-style diagonal sabai
+        for i in range(9):
+            s.set(12 + i, 19 + i // 2, sash)
+            s.set(12 + i, 20 + i // 2, sash)
+    return s
+
+
+DRESSES = {
+    "black_suit": suit("#1b1b24", "#2f2f3d", "#d9dce6", "#f2f3f7", "#ac1919"),
+    "navy_suit": suit("#1e3295", "#364db8", "#90a1f1", "#a0b0fb", "#ac1919"),      # the couple's suit
+    "white_gown": dress("#cfc8de", "#ffffff", "#ffffff", "#d9d2e6"),
+    "blush_gown": dress("#e98aa6", "#ffc2d2", "#ffc2d2", "#d98aa0"),
+    "red_dress": dress("#a8202f", "#d6394a", "#d6394a", "#8e1b28"),
+    "sky_dress": dress("#5a9fd4", "#9fd0f2", "#9fd0f2", "#5a8fc0"),
+    "pink_dress": dress("#fa5ca3", "#ff72b2", "#ff7eb8", "#d56597"),            # the couple's dress
+    "thai_gold": dress("#b8862a", "#e8b84a", "#e8b84a", "#a8761f", sash="#a32b3a"),
+}
+
+# ---- props (sized for the big head: eyes at (13,10) and (18,10)) ----------------------
+
+def glasses2(frame, lens):
+    s = Sprite()
+    for x0 in (11, 17):
+        s.rect(x0, 9, x0 + 3, 9, frame); s.rect(x0, 11, x0 + 3, 11, frame)
+        s.rect(x0, 9, x0, 11, frame); s.rect(x0 + 3, 9, x0 + 3, 11, frame)
+        s.rect(x0 + 1, 10, x0 + 2, 10, lens)
+    s.rect(15, 10, 16, 10, frame)
+    s.set(10, 10, frame); s.set(21, 10, frame)
+    return s
+
+
+def flower_crown2():
+    s = Sprite()
+    s.rect(9, 6, 22, 6, "#6a994e")
+    for i, x in enumerate(range(9, 23, 3)):
+        c, d = [("#ff8fab", "#e0708f"), ("#ffffff", "#d9d2e6"), ("#ffd166", "#e0a93a")][i % 3]
+        s.rect(x, 4, x + 1, 5, c); s.set(x + 1, 5, d)
+    return s
+
+
+def top_hat2():
+    s = Sprite()
+    s.rect(9, 0, 22, 3, "#2f2f3d"); s.rect(9, 0, 9, 3, "#1b1b24"); s.rect(22, 0, 22, 3, "#1b1b24")
+    s.rect(9, 3, 22, 3, "#c2577a")                       # ribbon
+    s.rect(6, 4, 25, 4, "#1b1b24")                       # brim
+    return s
+
+
+def veil2():
+    s = Sprite()
+    s.rect(10, 1, 21, 2, "#ffffff"); s.rect(10, 1, 21, 1, "#e6e1f0")
+    for x0 in (5, 25):
+        for y in range(3, 25):
+            s.set(x0, y, "#f4f2fa"); s.set(x0 + 1, y, "#ffffff" if y % 3 else "#e6e1f0")
+    s.rect(6, 2, 9, 2, "#f4f2fa"); s.rect(22, 2, 25, 2, "#f4f2fa")
+    return s
+
+
+def bouquet2():
+    s = Sprite()
+    s.rect(23, 21, 23, 24, "#4f7a3a")                    # stems in the right hand
+    for x, y, c, d in ((22, 18, "#ff8fab", "#e0708f"), (25, 18, "#ffffff", "#d9d2e6"), (23, 16, "#ffd166", "#e0a93a"),
+                       (21, 20, "#ffffff", "#d9d2e6"), (25, 20, "#ff8fab", "#e0708f")):
+        s.rect(x, y, x + 1, y + 1, c); s.set(x + 1, y + 1, d)
+    s.rect(22, 22, 25, 22, "#fff4e6"); s.rect(22, 22, 22, 22, "#e8d8c0")
+    return s
+
+
+def heart_balloon2():
+    s = Sprite()
+    s.rect(25, 1, 26, 3, "#ff5d8f"); s.rect(28, 1, 29, 3, "#ff5d8f"); s.rect(25, 2, 29, 4, "#ff5d8f")
+    s.rect(26, 5, 28, 5, "#ff5d8f"); s.set(27, 6, "#ff5d8f"); s.set(25, 1, "#e0477a"); s.set(29, 1, "#e0477a")
+    s.set(26, 2, "#ffc2d4")
+    for y in range(7, 22):
+        s.set(27 - (y > 14), y, "#b0a8b8")
+    return s
+
+
+PROPS = {
+    "black_glasses": glasses2("#2f2f3d", "#bfe3ff"), "pink_glasses": glasses2("#e0477a", "#ffd6e4"),
+    "flower_crown": flower_crown2(), "top_hat": top_hat2(), "veil": veil2(), "bouquet": bouquet2(),
+    "heart_balloon": heart_balloon2(),
+}
+
+# ---- drinks (held in the left hand, which is at about x 8-9, y 22-23) -----------------
+
+def glass_drink(bowl, bowl_dark, flute=False):
+    s = Sprite()
+    if flute:
+        s.rect(5, 14, 7, 19, bowl); s.rect(5, 14, 5, 19, bowl_dark); s.rect(5, 14, 7, 14, "#f6f2ff")
+        s.rect(6, 20, 6, 22, "#d9e4ee")
+    else:
+        s.rect(4, 15, 8, 18, bowl); s.rect(4, 18, 8, 18, bowl_dark); s.rect(4, 15, 8, 15, "#f6f2ff")
+        s.rect(5, 19, 7, 19, bowl_dark); s.rect(6, 20, 6, 22, "#d9e4ee")
+    s.rect(4, 23, 8, 23, "#c4d2de")
+    return s
+
+
+def beer2():
+    s = Sprite()
+    s.rect(4, 15, 8, 22, "#f2b134"); s.rect(4, 15, 4, 22, "#d18f1f"); s.rect(4, 22, 8, 22, "#d18f1f")
+    s.rect(4, 14, 8, 15, "#fffaf0"); s.set(5, 13, "#fffaf0"); s.set(7, 13, "#fffaf0")
+    s.rect(9, 17, 9, 20, "#d18f1f")                      # handle
+    return s
+
+
+def cocktail2():
+    s = Sprite()
+    for i, y in enumerate(range(14, 18)):
+        s.rect(3 + i, y, 9 - i, y, "#ff7eb6"); s.set(3 + i, y, "#e0558f")
+    s.rect(3, 14, 9, 14, "#ffc2dc")
+    s.rect(6, 18, 6, 22, "#d9e4ee"); s.rect(4, 23, 8, 23, "#c4d2de")
+    s.set(9, 12, "#ffd166"); s.set(8, 13, "#6a994e")     # lemon + mint
+    return s
+
+
+def coconut2():
+    s = Sprite()
+    s.disc(6, 19, 3.3, "#8b5a2b"); s.disc(5, 18, 1.5, "#a8743e")
+    s.rect(4, 16, 8, 16, "#f5f0dc")
+    s.rect(8, 11, 8, 15, "#ff5d8f"); s.set(9, 11, "#ff5d8f")  # straw
+    return s
+
+
+DRINKS = {
+    "red_wine": glass_drink("#9e2a4a", "#7a1d38"), "champagne": glass_drink("#f7e08a", "#e0c25a", flute=True),
+    "beer": beer2(), "pink_cocktail": cocktail2(), "coconut": coconut2(),
+}
+
+
+def bartender():
+    # white shirt + burgundy vest so the bartender doesn't look like the groom
+    outfit = suit("#5c1a2b", "#7a2438", "#ececf2", "#ffffff", "#1b1b24")
+    s = stack(BODIES["03_tan"], outfit, HAIRS["07_bob_brown"])
+    return s
+
+
+def couple():
+    bride = stack(BODIES["01_light"], DRESSES["white_gown"], HAIRS["02_long_dark"], PROPS["veil"], PROPS["bouquet"])
+    groom = stack(BODIES["01_light"], DRESSES["black_suit"], HAIRS["01_short_dark"])
+    groom.set(19, 19, "#ffffff"); groom.set(19, 20, "#ff8fab")             # boutonniere
+    return {"bride": bride, "groom": groom}
 
 
 def main():

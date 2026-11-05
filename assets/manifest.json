@@ -81,6 +81,11 @@
         "url": "assets/dresses/navy_suit.png"
       },
       {
+        "id": "pink_dress",
+        "label": "Pink Dress",
+        "url": "assets/dresses/pink_dress.png"
+      },
+      {
         "id": "red_dress",
         "label": "Red Dress",
         "url": "assets/dresses/red_dress.png"
