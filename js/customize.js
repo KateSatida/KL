@@ -9,7 +9,7 @@ import { pixelEditor } from "./pixel-editor.js";
 const TABS = [
   { id: "body", label: "🧍 Body", folder: "bodies", required: true },
   { id: "hair", label: "💇 Hair", folder: "hairs" },
-  { id: "dress", label: "👗 Outfit", folder: "dresses" },
+  { id: "dress", label: "👗 Outfit", folder: "dresses", required: true },
   { id: "prop", label: "🕶️ Prop", folder: "props" },
   { id: "drink", label: "🥂 Drink", folder: "drinks" },
   { id: "custom", label: "🎨 Draw", draw: true },
@@ -26,6 +26,7 @@ export function customizer(config, state, { showName = true, lockedName = null, 
     state.look.body = config.layers.bodies[0].url;
     if (config.layers.hairs[0]) state.look.hair = config.layers.hairs[0].url;
   }
+  if (!state.look.dress && config.layers.dresses?.[0]) state.look.dress = config.layers.dresses[0].url;   // nobody starts without an outfit
 
   const preview = el("canvas", { width: 32, height: 32 });
   const refresh = async () => {
