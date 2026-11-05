@@ -1022,6 +1022,76 @@ def bun_hair(dark, fill):
 
 HAIR_COLORS = {"dark": ("#3b2a1e", "#5e4331"), "black": ("#1f1a17", "#3d342d"), "brown": ("#966935", "#d09652"),
                "blonde": ("#c08a2e", "#f0c46a"), "pink": ("#c2588a", "#f49bc2")}
+HEAD_TOP = mask_from_rows(LONG_HAIR_T[:10])            # crown + fringe of the long hair, no length
+
+
+def _with_highlight(s, cells, colour):
+    for x, y in cells:
+        s.set(x, y, colour)
+    return s
+
+
+def ponytail_hair(dark, fill):
+    tail = {(x, y) for y in range(8, 19) for x in range(23, 27) if not (y > 15 and x in (23, 26))}
+    s = shade_outline(HEAD_TOP | {(7, 10), (7, 11), (24, 10)} | tail, dark, fill)
+    s.rect(23, 8, 24, 9, "#ff8fab")                       # hair tie
+    return s
+
+
+def twin_tails_hair(dark, fill):
+    tails = set()
+    for x0 in (4, 24):
+        tails |= {(x, y) for y in range(8, 19) for x in range(x0, x0 + 4) if not (y > 15 and x in (x0, x0 + 3))}
+    s = shade_outline(HEAD_TOP | tails, dark, fill)
+    s.rect(7, 8, 8, 9, "#ff8fab"); s.rect(23, 8, 24, 9, "#ff8fab")
+    return s
+
+
+def curly_hair(dark, fill):
+    m = set()
+    for y in range(0, 17):
+        for x in range(4, 28):
+            if (x - 15.5) ** 2 / 1.15 + (y - 8.5) ** 2 <= 82 and not (y >= 9 and 9 <= x <= 22):
+                m.add((x, y))
+    m -= {(x, y) for x, y in list(m) if (x + y) % 4 == 0 and any((x + dx, y + dy) not in m for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))}
+    s = shade_outline(m, dark, fill)
+    for x, y in m:                                        # little curls
+        if (x * 3 + y * 5) % 7 == 0 and (x, y) in m and s.get(x, y) == fill:
+            s.set(x, y, dark)
+    return s
+
+
+def spiky_hair(dark, fill):
+    spikes = set()
+    for x0 in (9, 12, 15, 18, 21):
+        spikes |= {(x0, 1)} | {(x, y) for x in (x0, x0 + 1) for y in (2, 3, 4)}
+    return shade_outline(SHORT_MASK | spikes, dark, fill)
+
+
+def braid_hair(dark, fill):
+    s = shade_outline(HEAD_TOP | {(7, 10), (7, 11), (24, 10), (24, 11)}, dark, fill)
+    for i, y in enumerate(range(11, 22)):                 # braid over the left shoulder
+        x = 22 + (i % 2)
+        s.rect(x, y, x + 1, y, fill); s.set(x + (i % 2 == 0), y, dark)
+    s.rect(22, 22, 23, 22, "#ff8fab")
+    return s
+
+
+def curtain_hair(dark, fill):
+    m = SHORT_MASK - {(15, 7), (16, 7), (15, 8), (16, 8), (14, 8), (17, 8)}
+    m |= {(7, 11), (8, 11), (23, 11), (24, 11), (7, 12), (24, 12)}
+    s = shade_outline(m, dark, fill)
+    s.set(15, 6, dark); s.set(16, 6, dark)                # middle part
+    return s
+
+
+def buzz_hair(dark, fill):
+    m = {(x, y) for y, (a, b) in zip(range(4, 9), ((13, 18), (11, 20), (10, 21), (9, 22), (8, 23))) for x in range(a, b + 1)}
+    return shade_outline(m, dark, fill)
+
+
+HAIR_COLORS.update({"ginger": ("#9a3f22", "#d9703f"), "silver": ("#7f7b8c", "#c9c6d6"), "blue": ("#34508f", "#7a9be0")})
+
 HAIRS = {
     "01_short_dark": short_hair(*HAIR_COLORS["dark"]),
     "02_long_dark": from_template(LONG_HAIR_T, dict(zip("OF", HAIR_COLORS["dark"]))),
@@ -1030,6 +1100,16 @@ HAIRS = {
     "05_long_pink": from_template(LONG_HAIR_T, dict(zip("OF", HAIR_COLORS["pink"]))),
     "06_short_black": short_hair(*HAIR_COLORS["black"]),
     "07_bob_brown": from_template(BOB_HAIR_T, dict(zip("OF", HAIR_COLORS["brown"]))),
+    "08_ponytail_dark": ponytail_hair(*HAIR_COLORS["dark"]),
+    "09_twin_tails_pink": twin_tails_hair(*HAIR_COLORS["pink"]),
+    "10_curly_black": curly_hair(*HAIR_COLORS["black"]),
+    "11_spiky_ginger": spiky_hair(*HAIR_COLORS["ginger"]),
+    "12_braid_blonde": braid_hair(*HAIR_COLORS["blonde"]),
+    "13_curtain_dark": curtain_hair(*HAIR_COLORS["dark"]),
+    "14_buzz_black": buzz_hair(*HAIR_COLORS["black"]),
+    "15_long_silver": from_template(LONG_HAIR_T, dict(zip("OF", HAIR_COLORS["silver"]))),
+    "16_bob_blue": from_template(BOB_HAIR_T, dict(zip("OF", HAIR_COLORS["blue"]))),
+    "17_ponytail_brown": ponytail_hair(*HAIR_COLORS["brown"]),
 }
 
 # ---- outfits ------------------------------------------------------------------------
@@ -1063,7 +1143,7 @@ def dress(outline, fill, shoe, shoe_dark, sash=None):
 DRESSES = {
     "black_suit": suit("#1b1b24", "#2f2f3d", "#d9dce6", "#f2f3f7", "#ac1919"),
     "navy_suit": suit("#1e3295", "#364db8", "#90a1f1", "#a0b0fb", "#ac1919"),      # the couple's suit
-    "white_gown": dress("#cfc8de", "#ffffff", "#ffffff", "#d9d2e6"),
+    "green_dress": dress("#4f8a5b", "#8fcf9a", "#8fcf9a", "#4f7a55"),
     "blush_gown": dress("#e98aa6", "#ffc2d2", "#ffc2d2", "#d98aa0"),
     "red_dress": dress("#a8202f", "#d6394a", "#d6394a", "#8e1b28"),
     "sky_dress": dress("#5a9fd4", "#9fd0f2", "#9fd0f2", "#5a8fc0"),
@@ -1133,7 +1213,7 @@ def heart_balloon2():
 
 PROPS = {
     "black_glasses": glasses2("#2f2f3d", "#bfe3ff"), "pink_glasses": glasses2("#e0477a", "#ffd6e4"),
-    "flower_crown": flower_crown2(), "top_hat": top_hat2(), "veil": veil2(), "bouquet": bouquet2(),
+    "flower_crown": flower_crown2(), "top_hat": top_hat2(),
     "heart_balloon": heart_balloon2(),
 }
 
@@ -1190,9 +1270,19 @@ def bartender():
     return s
 
 
+# Only the couple wears these, so they live in assets/couple/ (not in the guest wardrobe).
+COUPLE_ITEMS = {
+    "white_gown": dress("#cfc8de", "#ffffff", "#ffffff", "#d9d2e6"),
+    "veil": veil2(),
+    "bouquet": bouquet2(),
+    "grey_suit": suit("#565b67", "#7b818f", "#e4e6ec", "#ffffff", "#2f2f3d"),
+}
+
+
 def couple():
-    bride = stack(BODIES["01_light"], DRESSES["white_gown"], HAIRS["02_long_dark"], PROPS["veil"], PROPS["bouquet"])
-    groom = stack(BODIES["01_light"], DRESSES["black_suit"], HAIRS["01_short_dark"])
+    c = COUPLE_ITEMS
+    bride = stack(BODIES["01_light"], c["white_gown"], HAIRS["02_long_dark"], c["veil"], c["bouquet"])
+    groom = stack(BODIES["01_light"], c["grey_suit"], HAIRS["01_short_dark"])
     groom.set(19, 19, "#ffffff"); groom.set(19, 20, "#ff8fab")             # boutonniere
     return {"bride": bride, "groom": groom}
 
@@ -1204,7 +1294,7 @@ def main():
     logo().save(ASSETS / "logo.png")
     for folder, items in (("bodies", BODIES), ("hairs", HAIRS), ("dresses", DRESSES), ("props", PROPS), ("drinks", DRINKS),
                           ("decor", DECOR), ("stations", STATION_ICONS), ("stations", BUILDINGS),
-                          ("memories", MEMORIES), ("bouquets", BOUQUETS), ("charms", CHARMS)):
+                          ("memories", MEMORIES), ("bouquets", BOUQUETS), ("charms", CHARMS), ("couple", COUPLE_ITEMS)):
         for name, sprite in items.items():
             sprite.save(ASSETS / folder / f"{name}.png")
 
