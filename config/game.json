@@ -1,6 +1,6 @@
 {
   "_help": "Edit this file to change texts, the map, stations, decorations and day/night times. See README.md. Refresh the browser after saving.",
-  "wedding": { "title": "K & L Wedding Guestbook", "couple": "K & L", "date": "12 December 2026", "welcome": "Thank you for celebrating with us! Dress up, walk around, and leave us a memory." },
+  "wedding": { "title": "Kate & Lay Wedding", "couple": "Kate & Lay", "date": "28 November 2026", "welcome": "Thank you for celebrating with us! Dress up, walk around, and leave us a memory." },
   "world": {
     "width": 1600,
     "height": 1640,
