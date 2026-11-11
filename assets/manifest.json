@@ -231,6 +231,11 @@
       "id": "03_polaroid",
       "label": "Polaroid",
       "url": "assets/frames/03_polaroid.svg"
+    },
+    {
+      "id": "04_pixel_couple",
+      "label": "Pixel Couple",
+      "url": "assets/frames/04_pixel_couple.svg"
     }
   ]
 }
