@@ -275,8 +275,9 @@ reopen their card at the station. No admin needed.
 - Flowers: list them under `"bouquets"` on the bouquet station in
   `config/game.json` (name, meaning, and a 32×32 PNG in `assets/bouquets/` drawn
   in the right hand like a prop).
-- Notes: put your note images (PNG/JPG, e.g. 480×320) in `assets/bouquet_notes/`
-  and list them under `"notes"`. The three included notes are placeholders.
+- Notes: type them under `"notes"` (one line each, any number; one is picked at
+  random) and set `"noteSignature"`, e.g. `"— Kate & Lay"`. A note can also be a
+  path to an image instead of text, e.g. `"assets/my_note.png"`.
 
 **Your logo.** The flower backdrop (bottom right) shows `assets/logo.png`. Replace
 that file with your own logo (PNG with a transparent background looks best; any

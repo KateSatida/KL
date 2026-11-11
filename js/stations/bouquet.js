@@ -5,7 +5,9 @@
 //
 // config/game.json → this station:
 //   "bouquets": [{ "name", "image" (32x32 PNG, held in the hand), "meaning" }, …]
-//   "notes":    ["assets/bouquet_notes/01.png", …]   (any PNG/JPG images)
+//   "notes":    ["Thank you for coming!", …]   one is picked at random. Plain text
+//               shows as a card; a path to an image (.png/.jpg…) shows that image.
+//   "noteSignature": "— Kate & Lay"   (written under every text note)
 import { el, openModal, closeModal, store, toast } from "../ui.js";
 import { drawStation, inside } from "../world.js";
 import { addItem } from "../items.js";
@@ -40,6 +42,20 @@ const pickRandom = (list, avoid) => {
   return pool[Math.floor(Math.random() * pool.length)];
 };
 
+const NOTE_COLORS = ["#ff8fab", "#b5e48c", "#8ec9f0", "#ffd166", "#c77dff"];
+const isImage = (s) => /\.(png|jpe?g|gif|webp|svg)$/i.test(s);
+
+// A note from the couple: an image, or text on a card with a coloured border.
+function noteCard(note, notes, signature) {
+  if (!note) return null;
+  if (isImage(note)) return notes.includes(note) ? el("img", { class: "bouquet-note", src: note, alt: "A note from the couple" }) : null;   // old notes that were removed
+  const i = Math.max(0, notes.indexOf(note));
+  return el("div", { class: "bouquet-note text-note", style: `--accent:${NOTE_COLORS[i % NOTE_COLORS.length]}` },
+    el("div", { class: "hearts" }, "♥ ♥ ♥"),
+    el("div", { class: "text" }, note),
+    signature ? el("div", { class: "sign" }, signature) : null);
+}
+
 export default function bouquet(def, game) {
   const bouquets = def.bouquets || [];
   const notes = def.notes || [];
@@ -52,7 +68,7 @@ export default function bouquet(def, game) {
       centeredFlower(flower.image, flower.name),
       el("h2", {}, flower.name),
       el("p", { class: "bouquet-meaning" }, flower.meaning),
-      caught.note ? el("img", { class: "bouquet-note", src: caught.note, alt: "A note from the couple" }) : null,
+      noteCard(caught.note, notes, def.noteSignature),
       el("p", { class: "muted" }, "It's now part of your outfit 🌸"),
     ));
   };

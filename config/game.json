@@ -154,10 +154,11 @@
         { "name": "Baby's Breath", "image": "assets/bouquets/10_babys_breath.png", "meaning": "Everlasting love. ✨" }
       ],
       "notes": [
-        "assets/bouquet_notes/01_thank_you.png",
-        "assets/bouquet_notes/02_bloom.png",
-        "assets/bouquet_notes/03_next.png"
-      ]
+        "Thank you for celebrating our day with us!",
+        "May love bloom for you, just like this bouquet.",
+        "Psst… maybe the next wedding is yours? 😉"
+      ],
+      "noteSignature": "— Kate & Lay"
     },
     {
       "id": "dance",
