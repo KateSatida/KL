@@ -236,6 +236,12 @@ body.demo #join { padding-bottom: 40px; }
 .bouquet-flower { display: block; margin: 0 auto; width: 128px; height: 128px; image-rendering: pixelated; }
 .bouquet-meaning { font-size: 18px; margin: 4px 0 12px; }
 .bouquet-note { width: 100%; max-width: 420px; border-radius: 10px; }
+.text-note { margin: 0 auto; box-sizing: border-box; padding: 22px 20px 18px; background: #fffaf3; color: #4a3640;
+  border: 7px solid var(--accent); border-radius: 4px; box-shadow: 0 0 0 5px #fff, 0 0 0 8px #4a3640;
+  font-family: Georgia, Mali, serif; white-space: pre-line; }
+.text-note .hearts { font-size: 24px; letter-spacing: 6px; }
+.text-note .text { font-size: 21px; line-height: 1.4; margin: 10px 4px; }
+.text-note .sign { font-size: 18px; text-align: right; margin-right: 8px; }
 
 .fortune-card { text-align: center; }
 .fortune-face { margin: 0 auto; max-width: 320px; padding: 20px 16px; border-radius: 18px; color: #fff;
