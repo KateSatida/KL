@@ -26,6 +26,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Build photo-booth frames (pixel couple, die-cut photo)
+        run: pip install --quiet pillow && python tools/make_couple_frame.py
       - name: List art files
         run: python tools/build_manifest.py
       - name: Collect website files
