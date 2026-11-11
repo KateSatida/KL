@@ -233,7 +233,7 @@ body.demo #join { padding-bottom: 40px; }
 .memory-caption { font-weight: 600; min-height: 1.4em; }
 
 .bouquet-card { text-align: center; }
-.bouquet-flower { width: 128px; height: 128px; image-rendering: pixelated; }
+.bouquet-flower { display: block; margin: 0 auto; width: 128px; height: 128px; image-rendering: pixelated; }
 .bouquet-meaning { font-size: 18px; margin: 4px 0 12px; }
 .bouquet-note { width: 100%; max-width: 420px; border-radius: 10px; }
 
