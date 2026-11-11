@@ -9,6 +9,30 @@
 import { el, openModal, closeModal, store, toast } from "../ui.js";
 import { drawStation, inside } from "../world.js";
 import { addItem } from "../items.js";
+import { loadImage } from "../sprites.js";
+
+// The flower is drawn in the right hand (off to the side of its 32x32 image),
+// so trim the empty space around it to show it in the middle of the card.
+function centeredFlower(src, alt) {
+  const c = el("canvas", { class: "bouquet-flower", width: 32, height: 32, "aria-label": alt });
+  loadImage(src).then((img) => {
+    if (!img) return;
+    const t = document.createElement("canvas");
+    t.width = img.width; t.height = img.height;
+    const tc = t.getContext("2d");
+    tc.drawImage(img, 0, 0);
+    const d = tc.getImageData(0, 0, t.width, t.height).data;
+    let x0 = t.width, y0 = t.height, x1 = -1, y1 = -1;
+    for (let y = 0; y < t.height; y++) for (let x = 0; x < t.width; x++) {
+      if (d[(y * t.width + x) * 4 + 3]) { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
+    }
+    if (x1 < 0) return;
+    const w = x1 - x0 + 1, h = y1 - y0 + 1, side = Math.max(w, h);
+    c.width = c.height = side;
+    c.getContext("2d").drawImage(t, x0, y0, w, h, Math.floor((side - w) / 2), Math.floor((side - h) / 2), w, h);
+  });
+  return c;
+}
 
 export const inCircle = (def, p) => inside(p, def, 0);
 const pickRandom = (list, avoid) => {
@@ -25,7 +49,7 @@ export default function bouquet(def, game) {
     const flower = bouquets.find((b) => b.image === caught.image);
     if (!flower) return;
     openModal("💐 You caught a bouquet!", el("div", { class: "bouquet-card" },
-      el("img", { class: "bouquet-flower", src: flower.image, alt: flower.name }),
+      centeredFlower(flower.image, flower.name),
       el("h2", {}, flower.name),
       el("p", { class: "bouquet-meaning" }, flower.meaning),
       caught.note ? el("img", { class: "bouquet-note", src: caught.note, alt: "A note from the couple" }) : null,
