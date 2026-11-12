@@ -263,3 +263,4 @@ body.demo #join { padding-bottom: 40px; }
 .admin-item { background: #fff; border-radius: var(--radius); overflow: hidden; box-shadow: 0 2px 10px #0001; }
 .admin-item img { width: 100%; display: block; }
 .admin-item .meta { padding: 10px; font-size: 14px; white-space: pre-wrap; }
+.admin-item input { display: block; width: calc(100% - 20px); margin: 0 10px 10px; box-sizing: border-box; }
