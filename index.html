@@ -55,7 +55,12 @@
       <button id="hud-wardrobe" class="btn small">👗 Outfit</button>
     </header>
 
-    <button id="station-prompt" class="btn primary hidden"></button>
+    <div id="station-prompt" class="hidden" role="dialog">
+      <div class="sp-title"></div>
+      <p class="sp-text"></p>
+      <button id="station-go" class="btn primary"></button>
+      <button id="station-later" class="btn">ขอไปดูที่อื่นก่อน</button>
+    </div>
 
     <aside id="chat" class="chat collapsed">
       <div class="chat-head">

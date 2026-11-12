@@ -233,12 +233,20 @@ async function startGame() {
     },
   });
 
+  // Card at the top when you walk into a station: a short line + "go" / "later".
+  // "Later" hides it until you walk out of that station and back in.
   const prompt = $("#station-prompt");
   world.onNearStation = (s) => {
     prompt.classList.toggle("hidden", !s);
-    if (s) prompt.textContent = `${s.def.icon} Open ${s.def.label}`;
+    if (!s) return;
+    const p = s.def.prompt || {};
+    prompt.querySelector(".sp-title").textContent = `${s.def.icon} ${s.def.label}`;
+    prompt.querySelector(".sp-text").textContent = p.text || "";
+    prompt.querySelector(".sp-text").hidden = !p.text;
+    $("#station-go").textContent = p.button || `${s.def.icon} Open ${s.def.label}`;
   };
-  prompt.addEventListener("click", () => world.nearStation?.module.open());
+  $("#station-go").addEventListener("click", () => world.nearStation?.module.open());
+  $("#station-later").addEventListener("click", () => prompt.classList.add("hidden"));
 
   $("#hud-status").addEventListener("click", () => {
     const input = el("input", { maxlength: 60, value: state.status, placeholder: "e.g. Looking for the dessert table 🍰" });
