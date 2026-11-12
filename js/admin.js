@@ -5,7 +5,7 @@ import { backend } from "./backend/index.js";
 import { loadConfig } from "./config.js";
 import { embedFor } from "./player.js";
 import { playAsCouple } from "./couple.js";
-import { listDrivePhotos, driveFolderId, photoFromLink, memoryKey } from "./drive.js";
+import { listDrivePhotos, driveFolderId, photoFromLink, memoryKey, captionKey } from "./drive.js";
 
 const admin = backend.admin;
 
@@ -145,12 +145,16 @@ views.memories = async () => {
     note.textContent = "Checking the folder…";
     preview.replaceChildren();
     try {
-      const list = await listDrivePhotos(folder.value, key.value.trim());
+      const list = await listDrivePhotos(folder.value, key.value.trim(), saved);
       if (!list) { note.textContent = "Paste the folder link and the API key."; return false; }
       note.textContent = list.length ? `Found ${list.length} photo(s) ✔` : "The folder has no photos (or isn't shared with 'Anyone with the link').";
-      preview.replaceChildren(...list.map((p) => el("div", { class: "admin-item" },
-        el("img", { src: p.image, loading: "lazy", onerror: (e) => { e.target.onerror = null; e.target.src = p.fallback; } }),
-        el("div", { class: "meta" }, p.caption))));
+      preview.replaceChildren(...list.map((p) => {
+        const cap = el("input", { value: p.caption, maxlength: 120, placeholder: "Caption (optional)", "data-key": captionKey(p.id) });
+        return el("div", { class: "admin-item" },
+          el("img", { src: p.image, loading: "lazy", onerror: (e) => { e.target.onerror = null; e.target.src = p.fallback; } }),
+          el("div", { class: "meta" }, p.name), cap);
+      }));
+      saveCaps.hidden = !list.length;
       return list.length > 0;
     } catch (e) { note.textContent = `Google says: ${e.message}`; return false; }
   };
@@ -164,6 +168,16 @@ views.memories = async () => {
       note.textContent += " Saved ✔ Guests see the new photos right away.";
     } catch (e) { note.textContent = `Error: ${e.message}`; }
   } }, "💾 Save");
+  const saveCaps = el("button", { class: "btn primary", hidden: true, onclick: async () => {
+    const values = {};
+    for (const input of preview.querySelectorAll("input[data-key]")) values[input.dataset.key] = input.value.trim();
+    try {
+      await admin.saveSettings(values);
+      Object.assign(saved, values);
+      await getRoom().broadcast("settings", values);
+      note.textContent = "Captions saved ✔ Guests see them right away.";
+    } catch (e) { note.textContent = `Error: ${e.message}`; }
+  } }, "💾 Save captions");
   if (saved.memories_folder) test();
 
   // --- photo links, one by one (no API key needed) ---
@@ -218,9 +232,9 @@ views.memories = async () => {
     el("p", {}, "Show photos from a Google Drive folder on Memory Lane. Add, remove or rename photos in Drive any time; guests see the changes when they open the game."),
     el("label", {}, "Folder link (shared as \"Anyone with the link\")"), folder,
     el("label", {}, "Google API key"), key,
-    el("p", { class: "muted" }, "Captions come from the file names, in name order: \"01 Where it all began.jpg\" → \"Where it all began\"."),
+    el("p", { class: "muted" }, "Photos show in file-name order. Type a caption under each photo below and tap \"Save captions\" (file names are not shown to guests)."),
     el("div", { class: "row" }, save, el("button", { class: "btn", onclick: test }, "🔍 Test")),
-    note, preview));
+    note, preview, saveCaps));
 };
 
 // Music links: saved in Supabase, guests pick them up straight away.

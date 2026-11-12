@@ -30,6 +30,9 @@ const applySettings = (s = {}) => {
     config.memories.linkMap = links;
     config.memories.links = Object.keys(links).sort().map((k) => { try { return JSON.parse(links[k] || "null"); } catch { return null; } }).filter((x) => x?.link);
   }
+  // captions for photos in the Drive folder (memcap_<photo>)
+  config.memories.captions = { ...(config.memories.captions || {}) };
+  for (const k of Object.keys(s)) if (/^memcap_[a-z]+$/.test(k)) config.memories.captions[k] = s[k];
   // day / night chosen by the couple ("" = follow the clock)
   if (s.time_mode !== undefined) {
     config.time.mode = s.time_mode || "auto";

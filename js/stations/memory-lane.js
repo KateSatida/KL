@@ -31,7 +31,7 @@ export default function memoryLane(def, game) {
     else if (m.links) { photos = def.photos || []; loadAll(); }     // all links removed: back to the default photos
     // 2) a whole Drive folder (needs an API key)
     try {
-      const list = await listDrivePhotos(m.folder, m.apiKey);
+      const list = await listDrivePhotos(m.folder, m.apiKey, m.captions);
       if (list?.length) { photos = list; loadAll(); }
     } catch (e) {
       console.warn("Memory Lane: could not read the Google Drive folder:", e.message);
@@ -40,7 +40,7 @@ export default function memoryLane(def, game) {
   loadAll();
   fromDrive();
   game.on("settings", (s) => {
-    if (Object.keys(s).some((k) => k.startsWith("memor") || k === "google_api_key")) setTimeout(fromDrive, 100);
+    if (Object.keys(s).some((k) => k.startsWith("memor") || k.startsWith("memcap_") || k === "google_api_key")) setTimeout(fromDrive, 100);
   });
   let easel = null, sign = null;
   loadImage("assets/stations/easel.png").then((i) => { easel = i; });

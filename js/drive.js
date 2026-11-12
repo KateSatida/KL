@@ -31,11 +31,19 @@ export function photoFromLink(link, caption = "") {
 // Photo links are stored in settings as memory_aa, memory_ab, … (one per photo)
 export const memoryKey = (i) => "memory_" + String.fromCharCode(97 + Math.floor(i / 26)) + String.fromCharCode(97 + (i % 26));
 
-// "01_Where it all began.jpg" -> "Where it all began"
-const captionFrom = (name) => name.replace(/\.[a-z0-9]+$/i, "").replace(/^\d+[\s._-]*/, "").replace(/[_]+/g, " ").trim();
+// Settings key for the caption of one photo in the Drive folder, e.g. "memcap_qxbtrka"
+// (settings keys may only use a-z and _, so the Drive file id is hashed into letters).
+export function captionKey(id) {
+  let h = 2166136261;
+  for (const ch of id) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+  let s = "";
+  for (let i = 0; i < 7; i++) { s += String.fromCharCode(97 + (h % 26)); h = Math.floor(h / 26); }
+  return "memcap_" + s;
+}
 
-// → [{ image, fallback, caption }] sorted by file name
-export async function listDrivePhotos(folderLink, apiKey) {
+// → [{ id, name, image, fallback, caption }] sorted by file name.
+// caption: the one typed on the admin page, else the Drive "description", else none.
+export async function listDrivePhotos(folderLink, apiKey, captions = {}) {
   const folder = driveFolderId(folderLink);
   if (!folder || !apiKey) return null;
   const q = encodeURIComponent(`'${folder}' in parents and mimeType contains 'image/' and trashed = false`);
@@ -46,6 +54,6 @@ export async function listDrivePhotos(folderLink, apiKey) {
   if (!res.ok) throw new Error(data.error?.message || `Google Drive error ${res.status}`);
   return (data.files || []).map((f) => {
     const [image, fallback] = driveImageUrls(f.id);
-    return { image, fallback, caption: f.description || captionFrom(f.name) };
+    return { id: f.id, name: f.name, image, fallback, caption: captions[captionKey(f.id)] || f.description || "" };
   });
 }
