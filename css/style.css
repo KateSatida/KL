@@ -159,7 +159,11 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
 @media (max-width: 440px) { #hud-title { display: none; } }
 .pill { background: #ffffffe6; border-radius: 999px; padding: 5px 12px; font-weight: 600; font-size: 14px; box-shadow: 0 2px 8px #0001; }
 /* --chat-top (set by chat.js) = how far the chat box reaches up, so the button always sits above it */
-#station-prompt { position: absolute; z-index: 3; left: 50%; bottom: calc(var(--chat-top, 60px) + 14px); transform: translateX(-50%); font-size: 18px; box-shadow: 0 4px 16px #0002; animation: pop .25s; }
+#station-prompt { position: absolute; z-index: 3; left: 50%; top: 62px; transform: translateX(-50%); width: min(330px, calc(100% - 32px));
+  box-sizing: border-box; padding: 10px 14px 12px; background: #fffaf3; border-radius: 16px; box-shadow: 0 6px 20px #0003; text-align: center; animation: pop .25s; }
+#station-prompt .sp-title { font-weight: 700; font-size: 16px; }
+#station-prompt .sp-text { margin: 4px 0 8px; font-size: 15px; line-height: 1.35; text-wrap: balance; }
+#station-prompt .btn { display: block; width: 100%; margin-top: 6px; font-size: 16px; padding: 8px 12px; }
 @keyframes pop { from { transform: translateX(-50%) scale(.6); } }
 .connection { position: absolute; top: 56px; left: 50%; transform: translateX(-50%); background: #fff3cd; }
 

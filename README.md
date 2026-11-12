@@ -168,7 +168,9 @@ prop → drink → bouquet (from the toss) → lucky item (from the horoscope)**
   - `chatRadius`: how close guests must be to chat
   - `statusRadius`: how close guests must be to see a status
   - `background`: set it to e.g. `"assets/map.png"` to use your own drawn map instead of the tiled floor
-- `stations`: position (`x`, `y`), size (`w`, `h`), label, icon and colour of each station
+- `stations`: position (`x`, `y`), size (`w`, `h`), label, icon and colour of each station.
+  `"prompt": { "text": …, "button": … }` is the card shown at the top when a guest
+  walks in (short line + button; "ขอไปดูที่อื่นก่อน" hides it until they walk out and back in)
 - `decorations`: pixel-art pictures placed on the map (see **Decorations and day/night** below)
 - `time`: when night starts and ends
 
