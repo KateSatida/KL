@@ -35,6 +35,12 @@ jobs:
           mkdir _site
           cp -r index.html admin.html css js assets config _site/
           touch _site/.nojekyll
+      - name: Stamp file versions (phones never mix old and new files after an update)
+        run: |
+          V=${GITHUB_SHA::8}
+          sed -i -E "s#(href|src)=\"(css/style\.css|js/(main|admin)\.js)\"#\1=\"\2?v=$V\"#" _site/index.html _site/admin.html
+          find _site/js -name '*.js' -exec sed -i -E "s#(from |import\()\"(\.{1,2}/[^\"]+\.js)\"#\1\"\2?v=$V\"#g" {} +
+          grep -c "?v=$V" _site/index.html _site/admin.html _site/js/main.js
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
