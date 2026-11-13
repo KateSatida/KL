@@ -4,7 +4,7 @@ import { isModalOpen } from "./ui.js";
 import { Scenery, findGlowPoints } from "./scenery.js";
 import { Npcs } from "./npcs.js";
 
-const NEAR_STATION = 50;   // how close (px) you must be to use a station
+const NEAR_STATION = 12;   // how close (px) to a station's picture you must be to use it ("near" in config overrides)
 
 export class World {
   constructor(canvas, config, stations) {
@@ -191,7 +191,7 @@ export class World {
     }
 
     // Which station am I standing at?
-    const near = this.stations.find((s) => s.module.open && inside(me, s.def, NEAR_STATION)) || null;
+    const near = this.stations.find((s) => s.module.open && inside(me, nearZone(s.def), s.def.near ?? NEAR_STATION)) || null;
     if (near !== this.nearStation) { this.nearStation = near; this.onNearStation(near); }
 
     // Camera follows me
@@ -362,6 +362,13 @@ function artFor(s) {
     if (s.artFront) loadImage(s.artFront).then((i) => { a.front = i; });
   }
   return stationArt.get(s.id);
+}
+
+// The area that counts as "at the station": its picture (building, fountain…)
+// once loaded, else its whole box.
+function nearZone(s) {
+  const img = s.art ? artFor(s).img : null;
+  return img ? artBox(s, img) : s;
 }
 
 function artBox(s, img) {

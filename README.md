@@ -170,7 +170,9 @@ prop → drink → bouquet (from the toss) → lucky item (from the horoscope)**
   - `background`: set it to e.g. `"assets/map.png"` to use your own drawn map instead of the tiled floor
 - `stations`: position (`x`, `y`), size (`w`, `h`), label, icon and colour of each station.
   `"prompt": { "text": …, "button": … }` is the card shown at the top when a guest
-  walks in (short line + button; "ขอไปดูที่อื่นก่อน" hides it until they walk out and back in)
+  walks in (short line + button; "ขอไปดูที่อื่นก่อน" hides it until they walk out and back in).
+  The card appears when a guest is within 12 px of the station's picture; set
+  `"near": 30` on a station to make that distance bigger (or `0` for smaller)
 - `decorations`: pixel-art pictures placed on the map (see **Decorations and day/night** below)
 - `time`: when night starts and ends
 
