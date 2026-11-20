@@ -216,12 +216,7 @@
       "y": 1450,
       "scale": 3,
       "overlay": "assets/logo.png",
-      "overlayBox": [
-        14,
-        16,
-        36,
-        22
-      ],
+      "overlayBox": [16, 12, 32, 34],
       "night": "assets/decor/flower_backdrop_night.png",
       "glow": 30,
       "neon": {
