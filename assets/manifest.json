@@ -236,6 +236,11 @@
       "id": "04_pixel_couple",
       "label": "Pixel Couple",
       "url": "assets/frames/04_pixel_couple.svg"
+    },
+    {
+      "id": "06_pixel_couple_clear",
+      "label": "Pixel Couple Clear",
+      "url": "assets/frames/06_pixel_couple_clear.svg"
     }
   ]
 }

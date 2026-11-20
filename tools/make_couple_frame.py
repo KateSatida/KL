@@ -49,11 +49,11 @@ def diecut_frame(photo: Path) -> str:
     x, y = 600 - w - 8, 800 - h
     return f'''<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="600" height="800" viewBox="0 0 600 800">
   <!-- Photo frame: 600x800, transparent middle. Made by tools/make_couple_frame.py from assets/couple/our_photo.png -->
-  <path fill="#fff6ec" fill-rule="evenodd" d="M0 0H600V800H0Z M28 28V688H572V28Z"/>
-  <rect x="28" y="28" width="544" height="660" fill="none" stroke="#6aa57a" stroke-width="6"/>
-  <rect x="12" y="12" width="576" height="776" fill="none" stroke="#e98aa6" stroke-width="3" stroke-dasharray="14 8"/>
-  <text x="40" y="738" font-family="Georgia, serif" font-size="36" fill="#c2577a">{NAMES}</text>
-  <text x="42" y="772" font-family="Georgia, serif" font-size="20" fill="#4f8a5b" letter-spacing="3">{DATE}</text>
+  <!-- clear background: only the two of you and the names sit on the photo -->
+  <g font-family="Georgia, serif" stroke="#ffffff" stroke-linejoin="round" paint-order="stroke">
+    <text x="28" y="738" font-size="38" fill="#c2577a" stroke-width="7">{NAMES}</text>
+    <text x="30" y="774" font-size="22" fill="#4f8a5b" stroke-width="6" letter-spacing="3">{DATE}</text>
+  </g>
   <image x="{x}" y="{y}" width="{w}" height="{h}" xlink:href="{uri}" href="{uri}"/>
 </svg>
 '''
@@ -78,6 +78,22 @@ def main():
 '''
     out = ROOT / "assets" / "frames" / "04_pixel_couple.svg"
     out.write_text(svg, "utf-8")
+    print("wrote", out.relative_to(ROOT))
+
+    # the same couple with a clear background: no border, the photo fills the whole picture
+    big = 40 * 5                                      # a little bigger: 200 px
+    clear = f'''<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="600" height="800" viewBox="0 0 600 800">
+  <!-- Photo frame: 600x800, clear background. Made by tools/make_couple_frame.py -->
+  <image x="-14" y="{800 - big + 6}" width="{big}" height="{big}" xlink:href="{bride}" href="{bride}" style="image-rendering:pixelated"/>
+  <image x="{614 - big}" y="{800 - big + 6}" width="{big}" height="{big}" xlink:href="{groom}" href="{groom}" style="image-rendering:pixelated"/>
+  <g text-anchor="middle" font-family="Georgia, serif" stroke="#ffffff" stroke-linejoin="round" paint-order="stroke">
+    <text x="300" y="736" font-size="40" fill="#c2577a" stroke-width="8">{NAMES}</text>
+    <text x="300" y="774" font-size="23" fill="#4f8a5b" stroke-width="6" letter-spacing="3">{DATE}</text>
+  </g>
+</svg>
+'''
+    out = ROOT / "assets" / "frames" / "06_pixel_couple_clear.svg"
+    out.write_text(clear, "utf-8")
     print("wrote", out.relative_to(ROOT))
 
     photo = ROOT / "assets" / "couple" / "our_photo.png"
