@@ -181,8 +181,8 @@ prop → drink → bouquet (from the toss) → lucky item (from the horoscope)**
 middle is where the photo shows). The file name sets the order and the button
 label: `04_my_frame.png` shows as "My Frame".
 
-`04_pixel_couple.svg` (the pixel bride and groom) is built by
-`tools/make_couple_frame.py`. For a frame with a real photo of the couple,
+Frames 01-06 are built by `tools/make_couple_frame.py` (on every deploy) and
+carry your logo from `assets/logo.png`; edit that script to change their text. For a frame with a real photo of the couple,
 upload a PNG with the background removed as `assets/couple/our_photo.png`;
 the next deploy builds `05_our_photo.svg` from it automatically.
 Where the typed note sits on the photo is set by `NOTE_BOX` at the top of `js/stations/photobooth.js`.

@@ -51,7 +51,7 @@ function noteCard(note, notes, signature) {
   if (isImage(note)) return notes.includes(note) ? el("img", { class: "bouquet-note", src: note, alt: "A note from the couple" }) : null;   // old notes that were removed
   const i = Math.max(0, notes.indexOf(note));
   return el("div", { class: "bouquet-note text-note", style: `--accent:${NOTE_COLORS[i % NOTE_COLORS.length]}` },
-    el("div", { class: "hearts" }, "♥ ♥ ♥"),
+    el("img", { class: "note-logo", src: "assets/logo.png", alt: "", onerror: (e) => e.target.replaceWith(el("div", { class: "hearts" }, "♥ ♥ ♥")) }),
     el("div", { class: "text" }, note),
     signature ? el("div", { class: "sign" }, signature) : null);
 }
