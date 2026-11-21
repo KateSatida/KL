@@ -75,7 +75,6 @@ export default function memoryLane(def, game) {
 
   return {
     open: () => open(0),
-    onClick: () => { open(0); return true; },
     draw(ctx, d, now) {
       if (sign) ctx.drawImage(sign, Math.round(d.x + d.w / 2 - 40), d.y + 50, 80, 80);
       const cycle = Math.floor(now / 4000);
