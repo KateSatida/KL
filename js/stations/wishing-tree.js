@@ -66,7 +66,6 @@ export default function wishingTree(def, game) {
 
   return {
     open,
-    onClick: () => { open(); return true; },
     draw(ctx, d, now, world) {
       drawStation(ctx, d, now, world);
       const b = box();

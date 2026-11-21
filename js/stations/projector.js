@@ -31,7 +31,6 @@ export default function projector(def, game) {
 
   return {
     open,
-    onClick: () => { open(); return true; },
     draw(ctx, d) {
       // stand + screen
       ctx.fillStyle = "#5a4a5a";
