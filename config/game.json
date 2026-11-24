@@ -279,8 +279,8 @@
   ],
   "npcWalk": { "enabled": true, "speed": 50, "seconds": 16, "_help": "The bride & groom stand-ins stroll around together; set enabled to false to keep them at the backdrop." },
   "npcs": [
-    { "name": "Bride 👰", "sprite": "assets/npc/bride.png", "x": 1262, "y": 1508, "radius": 150, "lines": [ "Hello! 👋", "Welcome! 💕", "Thanks for joining us! 🥰" ], "role": "bride" },
-    { "name": "Groom 🤵", "sprite": "assets/npc/groom.png", "x": 1338, "y": 1508, "radius": 150, "dir": -1, "lines": [ "Hello! 👋", "Welcome! 💕", "Thanks for joining us! 🥰" ], "role": "groom" }
+    { "name": "Kate 👰", "sprite": "assets/npc/bride.png", "x": 1262, "y": 1508, "radius": 150, "lines": [ "Hello! 👋", "Welcome! 💕", "Thanks for joining us! 🥰" ], "role": "bride" },
+    { "name": "Lay 🤵", "sprite": "assets/npc/groom.png", "x": 1338, "y": 1508, "radius": 150, "dir": -1, "lines": [ "Hello! 👋", "Welcome! 💕", "Thanks for joining us! 🥰" ], "role": "groom" }
   ],
   "couple": {
     "_help": "The bride & groom log in with 💍 Couple login on the join screen. 'look' is the outfit they start with; 'badge' shows before their name. While one of you is online, your stand-in in 'npcs' (same 'role') steps away.",
