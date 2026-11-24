@@ -46,7 +46,9 @@ $("#wedding-title").textContent = w.title;
 $("#wedding-sub").textContent = `${w.couple} · ${w.date}`;
 $("#wedding-welcome").textContent = w.welcome;
 $("#hud-title").textContent = `💒 ${w.couple}`;
-$("#env-from").textContent = `From: ${w.couple} · ${w.date}`;
+$("#env-from").textContent = `From: ${w.couple}`;
+$("#env-names").textContent = w.couple;
+$("#env-date").textContent = w.date;
 if (!backend.online) { $("#demo-banner").classList.remove("hidden"); document.body.classList.add("demo"); }
 
 // The bride & groom play as themselves (started from the admin page's 💍 Couple tab).
