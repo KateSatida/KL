@@ -106,8 +106,10 @@ const getRoom = () => room || (room = admin.watchRoom({ onPlayers: () => {} }));
 views.couple = async () => {
   const config = await loadConfig();
   const saved = await backend.getSettings().catch(() => ({}));
-  const bride = el("input", { maxlength: 24, value: saved.couple_bride_name || "", placeholder: "Bride's name" });
-  const groom = el("input", { maxlength: 24, value: saved.couple_groom_name || "", placeholder: "Groom's name" });
+  // default: the names on the stand-in characters ("Kate 👰" → "Kate")
+  const npcName = (role) => ((config.npcs || []).find((n) => n.role === role)?.name || "").replace(/[^\p{L}\p{N} .'-]/gu, "").trim();
+  const bride = el("input", { maxlength: 24, value: saved.couple_bride_name || npcName("bride"), placeholder: "Bride's name" });
+  const groom = el("input", { maxlength: 24, value: saved.couple_groom_name || npcName("groom"), placeholder: "Groom's name" });
   const note = el("p", { class: "muted" });
   const saveNames = async () => {
     const values = { couple_bride_name: bride.value.trim(), couple_groom_name: groom.value.trim() };
