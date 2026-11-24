@@ -310,14 +310,19 @@ export class World {
       const badge = this.config.couple?.[p.role]?.badge || (p.role === "bride" ? "👰" : "🤵");
       ctx.save();
       ctx.font = "700 15px Mali, sans-serif";
-      const text = `${badge} ${p.name}`, w = ctx.measureText(text).width + 16;
+      // the real bride / groom is playing: a green "online" dot after the name
+      const text = `${badge} ${p.name}`, tw = ctx.measureText(text).width, w = tw + 30;
       ctx.fillStyle = "#fff6d6";
       ctx.strokeStyle = "#d4a017";
       ctx.lineWidth = 2;
       roundRect(ctx, p.rx - w / 2, p.ry + 4, w, 22, 11);
       ctx.fill(); ctx.stroke();
       ctx.restore();
-      label(ctx, text, p.rx, p.ry + 20, "#a8740a", 15);
+      label(ctx, text, p.rx - 7, p.ry + 20, "#a8740a", 15);
+      ctx.save();
+      ctx.fillStyle = "#34c759"; ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(p.rx - 7 + tw / 2 + 9, p.ry + 15, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.restore();
     } else {
       label(ctx, p.name, p.rx, p.ry + 16, p === this.me ? "#c27e8a" : "#4A5759");
     }
