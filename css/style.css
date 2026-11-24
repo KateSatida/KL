@@ -1,17 +1,25 @@
 /* ---- Theme colours: change these to match your wedding ---- */
 :root {
-  --green: #6fae7e;
-  --green-dark: #4f8a5e;
-  --mint: #e3f5e6;
-  --cream: #f6ead2;
-  --bg: #fdf3ee;
+  /* palette: #EDAFB8 pink · #F7E1D7 blush · #DEDBD2 linen · #B0C4B1 sage · #4A5759 slate */
+  --pink: #EDAFB8;
+  --blush: #F7E1D7;
+  --linen: #DEDBD2;
+  --sage: #B0C4B1;
+  --slate: #4A5759;
+  --green: var(--sage);
+  --green-dark: #8aa48c;
+  --mint: #e6ede5;
+  --cream: var(--blush);
+  --bg: #faf0eb;
   --card: #ffffff;
-  --text: #4a3640;
-  --muted: #9a8790;
-  --primary: #e0708f;
-  --primary-dark: #c2577a;
-  --accent: #f6c56b;
-  --line: #f0dde3;
+  --text: var(--slate);
+  --muted: #85908f;
+  --primary: var(--pink);
+  --primary-dark: #e39aa6;
+  --on-primary: var(--slate);
+  --rose-ink: #c27e8a;          /* deeper pink for text on light backgrounds */
+  --accent: var(--sage);
+  --line: var(--linen);
   --radius: 16px;
   --font: "Mali", system-ui, sans-serif;
 }
@@ -39,10 +47,10 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
   padding: 8px 16px; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-block;
 }
 .btn:hover { border-color: var(--primary); }
-.btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn.primary { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
 .btn.primary:hover { background: var(--primary-dark); }
-.btn.green { background: #3fae5a; color: #fff; border-color: #3fae5a; }
-.btn.green:hover { background: #33944b; }
+.btn.green { background: var(--sage); color: var(--slate); border-color: var(--sage); }
+.btn.green:hover { background: var(--green-dark); }
 .btn.small { padding: 5px 12px; font-size: 14px; }
 .btn.big { padding: 12px 28px; font-size: 18px; }
 .btn:disabled { opacity: .5; cursor: default; }
@@ -52,14 +60,14 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
 /* ---- Join screen ---- */
 .screen { position: fixed; inset: 0; }
 #join { overflow-y: auto; overflow-x: hidden; padding: 16px; display: flex; justify-content: center; align-items: flex-start;
-  background: radial-gradient(circle at top, #ffe3ea, var(--bg) 60%); }
-.card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: 0 8px 30px #e0708f22; }
+  background: radial-gradient(circle at top, #F7E1D7, var(--bg) 60%); }
+.card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: 0 8px 30px #4A575922; }
 .join-card { width: 100%; max-width: 720px; text-align: center; margin: auto 0; }
-.join-card h1 { color: var(--primary-dark); font-size: 28px; }
+.join-card h1 { color: var(--rose-ink); font-size: 28px; }
 #join-btn { margin-top: 16px; }
 
 /* ---- Invitation envelope (join screen) ---- */
-#join { background: radial-gradient(circle at 20% 10%, #ffe3ea, transparent 55%), radial-gradient(circle at 85% 90%, var(--mint), transparent 55%), #fbefe9; }
+#join { background: radial-gradient(circle at 20% 10%, #F7E1D7, transparent 55%), radial-gradient(circle at 85% 90%, var(--mint), transparent 55%), #faf0eb; }
 .envelope-scene { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 18px; z-index: 2; background: inherit; transition: opacity .6s ease .1s; }
 .envelope-scene.gone { opacity: 0; pointer-events: none; }
@@ -69,48 +77,48 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
 @keyframes env-float { 50% { transform: translateY(-8px) rotate(-1deg); } }
 .env-back, .env-pocket, .env-flap { position: absolute; inset: 0; border-radius: 6px; }
 /* cream paper with a little grain */
-.env-back { background: linear-gradient(135deg, #f1e2c4, var(--cream)); box-shadow: 0 14px 30px #7a5a4a33; }
-.env-pocket { z-index: 3; background: linear-gradient(160deg, #fbf1dc, #efdfbe);
-  clip-path: polygon(0 0, 50% 52%, 100% 0, 100% 100%, 0 100%); box-shadow: inset 0 0 0 2px #e2cda4; }
+.env-back { background: linear-gradient(135deg, #ecd5ca, var(--cream)); box-shadow: 0 14px 30px #4A575933; }
+.env-pocket { z-index: 3; background: linear-gradient(160deg, #fcf1ec, #F7E1D7);
+  clip-path: polygon(0 0, 50% 52%, 100% 0, 100% 100%, 0 100%); box-shadow: inset 0 0 0 2px #DEDBD2; }
 .env-pocket::before { content: ""; position: absolute; inset: 7px; border-radius: 4px; pointer-events: none;   /* airmail border */
   border: 6px solid transparent;
-  border-image: repeating-linear-gradient(45deg, #e0708f 0 10px, #fbf1dc 10px 16px, var(--green) 16px 26px, #fbf1dc 26px 32px) 6; }
-.env-flap { z-index: 4; background: linear-gradient(180deg, #ecd9b4, #f6e8cc); clip-path: polygon(0 0, 100% 0, 50% 58%);
+  border-image: repeating-linear-gradient(45deg, var(--pink) 0 10px, #fcf1ec 10px 16px, var(--sage) 16px 26px, #fcf1ec 26px 32px) 6; }
+.env-flap { z-index: 4; background: linear-gradient(180deg, #f0d4c8, #F7E1D7); clip-path: polygon(0 0, 100% 0, 50% 58%);
   transform-origin: top center; transition: transform .7s cubic-bezier(.5, 0, .3, 1), z-index 0s linear .35s; }
 .envelope-scene.opening .env-flap { transform: rotateX(180deg); z-index: 1; filter: brightness(.95); }
 .env-seal { position: absolute; z-index: 5; left: 50%; top: 52%; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%;
-  display: grid; place-items: center; color: #ffd9d9; font-weight: 700; font-size: 15px; letter-spacing: 1px;
-  background: radial-gradient(circle at 35% 30%, #e05252, #a51d24 70%); box-shadow: 0 0 0 4px #b8262dcc, 0 3px 6px #0004;
+  display: grid; place-items: center; color: #fff4f1; font-weight: 700; font-size: 15px; letter-spacing: 1px;
+  background: radial-gradient(circle at 35% 30%, #f2c3ca, #c98290 70%); box-shadow: 0 0 0 4px #c98290cc, 0 3px 6px #0004;
   transition: transform .35s ease, opacity .35s ease; }
 .envelope-scene.opening .env-seal { transform: scale(1.4) rotate(-20deg); opacity: 0; }
 .env-stamp { position: absolute; z-index: 5; right: 7%; bottom: 10%; width: 48px; height: 58px; padding: 4px; transform: rotate(4deg);
   /* perforated edge: a ring of "holes" around a red stamp */
-  background: radial-gradient(circle, transparent 0 2.6px, #c0392b 3px) -4px -4px / 8px 8px; filter: drop-shadow(0 1px 1px #0003); }
-.env-stamp span { width: 100%; height: 100%; display: grid; place-items: center; background: #c0392b; color: #ffe1e1;
-  font-size: 22px; box-shadow: inset 0 0 0 2px #c0392b, inset 0 0 0 4px #ffe1e1aa; }
+  background: radial-gradient(circle, transparent 0 2.6px, #4A5759 3px) -4px -4px / 8px 8px; filter: drop-shadow(0 1px 1px #0003); }
+.env-stamp span { width: 100%; height: 100%; display: grid; place-items: center; background: #4A5759; color: #F7E1D7;
+  font-size: 22px; box-shadow: inset 0 0 0 2px #4A5759, inset 0 0 0 4px #F7E1D7aa; }
 .env-postmark { position: absolute; z-index: 5; right: 20%; bottom: 20%; width: 64px; height: 30px; opacity: .45; transform: rotate(-8deg);
-  background: repeating-linear-gradient(180deg, transparent 0 5px, #4a3640 5px 7px); border-radius: 40%; }
-.env-address { position: absolute; z-index: 5; left: 9%; bottom: 13%; display: grid; gap: 2px; text-align: left; color: #6a4a3a;
+  background: repeating-linear-gradient(180deg, transparent 0 5px, #4A5759 5px 7px); border-radius: 40%; }
+.env-address { position: absolute; z-index: 5; left: 9%; bottom: 13%; display: grid; gap: 2px; text-align: left; color: #4A5759;
   font: 600 15px/1.3 var(--font); }
 .env-from { font-weight: 400; font-size: 13px; color: var(--green-dark); }
 .env-letter { position: absolute; z-index: 2; left: 7%; right: 7%; top: 8%; height: 84%; border-radius: 4px; padding: 14px 16px;
-  background: #fffaf0; box-shadow: 0 2px 6px #0002; display: flex; flex-direction: column; gap: 9px; text-align: left;
+  background: #fffaf7; box-shadow: 0 2px 6px #0002; display: flex; flex-direction: column; gap: 9px; text-align: left;
   transition: transform .8s cubic-bezier(.3, .7, .3, 1) .45s; }
 .envelope-scene.opening .env-letter { transform: translateY(-62%); }
-.env-letter-title { font: 700 18px var(--font); color: var(--primary-dark); }
-.env-letter-line { height: 3px; border-radius: 3px; background: #f0d7de; }
-.env-letter-line.short { width: 60%; background: #d6ecd9; }
-.env-hint { margin: 0; font-weight: 700; color: var(--primary-dark); animation: hint 1.6s ease-in-out infinite; }
+.env-letter-title { font: 700 18px var(--font); color: var(--rose-ink); }
+.env-letter-line { height: 3px; border-radius: 3px; background: #EDAFB8; }
+.env-letter-line.short { width: 60%; background: #B0C4B1; }
+.env-hint { margin: 0; font-weight: 700; color: var(--rose-ink); animation: hint 1.6s ease-in-out infinite; }
 @keyframes hint { 50% { opacity: .45; } }
 .envelope-scene.opening .env-hint { visibility: hidden; }
 /* the letter (join card) unfolds after the envelope opens */
-.join-card.letter { background: #fffaf0; border-radius: 6px; position: relative; padding-top: 30px;
-  box-shadow: 0 10px 30px #c2577a22, inset 0 0 0 8px #fffaf0, inset 0 0 0 10px #f0d7de; }
+.join-card.letter { background: #fffaf7; border-radius: 6px; position: relative; padding-top: 30px;
+  box-shadow: 0 10px 30px #4A575922, inset 0 0 0 8px #fffaf7, inset 0 0 0 10px #EDAFB8; }
 .join-card.letter::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 10px; border-radius: 6px 6px 0 0;
-  background: repeating-linear-gradient(45deg, var(--primary) 0 14px, #fffaf0 14px 20px, var(--green) 20px 34px, #fffaf0 34px 40px); }
+  background: repeating-linear-gradient(45deg, var(--primary) 0 14px, #fffaf7 14px 20px, var(--green) 20px 34px, #fffaf7 34px 40px); }
 .join-card.letter::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 10px; border-radius: 0 0 6px 6px;
-  background: inherit; background-image: repeating-linear-gradient(45deg, var(--primary) 0 14px, #fffaf0 14px 20px, var(--green) 20px 34px, #fffaf0 34px 40px); }
-.join-card.letter h1 { color: var(--primary-dark); }
+  background: inherit; background-image: repeating-linear-gradient(45deg, var(--primary) 0 14px, #fffaf7 14px 20px, var(--green) 20px 34px, #fffaf7 34px 40px); }
+.join-card.letter h1 { color: var(--rose-ink); }
 .join-card.letter #wedding-sub { color: var(--green-dark); font-weight: 600; }
 .join-card.unfold { animation: unfold .8s cubic-bezier(.2, .8, .3, 1) both; transform-origin: top center; }
 @keyframes unfold { from { transform: perspective(900px) rotateX(-70deg) translateY(-30px); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -131,15 +139,15 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
 }
 .preview-box { text-align: center; }
 .preview-box canvas { width: 192px; height: 192px; image-rendering: pixelated; background:
-  repeating-conic-gradient(#f7eef1 0 25%, #fff 0 50%) 0 0 / 24px 24px; border-radius: 12px; border: 2px solid var(--line); }
+  repeating-conic-gradient(#faf0eb 0 25%, #fff 0 50%) 0 0 / 24px 24px; border-radius: 12px; border: 2px solid var(--line); }
 .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .tab { border: 2px solid var(--line); background: #fff; border-radius: 999px; padding: 4px 12px; cursor: pointer; }
-.tab.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.tab.active { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
 .options { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; max-height: 260px; overflow-y: auto; padding: 2px; }
 .option { border: 2px solid var(--line); border-radius: 12px; background: #fff; padding: 4px; cursor: pointer; text-align: center; font-size: 12px; }
 .option img, .option canvas, .option .none { width: 64px; height: 64px; image-rendering: pixelated; display: block; margin: 0 auto; }
 .option .none { display: grid; place-items: center; font-size: 28px; }
-.option.selected { border-color: var(--primary); background: #fff0f4; }
+.option.selected { border-color: var(--primary); background: #fbeef0; }
 
 /* ---- Pixel editor ---- */
 .pixel-editor { display: grid; gap: 8px; justify-items: center; }
@@ -160,7 +168,7 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
 .pill { background: #ffffffe6; border-radius: 999px; padding: 5px 12px; font-weight: 600; font-size: 14px; box-shadow: 0 2px 8px #0001; }
 /* --chat-top (set by chat.js) = how far the chat box reaches up, so the button always sits above it */
 #station-prompt { position: absolute; z-index: 3; left: 50%; top: 62px; transform: translateX(-50%); width: min(330px, calc(100% - 32px));
-  box-sizing: border-box; padding: 10px 14px 12px; background: #fffaf3; border-radius: 16px; box-shadow: 0 6px 20px #0003; text-align: center; animation: pop .25s; }
+  box-sizing: border-box; padding: 10px 14px 12px; background: #fffaf7; border-radius: 16px; box-shadow: 0 6px 20px #0003; text-align: center; animation: pop .25s; }
 #station-prompt .sp-title { font-weight: 700; font-size: 16px; }
 #station-prompt .sp-text { margin: 4px 0 8px; font-size: 15px; line-height: 1.35; text-wrap: balance; }
 #station-prompt .btn { display: block; width: 100%; margin-top: 6px; font-size: 16px; padding: 8px 12px; }
@@ -188,18 +196,18 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
   border-radius: var(--radius); box-shadow: 0 4px 20px #0002; display: flex; flex-direction: column; max-height: 45vh; }
 .chat-head { display: flex; align-items: center; }
 .chat-toggle { flex: 1; border: 0; background: none; color: inherit; text-align: left; padding: 10px 14px; font-weight: 700; cursor: pointer; }
-.chat-min { border: 0; background: #f6e9ee; color: var(--text); border-radius: 999px; width: 36px; height: 36px;
+.chat-min { border: 0; background: #F7E1D7; color: var(--text); border-radius: 999px; width: 36px; height: 36px;
   margin-right: 8px; font-size: 20px; line-height: 1; cursor: pointer; touch-action: manipulation; }
 .chat.collapsed .chat-min { display: none; }
 .chat-log { overflow-y: auto; padding: 0 14px; font-size: 14px; flex: 1; min-height: 60px; }
 .chat-log p { margin: 4px 0; word-wrap: break-word; }
-.chat-log b { color: var(--primary-dark); }
+.chat-log b { color: var(--rose-ink); }
 .chat-form { display: flex; gap: 6px; padding: 10px; }
 .chat.collapsed .chat-log, .chat.collapsed .chat-form { display: none; }
-.badge { color: var(--primary); margin-left: 4px; }
+.badge { color: var(--rose-ink); margin-left: 4px; }
 
 /* ---- Modal ---- */
-.modal { position: fixed; inset: 0; background: #3b2a3366; display: grid; place-items: center; padding: 12px; z-index: 10; }
+.modal { position: fixed; inset: 0; background: #4A575966; display: grid; place-items: center; padding: 12px; z-index: 10; }
 .modal-box { background: #fff; border-radius: var(--radius); width: 100%; max-width: 640px; max-height: 92vh; max-height: 92dvh; overflow-y: auto; padding: 20px; position: relative; }
 .modal-close { position: absolute; top: 10px; right: 12px; border: 0; background: none; font-size: 22px; cursor: pointer; color: var(--muted); }
 
@@ -214,7 +222,7 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
 
 /* ---- Bar / message wall / singles ---- */
 .drinks { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
-.bubble { background: #fff0f4; border-radius: 14px; padding: 10px 14px; margin: 8px 0; }
+.bubble { background: #fbeef0; border-radius: 14px; padding: 10px 14px; margin: 8px 0; }
 .wall { max-height: 300px; overflow-y: auto; }
 .wall .msg { border-bottom: 1px dashed var(--line); padding: 8px 0; }
 .wall .msg small { color: var(--muted); }
@@ -222,7 +230,7 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
 .single-card { border: 2px solid var(--line); border-radius: 14px; overflow: hidden; text-align: center; padding-bottom: 8px; }
 .single-card img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
 .single-card .name { font-weight: 700; margin-top: 6px; }
-.single-card a { color: var(--primary-dark); }
+.single-card a { color: var(--rose-ink); }
 
 /* small strip at the very bottom, under pop-ups; only shown without Supabase keys */
 .demo-banner { position: fixed; bottom: 0; left: 0; right: 0; z-index: 5; background: #fff3cd; color: #7a5a00;
@@ -233,15 +241,15 @@ body.demo #join { padding-bottom: 40px; }
 
 .ribbon { display: inline-block; width: 10px; height: 14px; border-radius: 2px; vertical-align: middle; box-shadow: 0 0 0 1px #0002; }
 .memory { text-align: center; }
-.memory-photo { width: 100%; max-height: 55vh; object-fit: contain; border-radius: 12px; background: #f6efe9; image-rendering: auto; }
+.memory-photo { width: 100%; max-height: 55vh; object-fit: contain; border-radius: 12px; background: #faf0eb; image-rendering: auto; }
 .memory-caption { font-weight: 600; min-height: 1.4em; }
 
 .bouquet-card { text-align: center; }
 .bouquet-flower { display: block; margin: 0 auto; width: 128px; height: 128px; image-rendering: pixelated; }
 .bouquet-meaning { font-size: 18px; margin: 4px 0 12px; }
 .bouquet-note { width: 100%; max-width: 420px; border-radius: 10px; }
-.text-note { margin: 0 auto; box-sizing: border-box; padding: 22px 20px 18px; background: #fffaf3; color: #4a3640;
-  border: 7px solid var(--accent); border-radius: 4px; box-shadow: 0 0 0 5px #fff, 0 0 0 8px #4a3640;
+.text-note { margin: 0 auto; box-sizing: border-box; padding: 22px 20px 18px; background: #fffaf7; color: #4A5759;
+  border: 7px solid var(--accent); border-radius: 4px; box-shadow: 0 0 0 5px #fff, 0 0 0 8px #4A5759;
   font-family: Georgia, Mali, serif; white-space: pre-line; }
 .text-note .hearts { font-size: 24px; letter-spacing: 6px; }
 .text-note .note-logo { display: block; height: 60px; margin: 0 auto; }

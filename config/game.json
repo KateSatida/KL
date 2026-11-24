@@ -14,12 +14,12 @@
     "statusRadius": 260,
     "background": null,
     "theme": {
-      "grass": "#9ed27f",
-      "grassStripe": "#95c975",
-      "grassTuft": "#7fb35f",
-      "path": "#eadfca",
-      "pathEdge": "#cdbd9f",
-      "hedge": "#5f8f4a",
+      "grass": "#b4c8a5",
+      "grassStripe": "#adc19e",
+      "grassTuft": "#98ae8a",
+      "path": "#efe2d8",
+      "pathEdge": "#d8c8bd",
+      "hedge": "#7f9a78",
       "nightColor": "#0b1033",
       "nightDarkness": 0.62
     }
@@ -221,10 +221,9 @@
       "glow": 30,
       "neon": {
         "colors": [
-          "#ff5d8f",
-          "#4cc9f0",
-          "#c77dff",
-          "#ffd166"
+          "#EDAFB8",
+          "#B0C4B1",
+          "#F7E1D7"
         ],
         "seconds": 4,
         "frame": [
