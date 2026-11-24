@@ -277,6 +277,7 @@
     { "image": "assets/decor/flower_pot.png", "x": 885, "y": 1120 },
     { "image": "assets/decor/cake.png", "x": 1000, "y": 640 }
   ],
+  "npcWalk": { "enabled": true, "speed": 50, "seconds": 16, "_help": "The bride & groom stand-ins stroll around together; set enabled to false to keep them at the backdrop." },
   "npcs": [
     { "name": "Bride 👰", "sprite": "assets/npc/bride.png", "x": 1262, "y": 1508, "radius": 150, "lines": [ "Hello! 👋", "Welcome! 💕", "Thanks for joining us! 🥰" ], "role": "bride" },
     { "name": "Groom 🤵", "sprite": "assets/npc/groom.png", "x": 1338, "y": 1508, "radius": 150, "dir": -1, "lines": [ "Hello! 👋", "Welcome! 💕", "Thanks for joining us! 🥰" ], "role": "groom" }

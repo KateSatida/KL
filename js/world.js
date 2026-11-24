@@ -253,7 +253,8 @@ export class World {
   drawNpc(n, now) {
     if (!n.img) return;
     const ctx = this.ctx, size = SIZE * this.w.spriteScale;
-    const bob = n.line ? Math.abs(Math.sin(now / 200)) * 3 : 0;    // little hop while talking
+    const bob = n.moving ? Math.abs(Math.sin(now / 90)) * 3          // walking
+      : n.line ? Math.abs(Math.sin(now / 200)) * 3 : 0;            // little hop while talking
     ctx.fillStyle = "#00000022";
     ctx.beginPath(); ctx.ellipse(n.x, n.y, 16, 5, 0, 0, Math.PI * 2); ctx.fill();
     ctx.save();
