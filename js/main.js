@@ -58,7 +58,8 @@ if (role && !(await backend.admin.session().catch(() => null))) { store.set("cou
 // What this guest looks like. Saved on the device so a refresh keeps the outfit.
 const stateKey = role ? "coupleState" : "guest";
 const state = store.get(stateKey, { name: "", status: "", look: {} });
-$("#join-customizer").append(customizer(config, state, { lockedName: store.get("myName") }));
+// a guest keeps the name they claimed on this phone; the couple uses their own name
+$("#join-customizer").append(customizer(config, state, { lockedName: role ? null : store.get("myName") }));
 
 // Shared "game" object handed to every station module.
 const listeners = {};
