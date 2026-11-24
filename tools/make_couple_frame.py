@@ -23,6 +23,7 @@ from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).resolve().parent.parent
 NAMES, DATE = "Kate &amp; Lay", "28 · 11 · 2026"
+HASHTAG = "#LaybyKateside"
 SCALE = 5                                     # 32 px sprite -> 160 px
 
 
@@ -72,6 +73,7 @@ def classic_frames():
   <path fill="#F7E1D7" fill-rule="evenodd" d="M0 0H600V800H0Z M30 30V700H570V30Z"/>
   <rect x="30" y="30" width="540" height="670" fill="none" stroke="#EDAFB8" stroke-width="6"/>
   <g font-size="54"><text x="0" y="70">🌸</text><text x="535" y="70">🌸</text><text x="0" y="740">🌷</text><text x="535" y="740">🌷</text></g>
+  <text x="300" y="23" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#4A5759" letter-spacing="1">{HASHTAG}</text>
   {logo_tag("#4A5759", 52, cx=300, y=708)}
   <text x="300" y="786" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#4A5759">{NAMES_PLAIN} · {DATE_DOTS}</text>
 </svg>
@@ -80,15 +82,16 @@ def classic_frames():
   <path fill="#1f1b16" fill-rule="evenodd" d="M0 0H600V800H0Z M40 40V680H560V40Z"/>
   <rect x="40" y="40" width="520" height="640" fill="none" stroke="#d9b45a" stroke-width="8"/>
   <rect x="22" y="22" width="556" height="756" fill="none" stroke="#d9b45a" stroke-width="2"/>
-  {logo_tag("#d9b45a", 50, cx=300, y=690)}
+  {logo_tag("#d9b45a", 46, cx=300, y=688)}
   <text x="300" y="762" text-anchor="middle" font-family="Georgia, serif" font-size="30" fill="#d9b45a" letter-spacing="6">KATE &amp; LAY</text>
-  <text x="300" y="784" text-anchor="middle" font-family="Georgia, serif" font-size="15" fill="#d9b45a" letter-spacing="4">28 · 11 · 2026</text>
+  <text x="300" y="784" text-anchor="middle" font-family="Georgia, serif" font-size="15" fill="#d9b45a" letter-spacing="3">28 · 11 · 2026  ·  {HASHTAG}</text>
 </svg>
 '''
     polaroid = f'''{SVG_HEAD}
   <path fill="#ffffff" fill-rule="evenodd" d="M0 0H600V800H0Z M36 36V620H564V36Z"/>
-  {logo_tag("#4A5759", 92, cx=300, y=642)}
-  <text x="300" y="772" text-anchor="middle" font-family="'Comic Sans MS', cursive" font-size="26" fill="#85908f">♥ {NAMES_PLAIN} · {DATE_DOTS} ♥</text>
+  {logo_tag("#4A5759", 80, cx=300, y=634)}
+  <text x="300" y="776" text-anchor="middle" font-family="'Comic Sans MS', cursive" font-size="22" fill="#4A5759">{HASHTAG}</text>
+  <text x="300" y="746" text-anchor="middle" font-family="'Comic Sans MS', cursive" font-size="26" fill="#85908f">♥ {NAMES_PLAIN} · {DATE_DOTS} ♥</text>
 </svg>
 '''
     return {"01_floral": floral, "02_gold_classic": gold, "03_polaroid": polaroid}
@@ -113,10 +116,11 @@ def diecut_frame(photo: Path) -> str:
     return f'''<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="600" height="800" viewBox="0 0 600 800">
   <!-- Photo frame: 600x800, transparent middle. Made by tools/make_couple_frame.py from assets/couple/our_photo.png -->
   <!-- clear background: only the two of you and the names sit on the photo -->
-  {logo_tag("#4A5759", 64, x=24, y=632, halo=True)}
+  {logo_tag("#4A5759", 64, x=24, y=598, halo=True)}
   <g font-family="Georgia, serif" stroke="#ffffff" stroke-linejoin="round" paint-order="stroke">
-    <text x="28" y="738" font-size="38" fill="#4A5759" stroke-width="7">{NAMES}</text>
-    <text x="30" y="774" font-size="22" fill="#7e9a80" stroke-width="6" letter-spacing="3">{DATE}</text>
+    <text x="28" y="704" font-size="38" fill="#4A5759" stroke-width="7">{NAMES}</text>
+    <text x="30" y="740" font-size="22" fill="#7e9a80" stroke-width="6" letter-spacing="3">{DATE}</text>
+    <text x="30" y="774" font-size="22" fill="#4A5759" stroke-width="6">{HASHTAG}</text>
   </g>
   <image x="{x}" y="{y}" width="{w}" height="{h}" xlink:href="{uri}" href="{uri}"/>
 </svg>
@@ -130,7 +134,7 @@ def main():
     size = 32 * SCALE
     bride, groom = sprite_uri("bride"), sprite_uri("groom")
     hearts = "".join(f'<text x="{x}" y="{y}" font-size="{s}">{c}</text>' for x, y, s, c in (
-        (18, 62, 34, "💗"), (548, 62, 34, "💚"), (285, 32, 26, "🤍")))
+        (18, 62, 34, "💗"), (548, 62, 34, "💚")))
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="600" height="800" viewBox="0 0 600 800">
   <!-- Photo frame: 600x800, transparent middle. Made by tools/make_couple_frame.py -->
   <path fill="#F7E1D7" fill-rule="evenodd" d="M0 0H600V800H0Z M28 28V668H572V28Z"/>
@@ -139,6 +143,7 @@ def main():
   {hearts}
   <image x="-6" y="{800 - size + 4}" width="{size}" height="{size}" xlink:href="{bride}" href="{bride}" style="image-rendering:pixelated"/>
   <image x="{606 - size}" y="{800 - size + 4}" width="{size}" height="{size}" xlink:href="{groom}" href="{groom}" style="image-rendering:pixelated"/>
+  <text x="300" y="24" text-anchor="middle" font-family="Georgia, serif" font-size="16" fill="#4A5759" letter-spacing="1" stroke="#F7E1D7" stroke-width="6" paint-order="stroke">{HASHTAG}</text>
   {logo_tag("#4A5759", 50, cx=300, y=676)}
   <text x="300" y="756" text-anchor="middle" font-family="Georgia, serif" font-size="32" fill="#4A5759">{NAMES}</text>
   <text x="300" y="784" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#7e9a80" letter-spacing="3">{DATE}</text>
@@ -154,10 +159,11 @@ def main():
   <!-- Photo frame: 600x800, clear background. Made by tools/make_couple_frame.py -->
   <image x="-14" y="{800 - big + 6}" width="{big}" height="{big}" xlink:href="{bride}" href="{bride}" style="image-rendering:pixelated"/>
   <image x="{614 - big}" y="{800 - big + 6}" width="{big}" height="{big}" xlink:href="{groom}" href="{groom}" style="image-rendering:pixelated"/>
-  {logo_tag("#4A5759", 64, cx=300, y=630, halo=True)}
+  {logo_tag("#4A5759", 64, cx=300, y=596, halo=True)}
   <g text-anchor="middle" font-family="Georgia, serif" stroke="#ffffff" stroke-linejoin="round" paint-order="stroke">
-    <text x="300" y="736" font-size="40" fill="#4A5759" stroke-width="8">{NAMES}</text>
-    <text x="300" y="774" font-size="23" fill="#7e9a80" stroke-width="6" letter-spacing="3">{DATE}</text>
+    <text x="300" y="702" font-size="40" fill="#4A5759" stroke-width="8">{NAMES}</text>
+    <text x="300" y="738" font-size="23" fill="#7e9a80" stroke-width="6" letter-spacing="3">{DATE}</text>
+    <text x="300" y="774" font-size="23" fill="#4A5759" stroke-width="6">{HASHTAG}</text>
   </g>
 </svg>
 '''
