@@ -245,7 +245,7 @@ export class World {
     for (const s of this.stations) (s.module.drawLabel || drawStationLabel)(ctx, s.def, now, this);
     for (const p of players.sort((a, b) => a.ry - b.ry)) this.drawPlayerText(p, now);
     for (const n of this.npcs.visible(this.onlineRoles || new Set())) {
-      label(ctx, n.name, n.x, n.y + 16, "#c2577a");
+      label(ctx, n.name, n.x, n.y + 16, "#c27e8a");
       if (n.line) speech(ctx, n.line, n.x, n.y - SIZE * this.w.spriteScale - 8, "#ffffff");
     }
   }
@@ -318,7 +318,7 @@ export class World {
       ctx.restore();
       label(ctx, text, p.rx, p.ry + 20, "#a8740a", 15);
     } else {
-      label(ctx, p.name, p.rx, p.ry + 16, p === this.me ? "#c2577a" : "#4a3640");
+      label(ctx, p.name, p.rx, p.ry + 16, p === this.me ? "#c27e8a" : "#4A5759");
     }
     const near = p === this.me || (this.me && dist(p, this.me) <= this.w.statusRadius);
     const bubble = p.bubble && p.bubble.until > now ? p.bubble.text : null;
@@ -437,7 +437,7 @@ export function drawStation(ctx, s, now, world) {
 }
 
 export function drawStationLabel(ctx, s) {
-  label(ctx, s.label, s.x + s.w / 2, s.y + s.h - 18, "#4a3640", 18);
+  label(ctx, s.label, s.x + s.w / 2, s.y + s.h - 18, "#4A5759", 18);
 }
 
 export function roundRect(ctx, x, y, w, h, r) {
@@ -450,7 +450,7 @@ export function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-export function label(ctx, text, x, y, color = "#4a3640", size = 14) {
+export function label(ctx, text, x, y, color = "#4A5759", size = 14) {
   ctx.font = `700 ${size}px Mali, sans-serif`;
   ctx.textAlign = "center";
   ctx.save();
@@ -473,7 +473,7 @@ export function speech(ctx, text, x, y, bg) {
   roundRect(ctx, x - w / 2, y - h, w, h, 8);
   ctx.fill(); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(x - 5, y); ctx.lineTo(x, y + 6); ctx.lineTo(x + 5, y); ctx.fill();
-  ctx.fillStyle = "#4a3640";
+  ctx.fillStyle = "#4A5759";
   ctx.textAlign = "center";
   lines.forEach((l, i) => ctx.fillText(l, x, y - h + 18 + i * 16));
 }

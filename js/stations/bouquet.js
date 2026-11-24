@@ -42,7 +42,7 @@ const pickRandom = (list, avoid) => {
   return pool[Math.floor(Math.random() * pool.length)];
 };
 
-const NOTE_COLORS = ["#ff8fab", "#b5e48c", "#8ec9f0", "#ffd166", "#c77dff"];
+const NOTE_COLORS = ["#EDAFB8", "#B0C4B1", "#DEDBD2"];
 const isImage = (s) => /\.(png|jpe?g|gif|webp|svg)$/i.test(s);
 
 // A note from the couple: an image, or text on a card with a coloured border.

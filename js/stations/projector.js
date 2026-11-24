@@ -50,15 +50,15 @@ export default function projector(def, game) {
         ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, sx + 6, sy + 4, side, side);
         ctx.restore();
         const tx = sx + side + 16 + (sw - side - 16) / 2;
-        label(ctx, current.name, tx, sy + 40, "#c2577a", 20);
-        label(ctx, `@${current.instagram}`, tx, sy + 66, "#4a3640", 14);
+        label(ctx, current.name, tx, sy + 40, "#c27e8a", 20);
+        label(ctx, `@${current.instagram}`, tx, sy + 66, "#4A5759", 14);
         ctx.font = "600 12px Mali, sans-serif";
         ctx.fillStyle = "#7a6a74";
         wrap(ctx, current.bio || "", sw - side - 30).slice(0, 4)
           .forEach((l, i) => ctx.fillText(l, tx, sy + 92 + i * 15));
       } else {
-        label(ctx, "💘 Visit the Single Station", sx + sw / 2, sy + sh / 2, "#c2577a", 16);
-        label(ctx, "to appear here!", sx + sw / 2, sy + sh / 2 + 22, "#4a3640", 13);
+        label(ctx, "💘 Visit the Single Station", sx + sw / 2, sy + sh / 2, "#c27e8a", 16);
+        label(ctx, "to appear here!", sx + sw / 2, sy + sh / 2 + 22, "#4A5759", 13);
       }
     },
     // drawn after the night overlay so it stays readable

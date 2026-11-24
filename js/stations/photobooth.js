@@ -6,7 +6,7 @@ import { wrap } from "../world.js";
 
 const W = 600, H = 800;                                  // photo size (3:4, same as frames)
 const NOTE_BOX = { x: 60, y: 540, w: 480, maxLines: 3 }; // where the typed note goes
-const INK_COLORS = ["#ffffff", "#e0708f", "#222222", "#f6c56b"];
+const INK_COLORS = ["#ffffff", "#EDAFB8", "#4A5759", "#B0C4B1"];
 
 // iPhone/Android: open the share sheet ("Save Image" puts it in Photos).
 // Elsewhere: a normal download.
@@ -78,7 +78,7 @@ export default function photobooth(def, game) {
           target.beginPath();
           target.roundRect(NOTE_BOX.x, y, NOTE_BOX.w, h, 16);
           target.fill();
-          target.fillStyle = "#4a3640";
+          target.fillStyle = "#4A5759";
           target.textAlign = "center";
           lines.forEach((l, i) => target.fillText(l, NOTE_BOX.x + NOTE_BOX.w / 2, y + 36 + i * 32));
         }
