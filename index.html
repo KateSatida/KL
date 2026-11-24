@@ -16,6 +16,11 @@
   <section id="join" class="screen">
     <!-- The invitation envelope: tap to open, the letter becomes the join card -->
     <div id="envelope-scene" class="envelope-scene hidden">
+      <div class="env-heading">
+        <img class="env-logo" src="assets/logo.png" alt="">
+        <p class="env-names" id="env-names"></p>
+        <p class="env-date" id="env-date"></p>
+      </div>
       <button id="envelope" class="envelope" aria-label="Open the invitation">
         <span class="env-back"></span>
         <span class="env-letter">
@@ -24,14 +29,15 @@
         </span>
         <span class="env-pocket"></span>
         <span class="env-flap"></span>
-        <span class="env-seal" id="env-seal">K♥L</span>
-        <span class="env-stamp"><span>♥</span></span>
+        <span class="env-seal" id="env-seal"><span class="env-seal-logo"></span></span>
+        <span class="env-stamp"><span><i class="env-stamp-logo"></i></span></span>
         <span class="env-postmark"></span>
         <span class="env-address"><span id="env-to">To: our dearest guest</span><span id="env-from" class="env-from"></span></span>
       </button>
       <p class="env-hint">Tap to open 💌</p>
     </div>
     <div class="card join-card letter">
+      <img class="join-logo" src="assets/logo.png" alt="">
       <h1 id="wedding-title">Wedding Guestbook</h1>
       <p id="wedding-sub" class="muted"></p>
       <p id="wedding-welcome"></p>
