@@ -226,10 +226,12 @@ label { display: block; font-weight: 600; margin: 10px 0 4px; }
 .toast { position: fixed; top: 60px; left: 50%; transform: translateX(-50%); background: var(--text); color: #fff; padding: 10px 18px; border-radius: 999px; z-index: 20; }
 
 /* ---- Photo booth ---- */
-.booth { display: grid; gap: 10px; justify-items: center; }
+.booth { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; justify-items: center; }
+.booth > * { min-width: 0; max-width: 100%; }
 /* sized so the Snap button stays on screen on phones */
 .booth canvas { height: min(480px, 52vh, 106vw); width: auto; aspect-ratio: 3 / 4; border-radius: 8px; background: #222; touch-action: none; }
-.frames { display: flex; gap: 6px; overflow-x: auto; max-width: 100%; padding: 2px; }
+.frames { display: flex; gap: 6px; overflow-x: auto; max-width: 100%; padding: 2px; -webkit-overflow-scrolling: touch; }
+.frames .option { flex: 0 0 auto; width: 78px; }
 .frames .option img { width: 48px; height: 64px; object-fit: contain; background: #ddd; }
 
 /* ---- Bar / message wall / singles ---- */

@@ -241,6 +241,21 @@
       "id": "06_pixel_couple_clear",
       "label": "Pixel Couple Clear",
       "url": "assets/frames/06_pixel_couple_clear.svg"
+    },
+    {
+      "id": "07_lavender_wave",
+      "label": "Lavender Wave",
+      "url": "assets/frames/07_lavender_wave.png"
+    },
+    {
+      "id": "08_green_arch",
+      "label": "Green Arch",
+      "url": "assets/frames/08_green_arch.png"
+    },
+    {
+      "id": "09_sunglasses",
+      "label": "Sunglasses",
+      "url": "assets/frames/09_sunglasses.png"
     }
   ]
 }
